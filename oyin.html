@@ -3,465 +3,609 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PUBG Arena</title>
+  <title>PUBG 3D Arena</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; padding: 0; width: 100vw; height: 100dvh; overflow: hidden; font-family: sans-serif; background: #0b101b; color: #fff; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: #090d16; color: #fff; }
     .screen { display: none; width: 100%; height: 100%; position: relative; }
-    .screen.active { display: block; }
-    canvas { display: block; width: 100%; height: 100%; }
+    .screen.active { display: flex; flex-direction: column; }
 
-    .lb-top { position: absolute; top: 50px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; z-index: 5; }
-    .lb-prof { pointer-events: auto; display: flex; align-items: center; gap: 8px; background: rgba(12,18,30,0.78); border: 1px solid rgba(255,255,255,0.2); border-left: 3px solid #facc15; padding: 6px 12px 6px 8px; border-radius: 8px; }
-    .lb-right { pointer-events: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .uc-pill { background: rgba(12,18,30,0.85); border: 1px solid #f59e0b; color: #fde047; padding: 5px 12px; border-radius: 8px; font-weight: 800; font-size: 13px; }
-    .sq-btn { background: rgba(12,18,30,0.8); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    /* Lobby */
+    .lobby { background: radial-gradient(circle at top, #1e293b, #090d16); padding: 48px 12px 10px; overflow-y: auto; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.07); padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #facc15; }
+    .uc-badge { background: #f59e0b; color: #111; font-weight: 900; padding: 5px 11px; border-radius: 8px; font-size: 13px; }
+    .maps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+    .map-btn { padding: 10px 4px; border-radius: 10px; border: 1.5px solid #334155; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .map-btn.on { border-color: #facc15; background: rgba(250,204,21,0.18); color: #fde047; }
+    .btn-go { width: 100%; padding: 13px; border: none; border-radius: 10px; background: linear-gradient(180deg, #fde047, #eab308); color: #111; font-size: 17px; font-weight: 900; cursor: pointer; margin-bottom: 10px; }
 
-    .lb-bot { position: absolute; left: 10px; right: 10px; bottom: 12px; display: flex; flex-direction: column; gap: 8px; pointer-events: none; z-index: 5; }
-    .lb-start-row { display: flex; align-items: flex-end; justify-content: space-between; pointer-events: auto; }
-    .mode-tag { background: rgba(12,18,30,0.8); border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 6px; font-size: 11px; color: #e2e8f0; margin-bottom: 4px; width: fit-content; }
-    .btn-pubg { background: linear-gradient(180deg, #fde047, #eab308); color: #111827; border: 2px solid #fef08a; border-radius: 6px; padding: 13px 30px; font-size: 18px; font-weight: 900; cursor: pointer; }
-    .lb-nav { pointer-events: auto; display: flex; gap: 4px; background: rgba(12,18,30,0.86); border-top: 1px solid rgba(255,255,255,0.2); padding: 6px; border-radius: 10px; }
-    .nav-item { flex: 1; padding: 7px 2px; border: none; border-radius: 7px; background: transparent; color: #e2e8f0; font-size: 11px; font-weight: 700; cursor: pointer; }
-
-    .drawer-bg { position: absolute; inset: 0; background: rgba(6,10,18,0.78); display: none; align-items: flex-end; z-index: 25; }
-    .drawer-bg.open { display: flex; }
-    .drawer { width: 100%; max-height: 75dvh; background: #111827; border-top: 2px solid #f59e0b; border-radius: 18px 18px 0 0; padding: 14px; display: flex; flex-direction: column; }
-    .drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .drawer-body { overflow-y: auto; flex: 1; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .card { background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-    .card.eq { border-color: #22c55e; background: rgba(34,197,94,0.12); }
-    .c-btn { width: 100%; padding: 8px; border-radius: 8px; border: none; font-weight: 800; font-size: 12px; cursor: pointer; background: #f59e0b; color: #111; }
+    .tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; }
+    .t-btn { padding: 7px 10px; border-radius: 8px; border: 1px solid #334155; background: #111827; color: #cbd5e1; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+    .t-btn.on { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 20px; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
+    .card.eq { border-color: #22c55e; background: rgba(34,197,94,0.14); }
+    .c-btn { width: 100%; padding: 7px; border: none; border-radius: 7px; font-weight: 800; font-size: 11px; cursor: pointer; background: #f59e0b; color: #111; margin-top: 6px; }
     .c-btn.own { background: #334155; color: #fff; }
     .c-btn.eq { background: #22c55e; color: #052e16; }
-    .list-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.06); border-radius: 12px; padding: 9px 12px; margin-bottom: 7px; font-size: 13px; cursor: pointer; }
-    .wd-inp { width: 100%; padding: 11px; border-radius: 10px; border: 1px solid #334155; background: #0b101b; color: #fff; margin: 6px 0 10px; font-size: 14px; }
+    .box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 13px; margin-bottom: 14px; }
+    .inp { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334155; background: #090d16; color: #fff; margin: 6px 0; }
 
-    #scr-game { background: #2c4728; }
-    #game-canvas { touch-action: none; }
-    .hud-top { position: absolute; top: 52px; left: 10px; right: 100px; display: flex; flex-wrap: wrap; gap: 5px; pointer-events: none; z-index: 10; }
-    .hud-pill { background: rgba(9,13,22,0.82); border: 1px solid rgba(255,255,255,0.2); padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; pointer-events: auto; }
-    .exit-btn { background: #dc2626; color: #fff; border: none; cursor: pointer; }
-    .joy-zone { position: absolute; bottom: 20px; left: 18px; width: 114px; height: 114px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.28); touch-action: none; z-index: 10; }
-    .joy-knob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: rgba(255,255,255,0.82); pointer-events: none; }
-    .act-pad { position: absolute; bottom: 18px; right: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; z-index: 10; }
-    .act-row { display: flex; gap: 6px; }
-    .act-btn { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.3); background: rgba(15,23,42,0.82); color: #fff; font-size: 10px; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-    .act-btn.on { border-color: #fbbf24; background: rgba(245,158,11,0.38); }
-    .fire-btn { width: 82px; height: 82px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.55); background: radial-gradient(circle,#ef4444,#991b1b); color: #fff; font-weight: 800; font-size: 14px; touch-action: none; }
-    .go-overlay { position: absolute; inset: 0; background: rgba(9,13,22,0.88); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 30; }
-    .go-overlay.open { display: flex; }
-    .go-card { width: 100%; max-width: 320px; background: #1e293b; border-radius: 18px; padding: 20px; text-align: center; }
+    /* 3D Game HUD */
+    #scr-game { position: relative; background: #1e293b; }
+    #c3d { width: 100%; height: 100%; display: block; touch-action: none; }
+    .rotate-tip { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); padding: 4px 10px; border-radius: 999px; font-size: 11px; z-index: 15; display: none; }
+    .hud-tl { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 10; }
+    .h-box { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.2); padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 800; }
+    .compass { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); padding: 4px 14px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 2px; z-index: 10; }
+    .hud-tr { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; align-items: flex-start; z-index: 10; }
+    .minimap { width: 76px; height: 76px; background: rgba(15,23,42,0.8); border: 1.5px solid #cbd5e1; border-radius: 6px; }
+    .crosshair { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; pointer-events: none; z-index: 9; }
+
+    .joy { position: absolute; bottom: 18px; left: 18px; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.8); pointer-events: none; }
+    .bot-mid { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; z-index: 10; }
+    .hp-bar { width: 120px; height: 10px; background: #1e293b; border: 1px solid #fff; border-radius: 6px; overflow: hidden; }
+    .hp-fill { height: 100%; background: #22c55e; width: 100%; }
+
+    .acts { position: absolute; bottom: 14px; right: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; z-index: 10; }
+    .act-r { display: flex; gap: 6px; }
+    .ab { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .ab.on { border-color: #facc15; background: rgba(234,179,8,0.4); }
+    .fire { width: 74px; height: 74px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.6); background: radial-gradient(#ef4444,#991b1b); color: #fff; font-weight: 900; font-size: 13px; touch-action: none; }
+
+    .end-ov { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
+    .end-ov.open { display: flex; }
+    .end-card { background: #1e293b; border: 2px solid #facc15; border-radius: 16px; padding: 18px; text-align: center; max-width: 340px; width: 100%; }
   </style>
 </head>
 <body>
-  <div class="screen active" id="scr-lobby">
-    <canvas id="lobby-canvas"></canvas>
-    <div class="lb-top">
-      <div class="lb-prof">
-        <div style="font-size:22px;">🎖️</div>
-        <div>
-          <div style="font-weight:800;font-size:13px;" id="p-name">O‘yinchi</div>
-          <div style="font-size:11px;color:#fde047;">☠️ <span id="p-kills">0</span> Kill • VIP</div>
-        </div>
+
+  <!-- LOBBY -->
+  <div class="screen lobby active" id="scr-lobby">
+    <div class="top-bar">
+      <div>
+        <div style="font-weight:800;font-size:14px;" id="u-name">O‘yinchi</div>
+        <div style="font-size:11px;color:#fde047;">Lvl <span id="u-lvl">1</span> • ☠️ <span id="u-kills">0</span> Kill</div>
       </div>
-      <div class="lb-right">
-        <div class="uc-pill">💵 <span id="uc-bal">0</span> UC</div>
-        <div style="display:flex;gap:6px;">
-          <button class="sq-btn" onclick="openDrawer('shop')">🛒 Do‘kon</button>
-          <button class="sq-btn" onclick="openDrawer('top')">🏆 Top 100</button>
-        </div>
-      </div>
+      <div class="uc-badge">💵 <span id="u-uc">0</span> UC</div>
     </div>
-    <div class="lb-bot">
-      <div class="lb-start-row">
-        <div>
-          <div class="mode-tag">🗺️ Erangel Arena</div>
-          <button class="btn-pubg" onclick="startGame(null)">BOSHLASH</button>
-        </div>
-        <div class="mode-tag" id="lb-eq-info">🔫 Oddiy • 🐼 Panda</div>
-      </div>
-      <div class="lb-nav">
-        <button class="nav-item" onclick="openDrawer('shop')">🔫 Qurol</button>
-        <button class="nav-item" onclick="openDrawer('skins')">👕 Skin</button>
-        <button class="nav-item" onclick="openDrawer('garage')">🚗 Garaj</button>
-        <button class="nav-item" onclick="openDrawer('arena')">⚔️ Raqib</button>
-        <button class="nav-item" onclick="openDrawer('wd')">💳 UC</button>
-      </div>
+
+    <div class="maps-row">
+      <button class="map-btn on" onclick="setMap('erangel',this)">🏝️ Erangel (100)</button>
+      <button class="map-btn" onclick="setMap('park',this)">🎡 Park</button>
+      <button class="map-btn" onclick="setMap('build',this)">🏠 Uy Qurish</button>
     </div>
-    <div class="drawer-bg" id="drawer-bg" onclick="if(event.target===this)closeDrawer()">
-      <div class="drawer">
-        <div class="drawer-head">
-          <div style="font-weight:800;font-size:16px;" id="drawer-title">Do‘kon</div>
-          <button class="sq-btn" onclick="closeDrawer()">✕ Yopish</button>
-        </div>
-        <div class="drawer-body" id="drawer-body"></div>
-      </div>
+
+    <button class="btn-go" onclick="start3D()">🎮 BOSHLASH (Yotqizib o‘ynang)</button>
+
+    <div class="tabs">
+      <button class="t-btn on" onclick="showTab('weapons',this)">🔫 Qurol (100)</button>
+      <button class="t-btn" onclick="showTab('outfits',this)">👕 Kiyimlar</button>
+      <button class="t-btn" onclick="showTab('cars',this)">🚗 Garaj</button>
+      <button class="t-btn" onclick="showTab('house',this)">🏢 Uy (8 qavat)</button>
+      <button class="t-btn" onclick="showTab('wd',this)">💳 UC Yechish</button>
+      <button class="t-btn" onclick="showTab('social',this)">🛡️ Klan/Chat/Do‘st</button>
     </div>
+
+    <div id="tab-content"></div>
   </div>
 
+  <!-- 3D GAME -->
   <div class="screen" id="scr-game">
-    <canvas id="game-canvas"></canvas>
-    <div class="hud-top">
-      <button class="hud-pill exit-btn" onclick="exitGame()">✖ Chiqish</button>
-      <div class="hud-pill">❤️ <span id="h-hp">100</span></div>
-      <div class="hud-pill">💵 <span id="h-uc">0</span></div>
-      <div class="hud-pill">☠️ <span id="h-kills">0</span></div>
-      <div class="hud-pill" id="h-mode">Arena</div>
+    <canvas id="c3d"></canvas>
+    <div class="rotate-tip" id="rot-tip">📱 Telefonni yotqizib (gorizontal) o‘ynang!</div>
+    <div class="hud-tl">
+      <button class="h-box" style="background:#dc2626;border:none;color:#fff;" onclick="exit3D()">✖</button>
+      <div class="h-box">Qolgan <span id="g-alive">100</span></div>
+      <div class="h-box">Kill <span id="g-kills">0</span></div>
+      <div class="h-box" id="g-wep">M416</div>
     </div>
-    <div class="joy-zone" id="joy-zone"><div class="joy-knob" id="joy-knob"></div></div>
-    <div class="act-pad">
-      <div class="act-row">
-        <button class="act-btn" id="btn-car" onclick="toggleCar()">🚗<span>Mashina</span></button>
-        <button class="act-btn" id="btn-scope" onclick="toggleScope()">🎯<span>Pritsel</span></button>
-      </div>
-      <div class="act-row">
-        <button class="act-btn" onclick="doJump()">🦵<span>Sakrash</span></button>
-        <button class="act-btn" id="btn-crouch" onclick="setStance('crouch')">🙇<span>O‘tir</span></button>
-        <button class="act-btn" id="btn-prone" onclick="setStance('prone')">🛌<span>Yot</span></button>
-      </div>
-      <button class="fire-btn" id="fire-btn">OTISH 🔥</button>
+    <div class="compass" id="g-comp">NW • N • NE</div>
+    <div class="hud-tr">
+      <canvas class="minimap" id="mmap" width="76" height="76"></canvas>
     </div>
-    <div class="go-overlay" id="go-modal">
-      <div class="go-card">
-        <h2 style="margin:0 0 8px;">💥 Mag‘lub bo‘ldingiz!</h2>
-        <p style="font-size:14px;color:#cbd5e1;" id="go-txt"></p>
-        <button class="btn-pubg" style="width:100%;margin-bottom:8px;font-size:15px;" onclick="startGame(duelEnemy)">🔄 Qayta o‘ynash</button>
-        <button class="sq-btn" style="width:100%;padding:12px;" onclick="exitGame()">🏠 Lobbiga qaytish</button>
+    <div class="crosshair"></div>
+
+    <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
+
+    <div class="bot-mid">
+      <div class="hp-bar"><div class="hp-fill" id="hp-fill"></div></div>
+      <div class="h-box" id="hp-num">100</div>
+    </div>
+
+    <div class="acts">
+      <div class="act-r">
+        <button class="ab" onclick="dropVehicle()">🪂<span>Chaqir</span></button>
+        <button class="ab" id="b-car" onclick="toggleVehicle()">🚗<span>Min</span></button>
+        <button class="ab" id="b-scope" onclick="toggleScope()">🎯<span>Pritsel</span></button>
+      </div>
+      <div class="act-r">
+        <button class="ab" onclick="doJump()">🦵<span>Sakra</span></button>
+        <button class="ab" id="b-crouch" onclick="setStance('crouch')">🙇<span>O‘tir</span></button>
+        <button class="ab" id="b-prone" onclick="setStance('prone')">🛌<span>Yot</span></button>
+      </div>
+      <button class="fire" id="fire-btn">OTISH 🔥</button>
+    </div>
+
+    <div class="end-ov" id="end-ov">
+      <div class="end-card">
+        <h2 id="end-title" style="margin:0 0 8px;"></h2>
+        <p id="end-desc" style="font-size:13px;color:#cbd5e1;margin:0 0 14px;"></p>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-go" style="margin:0;font-size:14px;" onclick="start3D()">🔄 Yangi match</button>
+          <button class="btn-go" style="margin:0;font-size:14px;background:#334155;color:#fff;" onclick="exit3D()">🏠 Lobbi</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    let playerName = 'O‘yinchi';
+    let uid = '0000', uname = 'O‘yinchi';
     try {
       if (tg) {
         tg.ready(); tg.expand();
         if (tg.requestFullscreen) tg.requestFullscreen();
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) playerName = tg.initDataUnsafe.user.first_name;
-      }
-    } catch (e) {}
-    document.getElementById('p-name').innerText = playerName;
-
-    const WEAPONS = {
-      starter:   { id:'starter',   icon:'🔫', name:'Boshlang‘ich',  desc:'Oddiy', price:0, dmg:35, rate:380, spd:12, rng:280, col:'#fde047', len:14 },
-      karambit:  { id:'karambit',  icon:'🌙', name:'Kerambit',      desc:'Kamalak pichoq', price:35, dmg:110, rate:260, spd:12, rng:115, col:'#2dd4bf', melee:true, len:16 },
-      butterfly: { id:'butterfly', icon:'🦋', name:'Babochka',      desc:'Neon pichoq', price:35, dmg:105, rate:240, spd:12, rng:115, col:'#e879f9', melee:true, len:16 },
-      knife:     { id:'knife',     icon:'🔪', name:'Pichoq',        desc:'Qizil taktik', price:35, dmg:100, rate:280, spd:12, rng:110, col:'#fb7185', melee:true, len:15 },
-      pistol:    { id:'pistol',    icon:'🟡', name:'To‘pponcha',    desc:'Oltin rang', price:35, dmg:55, rate:280, spd:15, rng:440, col:'#facc15', len:16 },
-      rifle:     { id:'rifle',     icon:'💠', name:'Avtomat AKM',   desc:'Neon-muz rang', price:35, dmg:36, rate:105, spd:17, rng:540, col:'#38bdf8', len:24 },
-      sniper:    { id:'sniper',    icon:'🔴', name:'Snayper AWM',   desc:'Ajdar qizil', price:35, dmg:135, rate:680, spd:25, rng:820, col:'#f87171', len:30 }
-    };
-    const SKINS = {
-      soldier: { id:'soldier', icon:'🥋', name:'Komando',       price:0,   body:'#f1f5f9', pants:'#1e293b', head:'#334155', accent:'#94a3b8' },
-      pharaoh: { id:'pharaoh', icon:'👑', name:'Fir‘avn',       price:150, body:'#eab308', pants:'#1d4ed8', head:'#1d4ed8', accent:'#fef08a' },
-      mummy:   { id:'mummy',   icon:'🧻', name:'Mumiya',        price:150, body:'#e2e8f0', pants:'#cbd5e1', head:'#f8fafc', accent:'#22d3ee' },
-      inferno: { id:'inferno', icon:'👹', name:'Inferno Kaska', price:150, body:'#18181b', pants:'#27272a', head:'#ea580c', accent:'#fde047' },
-      cyber:   { id:'cyber',   icon:'🤖', name:'Kiber',         price:150, body:'#7c3aed', pants:'#312e81', head:'#06b6d4', accent:'#f472b6' }
-    };
-    const CARS = {
-      none:    { id:'none',    icon:'🚗', name:'Standart Qizil', price:0,      col:'#dc2626', col2:'#1e293b', spd:0 },
-      lambo:   { id:'lambo',   icon:'🏎️', name:'Lamborghini',    price:200000, col:'#facc15', col2:'#111827', spd:8.8 },
-      bugatti: { id:'bugatti', icon:'🚙', name:'Bugatti',        price:200000, col:'#2563eb', col2:'#0f172a', spd:9.2 },
-      malibu2: { id:'malibu2', icon:'🚘', name:'Malibu 2',       price:200000, col:'#f8fafc', col2:'#1e293b', spd:8.0 }
-    };
-
-    let uc = Number(localStorage.getItem('br_uc') || localStorage.getItem('pg_uc') || 0);
-    let totalKills = Number(localStorage.getItem('br_kills') || 0);
-    let ownW = JSON.parse(localStorage.getItem('br_ow') || '["starter"]');
-    let eqW = localStorage.getItem('br_ew') || 'starter';
-    let ownS = JSON.parse(localStorage.getItem('br_os') || '["soldier"]');
-    let eqS = localStorage.getItem('br_es') || 'soldier';
-    let ownC = JSON.parse(localStorage.getItem('br_oc') || '["none"]');
-    let eqC = localStorage.getItem('br_ec') || 'none';
-    let activeTab = 'shop';
-
-    function saveAll() {
-      localStorage.setItem('br_uc', uc); localStorage.setItem('br_kills', totalKills);
-      localStorage.setItem('br_ow', JSON.stringify(ownW)); localStorage.setItem('br_ew', eqW);
-      localStorage.setItem('br_os', JSON.stringify(ownS)); localStorage.setItem('br_es', eqS);
-      localStorage.setItem('br_oc', JSON.stringify(ownC)); localStorage.setItem('br_ec', eqC);
-      document.getElementById('uc-bal').innerText = uc.toLocaleString();
-      document.getElementById('h-uc').innerText = uc.toLocaleString();
-      document.getElementById('p-kills').innerText = totalKills;
-      document.getElementById('lb-eq-info').innerText = WEAPONS[eqW].icon + ' ' + WEAPONS[eqW].name + ' • 🐼 Panda';
-    }
-
-    const ARENA_BOTS = Array.from({ length: 99 }, (_, i) => {
-      const n = ['Sardor_Pro','Azizbek_UZ','Shohruh_99','Jasur_PUBG','Bekzod_AWM','Mirjalol','Doston_X','Samandar','Ulugbek_VIP','Timur_King'];
-      return {
-        name: n[i%n.length] + '_' + (10+i), kills: Math.max(2, 320-i*3), uc: Math.max(200, (320-i*3)*100),
-        skin: ['pharaoh','mummy','inferno','cyber','soldier'][i%5],
-        weapon: ['sniper','rifle','karambit','butterfly','pistol'][i%5]
-      };
-    });
-
-    function openDrawer(tab) { activeTab = tab; document.getElementById('drawer-bg').classList.add('open'); renderDrawer(); }
-    function closeDrawer() { document.getElementById('drawer-bg').classList.remove('open'); }
-    function gridHtml(dict, ownArr, eqId, type) {
-      return '<div class="grid-2">' + Object.values(dict).filter(x => x.price > 0).map(x => {
-        const isO = ownArr.includes(x.id), isE = eqId === x.id;
-        return '<div class="card ' + (isE?'eq':'') + '"><div><div style="font-size:26px;">' + x.icon + '</div>' +
-          '<div style="font-weight:700;font-size:14px;">' + x.name + '</div>' +
-          '<div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">' + (x.desc||'Maxsus') + '</div></div>' +
-          '<button class="c-btn ' + (isE?'eq':(isO?'own':'')) + '" onclick="buyItem(\'' + type + '\',\'' + x.id + '\')">' +
-          (isE?'✅ Tanlangan':(isO?'Tanlash':'💵 '+x.price.toLocaleString()+' UC')) + '</button></div>';
-      }).join('') + '</div>';
-    }
-    function renderDrawer() {
-      const t = { shop:'🔫 Qurollar (35 UC)', skins:'👕 Skinlar', garage:'🚗 Garaj (200,000 UC)', arena:'⚔️ Raqiblar', top:'🏆 Top 100', wd:'💳 PUBG ID ga UC' };
-      document.getElementById('drawer-title').innerText = t[activeTab];
-      const b = document.getElementById('drawer-body');
-      if (activeTab==='shop') b.innerHTML = gridHtml(WEAPONS, ownW, eqW, 'w');
-      else if (activeTab==='skins') b.innerHTML = gridHtml(SKINS, ownS, eqS, 's');
-      else if (activeTab==='garage') b.innerHTML = gridHtml(CARS, ownC, eqC, 'c');
-      else if (activeTab==='arena') {
-        b.innerHTML = ARENA_BOTS.slice(0,25).map((x,i) =>
-          '<div class="list-row" onclick="closeDrawer();startGame(' + i + ')"><div><b>🟢 ' + x.name + '</b>' +
-          '<div style="font-size:11px;color:#94a3b8;">' + SKINS[x.skin].name + ' • ' + WEAPONS[x.weapon].name + '</div></div>' +
-          '<span style="background:#ef4444;padding:5px 10px;border-radius:8px;font-weight:700;font-size:11px;">⚔️ Urush</span></div>'
-        ).join('');
-      } else if (activeTab==='top') {
-        const all = [...ARENA_BOTS, { name: playerName+' (Siz)', kills: totalKills, uc: uc, me: true }].sort((a,b)=>b.uc-a.uc).slice(0,100);
-        b.innerHTML = all.map((p,i) =>
-          '<div class="list-row" style="' + (p.me?'border:1px solid #22c55e;background:rgba(34,197,94,0.16);':'') + '">' +
-          '<b>#' + (i+1) + ' ' + p.name + '</b><span>☠️ ' + p.kills + ' | 💵 <b>' + p.uc.toLocaleString() + '</b></span></div>'
-        ).join('');
-      } else {
-        b.innerHTML = '<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">O‘yindagi UC — virtual valyuta. Admin sovrin yuborishi uchun PUBG ID yozing:</div>' +
-          '<input class="wd-inp" type="number" id="pubg-id" placeholder="PUBG ID" />' +
-          '<input class="wd-inp" type="number" id="wd-amt" placeholder="Miqdor (kamida 100)" />' +
-          '<button class="btn-pubg" style="width:100%;font-size:15px;" onclick="sendWd()">📩 So‘rov yuborish</button><div id="wd-msg" style="margin-top:8px;font-size:12px;color:#86efac;"></div>';
-      }
-    }
-    function buyItem(type, id) {
-      const dict = type==='w'?WEAPONS:(type==='s'?SKINS:CARS), own = type==='w'?ownW:(type==='s'?ownS:ownC), item = dict[id];
-      if (!own.includes(id)) {
-        if (uc < item.price) { alert('❌ UC yetarli emas! Kerak: ' + item.price.toLocaleString() + ' UC'); return; }
-        uc -= item.price; own.push(id);
-      }
-      if (type==='w') eqW=id; if (type==='s') eqS=id; if (type==='c') eqC=id;
-      saveAll(); renderDrawer();
-    }
-    function sendWd() {
-      const pid = document.getElementById('pubg-id').value.trim(), amt = Number(document.getElementById('wd-amt').value.trim());
-      if (pid.length < 5 || amt < 100 || amt > uc) { alert('ID va miqdorni to‘g‘ri kiriting!'); return; }
-      uc -= amt; saveAll(); document.getElementById('wd-msg').innerText = '✅ So‘rov saqlandi! ID: ' + pid + ' | ' + amt + ' UC';
-    }
-
-    /* Lobby Scene */
-    const lC = document.getElementById('lobby-canvas'), lX = lC.getContext('2d');
-    let inBattle = false, lbT = 0;
-    function drawLobby() {
-      if (!inBattle) {
-        if (lC.width !== window.innerWidth || lC.height !== window.innerHeight) { lC.width = window.innerWidth; lC.height = window.innerHeight; }
-        const W = lC.width, H = lC.height, hor = H * 0.56; lbT += 0.04;
-        const sky = lX.createLinearGradient(0,0,0,hor);
-        sky.addColorStop(0,'#2a1b4e'); sky.addColorStop(0.55,'#8b4c70'); sky.addColorStop(1,'#f4a261');
-        lX.fillStyle = sky; lX.fillRect(0,0,W,H);
-
-        lX.fillStyle = '#475569'; lX.beginPath(); lX.moveTo(0,hor);
-        lX.lineTo(W*0.18,hor-85); lX.lineTo(W*0.4,hor-28); lX.lineTo(W*0.65,hor-105); lX.lineTo(W,hor-65); lX.lineTo(W,hor); lX.fill();
-        lX.fillStyle = '#e2e8f0'; lX.beginPath(); lX.moveTo(W*0.65,hor-105); lX.lineTo(W*0.58,hor-70); lX.lineTo(W*0.71,hor-72); lX.fill();
-
-        const grd = lX.createLinearGradient(0,hor,0,H);
-        grd.addColorStop(0,'#64748b'); grd.addColorStop(0.28,'#2b211b'); grd.addColorStop(1,'#14110f');
-        lX.fillStyle = grd; lX.fillRect(0,hor,W,H-hor);
-
-        /* House */
-        const hx = W*0.07, hy = hor-38;
-        lX.fillStyle = '#452414'; lX.fillRect(hx,hy,92,50);
-        lX.fillStyle = '#29150b'; lX.beginPath(); lX.moveTo(hx-8,hy); lX.lineTo(hx+46,hy-32); lX.lineTo(hx+100,hy); lX.fill();
-        lX.fillStyle = '#facc15'; lX.fillRect(hx+16,hy+14,15,15); lX.fillRect(hx+60,hy+14,15,15);
-
-        /* Car */
-        const car = CARS[eqC]||CARS.none, cx = W*0.18, cy = hor+42;
-        lX.fillStyle = 'rgba(0,0,0,0.45)'; lX.beginPath(); lX.ellipse(cx,cy+15,62,11,0,0,Math.PI*2); lX.fill();
-        lX.fillStyle = car.col; lX.fillRect(cx-55,cy-10,110,24);
-        lX.fillStyle = car.col2; lX.beginPath(); lX.moveTo(cx-32,cy-10); lX.lineTo(cx-12,cy-25); lX.lineTo(cx+24,cy-25); lX.lineTo(cx+38,cy-10); lX.fill();
-        lX.fillStyle = '#111'; lX.beginPath(); lX.arc(cx-30,cy+14,10,0,Math.PI*2); lX.arc(cx+30,cy+14,10,0,Math.PI*2); lX.fill();
-        lX.fillStyle = '#fef08a'; lX.fillRect(cx+50,cy-4,5,7);
-
-        /* Hero */
-        const px = W*0.5, py = hor+60, br = Math.sin(lbT)*2.5, sk = SKINS[eqS]||SKINS.soldier, wp = WEAPONS[eqW]||WEAPONS.starter;
-        lX.fillStyle = 'rgba(0,0,0,0.5)'; lX.beginPath(); lX.ellipse(px,py+52,26,8,0,0,Math.PI*2); lX.fill();
-        lX.fillStyle = sk.pants; lX.fillRect(px-14,py+10,11,40); lX.fillRect(px+3,py+10,11,40);
-        lX.fillStyle = sk.body; lX.fillRect(px-19,py-34+br,38,46);
-        lX.fillRect(px-28,py-30+br,9,32); lX.fillRect(px+19,py-30+br,9,32);
-        lX.fillStyle = wp.col; lX.fillRect(px+21,py-6+br,7,wp.len+6);
-        lX.fillStyle = '#f1c27d'; lX.beginPath(); lX.arc(px,py-48+br,13,0,Math.PI*2); lX.fill();
-        lX.fillStyle = sk.head; lX.beginPath(); lX.arc(px,py-52+br,13,Math.PI,0); lX.fill();
-        if (eqS==='inferno') { lX.fillStyle='#fbbf24'; lX.beginPath(); lX.moveTo(px-9,py-60+br); lX.lineTo(px-16,py-75+br); lX.lineTo(px-3,py-62+br); lX.fill(); lX.beginPath(); lX.moveTo(px+9,py-60+br); lX.lineTo(px+16,py-75+br); lX.lineTo(px+3,py-62+br); lX.fill(); }
-        else if (eqS==='pharaoh') { lX.fillStyle='#fde047'; lX.fillRect(px-12,py-63+br,24,6); }
-        else if (eqS==='mummy') { lX.fillStyle='#22d3ee'; lX.fillRect(px-5,py-50+br,4,3); lX.fillRect(px+2,py-50+br,4,3); }
-
-        /* Panda */
-        const ax = W*0.73, ay = hor+84;
-        lX.fillStyle = 'rgba(0,0,0,0.45)'; lX.beginPath(); lX.ellipse(ax,ay+24,22,7,0,0,Math.PI*2); lX.fill();
-        lX.fillStyle = '#f8fafc'; lX.beginPath(); lX.ellipse(ax,ay+5,17,19,0,0,Math.PI*2); lX.fill();
-        lX.fillStyle = '#18181b'; lX.beginPath(); lX.arc(ax-14,ay+15,6,0,Math.PI*2); lX.arc(ax+14,ay+15,6,0,Math.PI*2); lX.fill();
-        lX.fillStyle = '#f8fafc'; lX.beginPath(); lX.arc(ax,ay-17+br*0.5,14,0,Math.PI*2); lX.fill();
-        lX.fillStyle = '#18181b'; lX.beginPath(); lX.arc(ax-11,ay-28+br*0.5,5,0,Math.PI*2); lX.arc(ax+11,ay-28+br*0.5,5,0,Math.PI*2); lX.fill();
-        lX.beginPath(); lX.arc(ax-5,ay-18+br*0.5,3.5,0,Math.PI*2); lX.arc(ax+5,ay-18+br*0.5,3.5,0,Math.PI*2); lX.fill();
-      }
-      requestAnimationFrame(drawLobby);
-    }
-
-    saveAll(); drawLobby();
-
-    /* Battle Arena */
-    const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d'), WORLD = 2000;
-    let running = false, animId = null, duelEnemy = null, player, enemies, bullets, floats, houses, trees;
-    let joyVec = {x:0,y:0}, firing = false, lastShot = 0, sessionKills = 0, slashT = 0;
-    let scopeOn = false, stance = 'stand', jumpZ = 0, jumpV = 0, inCar = false;
-
-    function startGame(botIdx) {
-      inBattle = true; duelEnemy = botIdx;
-      document.getElementById('scr-lobby').classList.remove('active');
-      document.getElementById('scr-game').classList.add('active');
-      document.getElementById('go-modal').classList.remove('open');
-      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-      player = { x:WORLD/2, y:WORLD/2, r:17, hp:100, angle:0, walk:0 };
-      enemies = []; bullets = []; floats = []; houses = []; trees = [];
-      sessionKills = 0; scopeOn = false; stance = 'stand'; jumpZ = 0; jumpV = 0; inCar = false;
-      document.getElementById('h-hp').innerText = '100'; document.getElementById('h-kills').innerText = '0';
-      ['btn-scope','btn-car','btn-crouch','btn-prone'].forEach(i => document.getElementById(i).classList.remove('on'));
-      [[350,350,150,110],[1400,320,170,120],[320,1400,160,120],[1450,1420,170,130],[720,650,130,95],[1160,1180,140,100]]
-        .forEach(([x,y,w,h]) => houses.push({x,y,w,h}));
-      for (let i=0;i<28;i++) trees.push({ x:80+Math.random()*(WORLD-160), y:80+Math.random()*(WORLD-160), r:24+Math.random()*14 });
-      if (botIdx !== null && ARENA_BOTS[botIdx]) {
-        const b = ARENA_BOTS[botIdx]; document.getElementById('h-mode').innerText = '⚔️ ' + b.name;
-        spawnEnemy(b.skin, b.weapon, 160);
-      } else {
-        document.getElementById('h-mode').innerText = WEAPONS[eqW].icon + ' ' + WEAPONS[eqW].name;
-        for (let i=0;i<9;i++) spawnEnemy();
-      }
-      running = true; if (animId) cancelAnimationFrame(animId); loop();
-    }
-    function exitGame() {
-      running = false; firing = false; inBattle = false;
-      if (animId) cancelAnimationFrame(animId);
-      document.getElementById('scr-game').classList.remove('active');
-      document.getElementById('scr-lobby').classList.add('active');
-      saveAll();
-    }
-    function spawnEnemy(sk, wp, hp=100) {
-      let ex, ey; do { ex=100+Math.random()*(WORLD-200); ey=100+Math.random()*(WORLD-200); } while (Math.hypot(ex-player.x,ey-player.y)<300);
-      const ks = Object.keys(SKINS);
-      enemies.push({ x:ex, y:ey, r:17, hp, maxHp:hp, angle:0, walk:0, skin:sk||ks[Math.floor(Math.random()*ks.length)], weapon:wp||'rifle', speed:1.7+Math.random()*0.9, lastFire:Date.now()+Math.random()*1200 });
-    }
-    function toggleScope() { scopeOn = !scopeOn; document.getElementById('btn-scope').classList.toggle('on', scopeOn); }
-    function doJump() { if (jumpZ===0 && !inCar) { jumpV=7.5; stance='stand'; updSt(); } }
-    function setStance(s) { if (!inCar) { stance = stance===s?'stand':s; updSt(); } }
-    function updSt() { document.getElementById('btn-crouch').classList.toggle('on',stance==='crouch'); document.getElementById('btn-prone').classList.toggle('on',stance==='prone'); }
-    function toggleCar() {
-      if (eqC==='none') { alert('Avval Garajdan mashina sotib oling (200,000 UC)!'); return; }
-      inCar = !inCar; if (inCar) stance='stand'; updSt(); document.getElementById('btn-car').classList.toggle('on', inCar);
-    }
-    function shoot() {
-      if (inCar) return;
-      const now = Date.now(), w = WEAPONS[eqW]; if (now - lastShot < w.rate) return; lastShot = now;
-      let t = null, bd = w.rng+160;
-      for (const e of enemies) { const d = Math.hypot(e.x-player.x,e.y-player.y); if (d<bd) { bd=d; t=e; } }
-      const ang = t ? Math.atan2(t.y-player.y, t.x-player.x) : player.angle; player.angle = ang;
-      if (w.melee) { slashT=10; for (let i=enemies.length-1;i>=0;i--) if (Math.hypot(enemies[i].x-player.x,enemies[i].y-player.y)<=w.rng) hitEnemy(i,w.dmg); }
-      else bullets.push({ x:player.x+Math.cos(ang)*22, y:player.y+Math.sin(ang)*22, vx:Math.cos(ang)*w.spd, vy:Math.sin(ang)*w.spd, dmg:w.dmg, fp:true, col:w.col, life:w.rng/w.spd });
-    }
-    function hitEnemy(i, dmg) {
-      const e = enemies[i]; if (!e) return; e.hp -= dmg;
-      if (e.hp <= 0) {
-        floats.push({ x:e.x, y:e.y-14, txt:'+100 UC', life:45 });
-        enemies.splice(i,1); sessionKills++; totalKills++; uc += 100; saveAll();
-        document.getElementById('h-kills').innerText = sessionKills;
-        if (duelEnemy !== null) setTimeout(() => { if (running) { alert('🏆 Duelda yutdingiz! +100 UC'); exitGame(); } }, 300);
-        else spawnEnemy();
-      }
-    }
-    function resH(ent) {
-      for (const h of houses) {
-        const cx = Math.max(h.x,Math.min(ent.x,h.x+h.w)), cy = Math.max(h.y,Math.min(ent.y,h.y+h.h));
-        const dx = ent.x-cx, dy = ent.y-cy, d = Math.hypot(dx,dy);
-        if (d < ent.r && d > 0) { ent.x += (dx/d)*(ent.r-d); ent.y += (dy/d)*(ent.r-d); }
-      }
-    }
-    function loop() { if (!running) return; update(); draw(); animId = requestAnimationFrame(loop); }
-    function update() {
-      const spd = inCar ? CARS[eqC].spd : (stance==='prone'?1.8:(stance==='crouch'?2.8:4.2)), mag = Math.hypot(joyVec.x,joyVec.y);
-      if (mag > 0.08) { player.x+=joyVec.x*spd; player.y+=joyVec.y*spd; player.angle=Math.atan2(joyVec.y,joyVec.x); player.walk+=0.25; }
-      player.x = Math.max(24,Math.min(WORLD-24,player.x)); player.y = Math.max(24,Math.min(WORLD-24,player.y)); resH(player);
-      if (jumpZ>0||jumpV>0) { jumpZ+=jumpV; jumpV-=0.55; if (jumpZ<=0) { jumpZ=0; jumpV=0; } }
-      if (firing) shoot(); if (slashT>0) slashT--;
-      const now = Date.now();
-      for (let i=enemies.length-1; i>=0; i--) {
-        const e=enemies[i], dx=player.x-e.x, dy=player.y-e.y, d=Math.hypot(dx,dy); e.angle = Math.atan2(dy,dx);
-        if (inCar && mag>0.3 && d<36) { hitEnemy(i,120); continue; }
-        if (d>150) { e.x+=(dx/d)*e.speed; e.y+=(dy/d)*e.speed; e.walk+=0.15; resH(e); }
-        if (d<440 && now-e.lastFire>1500) { e.lastFire=now; bullets.push({x:e.x,y:e.y,vx:(dx/d)*7,vy:(dy/d)*7,dmg:9,fp:false,col:'#fb7185',life:65}); }
-      }
-      for (let i=bullets.length-1; i>=0; i--) {
-        const b=bullets[i]; b.x+=b.vx; b.y+=b.vy; b.life--;
-        if (b.life<=0 || b.x<0 || b.y<0 || b.x>WORLD || b.y>WORLD || houses.some(h=>b.x>h.x&&b.x<h.x+h.w&&b.y>h.y&&b.y<h.y+h.h)) { bullets.splice(i,1); continue; }
-        if (b.fp) { for (let j=enemies.length-1;j>=0;j--) if (Math.hypot(b.x-enemies[j].x,b.y-enemies[j].y)<20) { hitEnemy(j,b.dmg); bullets.splice(i,1); break; } }
-        else if (jumpZ<10 && Math.hypot(b.x-player.x,b.y-player.y)<(stance==='prone'?10:(stance==='crouch'?14:18))) {
-          player.hp = Math.max(0, player.hp-(inCar?4:b.dmg)); document.getElementById('h-hp').innerText = player.hp; bullets.splice(i,1);
-          if (player.hp<=0) { running=false; document.getElementById('go-txt').innerText='Kill: '+sessionKills+' | Balans: '+uc.toLocaleString()+' UC'; document.getElementById('go-modal').classList.add('open'); }
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+          uid = String(tg.initDataUnsafe.user.id);
+          uname = tg.initDataUnsafe.user.first_name;
         }
       }
-      for (let i=floats.length-1;i>=0;i--) { floats[i].y-=1; if (--floats[i].life<=0) floats.splice(i,1); }
-    }
-    function drawChar(x, y, ang, skId, wpId, walk, st, jz, isP) {
-      const sk = SKINS[skId]||SKINS.soldier, wp = WEAPONS[wpId]||WEAPONS.starter;
-      ctx.save(); ctx.translate(x,y);
-      ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0,8,15,9,0,0,Math.PI*2); ctx.fill();
-      ctx.translate(0,-jz); ctx.rotate(ang);
-      const sc = st==='crouch'?0.85:(jz>0?1+jz*0.01:1); ctx.scale(sc,sc);
-      const lo = Math.sin(walk)*5; ctx.fillStyle = sk.pants;
-      if (st==='prone') { ctx.fillRect(-24,-6,20,5); ctx.fillRect(-24,2,20,5); } else { ctx.fillRect(-5+lo,-11,9,5); ctx.fillRect(-5-lo,6,9,5); }
-      ctx.fillStyle = sk.body; ctx.fillRect(st==='prone'?-9:-10,-12,st==='prone'?22:18,24);
-      ctx.fillStyle = wp.col; ctx.fillRect(8,4,wp.len||16,4);
-      ctx.fillStyle = sk.head; ctx.beginPath(); ctx.arc(2,0,9.5,0,Math.PI*2); ctx.fill();
-      if (skId==='inferno') { ctx.fillStyle='#fbbf24'; ctx.fillRect(-2,-13,6,4); ctx.fillRect(-2,9,6,4); }
-      if (isP) { ctx.strokeStyle='#fff'; ctx.lineWidth=1.8; ctx.beginPath(); ctx.arc(2,0,9.5,0,Math.PI*2); ctx.stroke(); }
-      ctx.restore();
-    }
-    function draw() {
-      const W=canvas.width, H=canvas.height, z=scopeOn?1.35:1;
-      ctx.fillStyle='#33522e'; ctx.fillRect(0,0,W,H);
-      ctx.save(); ctx.translate(W/2,H/2); ctx.scale(z,z); ctx.translate(-player.x,-player.y);
-      ctx.fillStyle='#334155'; ctx.fillRect(0,WORLD/2-50,WORLD,100); ctx.fillRect(WORLD/2-50,0,100,WORLD);
-      for (const h of houses) { ctx.fillStyle='#78350f'; ctx.fillRect(h.x,h.y,h.w,h.h); ctx.fillStyle='#92400e'; ctx.fillRect(h.x+10,h.y+10,h.w-20,h.h-20); }
-      for (const t of trees) { ctx.fillStyle='#1b4320'; ctx.beginPath(); ctx.arc(t.x,t.y,t.r,0,Math.PI*2); ctx.fill(); }
-      for (const e of enemies) { drawChar(e.x,e.y,e.angle,e.skin,e.weapon,e.walk,'stand',0,false); ctx.fillStyle='#111'; ctx.fillRect(e.x-16,e.y-26,32,4); ctx.fillStyle='#ef4444'; ctx.fillRect(e.x-16,e.y-26,32*(e.hp/e.maxHp),4); }
-      if (scopeOn && !inCar) { ctx.strokeStyle='rgba(239,68,68,0.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(player.x,player.y); ctx.lineTo(player.x+Math.cos(player.angle)*340,player.y+Math.sin(player.angle)*340); ctx.stroke(); }
-      if (slashT>0) { ctx.strokeStyle=WEAPONS[eqW].col; ctx.lineWidth=6; ctx.beginPath(); ctx.arc(player.x,player.y,70,player.angle-1,player.angle+1); ctx.stroke(); }
-      if (inCar) { const c=CARS[eqC]||CARS.lambo; ctx.save(); ctx.translate(player.x,player.y); ctx.rotate(player.angle); ctx.fillStyle=c.col; ctx.fillRect(-28,-15,56,30); ctx.fillStyle=c.col2; ctx.fillRect(-8,-12,20,24); ctx.restore(); }
-      else drawChar(player.x,player.y,player.angle,eqS,eqW,player.walk,stance,jumpZ,true);
-      for (const b of bullets) { ctx.fillStyle=b.col; ctx.beginPath(); ctx.arc(b.x,b.y,4.5,0,Math.PI*2); ctx.fill(); }
-      ctx.font='bold 16px sans-serif'; ctx.textAlign='center'; for (const f of floats) { ctx.fillStyle='#fde047'; ctx.fillText(f.txt,f.x,f.y); }
-      ctx.restore();
-      if (scopeOn) { ctx.strokeStyle='rgba(239,68,68,0.7)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(W/2,H/2,52,0,Math.PI*2); ctx.stroke(); }
-      const ms=80, mx=W-ms-10, my=52; ctx.fillStyle='rgba(9,13,22,0.78)'; ctx.fillRect(mx,my,ms,ms); ctx.strokeStyle='#64748b'; ctx.strokeRect(mx,my,ms,ms);
-      ctx.fillStyle='#38bdf8'; ctx.fillRect(mx+(player.x/WORLD)*ms-2,my+(player.y/WORLD)*ms-2,4,4);
-      ctx.fillStyle='#ef4444'; for (const e of enemies) ctx.fillRect(mx+(e.x/WORLD)*ms-1,my+(e.y/WORLD)*ms-1,3,3);
+    } catch (e) {}
+    document.getElementById('u-name').innerText = uname;
+
+    /* 100 ta Qurol (50 - 100 UC) */
+    const BASES = ['M416','AKM','AWM','Kar98k','Scar-L','Groza','M762','UMP45','Vector','DP-28'];
+    const W_SKINS = [
+      ['Muzlik',0x38bdf8],['Oltin',0xfacc15],['Firavn',0xeab308],['Ajdar',0xef4444],['Qonli',0xbe123c],
+      ['Kiber',0xa855f7],['Neon',0x22d3ee],['Qora',0x18181b],['Zahar',0x22c55e],['Kumush',0xcbd5e1]
+    ];
+    const WEAPONS = [];
+    for (let i=0; i<10; i++) for (let j=0; j<10; j++) {
+      const idx = i*10 + j;
+      WEAPONS.push({
+        id: 'w'+idx, name: BASES[i] + ' ' + W_SKINS[j][0],
+        price: idx===0 ? 0 : 50 + (idx % 6)*10,
+        dmg: 28 + (i%4)*15, rate: i===2||i===3 ? 650 : 120, col: W_SKINS[j][1]
+      });
     }
 
-    const jz=document.getElementById('joy-zone'), jk=document.getElementById('joy-knob');
-    function onJoy(e) {
+    /* PUBG Kiyimlar (1000 - 5000 UC) */
+    const OUTFIT_NAMES = [
+      ['Inferno & Qora',0x18181b,0xea580c,0],['Fir‘avn Oltin',0xeab308,0x1d4ed8,1200],['Mumiya Oq',0xf1f5f9,0xe2e8f0,1500],
+      ['Ravon Maxsus',0x0f172a,0x38bdf8,1800],['Joker Kostyum',0x7c3aed,0x22c55e,2200],['Godzilla',0x1e3a8a,0x06b6d4,2800],
+      ['Kiber X-Suit',0x4c1d95,0xf472b6,3500],['Qonli Ritsar',0x991b1b,0xfacc15,4200],['Tilla X-Suit',0xd97706,0xfef08a,5000]
+    ];
+    const OUTFITS = OUTFIT_NAMES.map((x,i) => ({ id:'s'+i, name:x[0], body:x[1], helm:x[2], price:x[3] }));
+
+    /* Mashinalar, Tank, Vertolyot (50,000 - 200,000 UC) */
+    const CARS = [
+      { id:'matiz',   name:'Matiz',            price:50000,  col:0x38bdf8, spd:0.42, type:'car' },
+      { id:'tiko',    name:'Tiko',             price:55000,  col:0xef4444, spd:0.40, type:'car' },
+      { id:'damas',   name:'Damas',            price:65000,  col:0xf8fafc, spd:0.38, type:'van' },
+      { id:'malibu1', name:'Malibu 1',         price:90000,  col:0x334155, spd:0.48, type:'car' },
+      { id:'gentra',  name:'Gentra',           price:110000, col:0x1e293b, spd:0.50, type:'car' },
+      { id:'malibu2', name:'Malibu 2 Qopqora', price:150000, col:0x050507, spd:0.56, type:'car' },
+      { id:'lambo',   name:'Lamborghini',      price:180000, col:0xfacc15, spd:0.68, type:'car' },
+      { id:'bugatti', name:'Bugatti',          price:200000, col:0x2563eb, spd:0.72, type:'car' },
+      { id:'tank',    name:'Harbiy Tank',      price:190000, col:0x3f6212, spd:0.36, type:'tank' },
+      { id:'heli',    name:'Vertolyot',        price:200000, col:0x0f172a, spd:0.75, type:'heli' }
+    ];
+
+    let uc = Number(localStorage.getItem('p3_uc') || localStorage.getItem('br_uc') || localStorage.getItem('pg_uc') || 0);
+    let kills = Number(localStorage.getItem('p3_kills') || 0);
+    let floors = Number(localStorage.getItem('p3_floors') || 1);
+    let ownW = JSON.parse(localStorage.getItem('p3_ow') || '["w0"]');
+    let eqW = localStorage.getItem('p3_ew') || 'w0';
+    let ownS = JSON.parse(localStorage.getItem('p3_os') || '["s0"]');
+    let eqS = localStorage.getItem('p3_es') || 's0';
+    let ownC = JSON.parse(localStorage.getItem('p3_oc') || '[]');
+    let eqC = localStorage.getItem('p3_ec') || 'malibu2';
+    let curMap = 'erangel', curTab = 'weapons';
+    let chatMsgs = JSON.parse(localStorage.getItem('p3_chat') || '["Aziz: Salom hammaga!"]');
+    let clanName = localStorage.getItem('p3_clan') || 'Klan yo‘q';
+
+    function save() {
+      localStorage.setItem('p3_uc', uc); localStorage.setItem('p3_kills', kills); localStorage.setItem('p3_floors', floors);
+      localStorage.setItem('p3_ow', JSON.stringify(ownW)); localStorage.setItem('p3_ew', eqW);
+      localStorage.setItem('p3_os', JSON.stringify(ownS)); localStorage.setItem('p3_es', eqS);
+      localStorage.setItem('p3_oc', JSON.stringify(ownC)); localStorage.setItem('p3_ec', eqC);
+      document.getElementById('u-uc').innerText = uc.toLocaleString();
+      document.getElementById('u-kills').innerText = kills;
+      document.getElementById('u-lvl').innerText = 1 + Math.floor(kills / 5);
+    }
+
+    function setMap(m, btn) {
+      curMap = m;
+      document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    }
+
+    function showTab(t, btn) {
+      curTab = t;
+      if (btn) { document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+      const box = document.getElementById('tab-content');
+      if (t==='weapons') {
+        box.innerHTML = '<div class="grid">' + WEAPONS.map(w => {
+          const isO = ownW.includes(w.id), isE = eqW===w.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>'+w.name+'</b><div>Zarba: '+w.dmg+'</div>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyW(\''+w.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':w.price+' UC'))+'</button></div>';
+        }).join('') + '</div>';
+      } else if (t==='outfits') {
+        box.innerHTML = '<div class="grid">' + OUTFITS.map(s => {
+          const isO = ownS.includes(s.id), isE = eqS===s.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>👕 '+s.name+'</b>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyS(\''+s.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':s.price.toLocaleString()+' UC'))+'</button></div>';
+        }).join('') + '</div>';
+      } else if (t==='cars') {
+        box.innerHTML = '<div class="grid">' + CARS.map(c => {
+          const isO = ownC.includes(c.id), isE = eqC===c.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>🚗 '+c.name+'</b><div>Tezlik: '+Math.round(c.spd*200)+' km/s</div>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyC(\''+c.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':c.price.toLocaleString()+' UC'))+'</button></div>';
+        }).join('') + '</div>';
+      } else if (t==='house') {
+        let h = '<div class="box"><b>🏠 Uy Qurish Xaritasi (1-8 qavat):</b><br>Hozirgi uyingiz: <b>'+floors+' qavatli</b></div><div class="grid">';
+        for (let f=1; f<=8; f++) {
+          const pr = f * 10000, done = floors >= f;
+          h += '<div class="card '+(done?'eq':'')+'"><b>🏢 '+f+'-qavat</b><div>Narxi: '+pr.toLocaleString()+' UC</div>' +
+            '<button class="c-btn '+(done?'eq':'')+'" onclick="buyFloor('+f+','+pr+')">'+(done?'✅ Qurilgan':'Qurish')+'</button></div>';
+        }
+        box.innerHTML = h + '</div>';
+      } else if (t==='wd') {
+        box.innerHTML = '<div class="box"><b>💳 UC Yechib olish (Ariza):</b>' +
+          '<input class="inp" type="number" id="wd-id" placeholder="PUBG Mobile ID raqamingiz" />' +
+          '<button class="c-btn" onclick="askWd(60000,60)">60,000 UC ➔ 60 UC ariza</button>' +
+          '<button class="c-btn" onclick="askWd(360000,360)">360,000 UC ➔ 360 UC ariza</button>' +
+          '<button class="c-btn" onclick="askWd(720000,720)">720,000 UC ➔ 720 UC ariza</button>' +
+          '<div id="wd-res" style="margin-top:8px;color:#86efac;"></div></div>' +
+          '<div class="box"><b>💎 UC Sotib olish (Do‘kon):</b><br>Haqiqiy pulga UC sotib olish uchun to‘lov tizimi/admin ulanishi kerak.</div>';
+      } else {
+        box.innerHTML = '<div class="box"><b>👥 Do‘st taklif qilish (+1,000 UC):</b>' +
+          '<input class="inp" readonly value="https://t.me/share/url?url=ref_'+uid+'" />' +
+          '<div style="font-size:11px;color:#94a3b8;">Referal avtomatik hisoblanishi uchun bot serveri ulanishi kerak.</div></div>' +
+          '<div class="box"><b>🛡️ Klan: ' + clanName + '</b>' +
+          '<input class="inp" id="cl-inp" placeholder="Klan nomi yozing..." />' +
+          '<button class="c-btn own" onclick="clanName=document.getElementById(\'cl-inp\').value||\'UZB_TEAM\';localStorage.setItem(\'p3_clan\',clanName);showTab(\'social\')">Klan ochish / Kirish</button></div>' +
+          '<div class="box"><b>💬 Chat (Mahalliy demo):</b><div style="max-height:90px;overflow:auto;margin:6px 0;font-size:12px;">' +
+          chatMsgs.map(m=>'<div>'+m+'</div>').join('') + '</div>' +
+          '<input class="inp" id="ch-inp" placeholder="Xabar yozing..." />' +
+          '<button class="c-btn eq" onclick="sendChat()">Yuborish</button></div>';
+      }
+    }
+
+    function buyW(id) { const w=WEAPONS.find(x=>x.id===id); if (!ownW.includes(id)) { if (uc<w.price) return alert('UC kam!'); uc-=w.price; ownW.push(id); } eqW=id; save(); showTab('weapons'); }
+    function buyS(id) { const s=OUTFITS.find(x=>x.id===id); if (!ownS.includes(id)) { if (uc<s.price) return alert('UC kam!'); uc-=s.price; ownS.push(id); } eqS=id; save(); showTab('outfits'); }
+    function buyC(id) { const c=CARS.find(x=>x.id===id); if (!ownC.includes(id)) { if (uc<c.price) return alert('UC kam! '+c.price.toLocaleString()+' UC kerak.'); uc-=c.price; ownC.push(id); } eqC=id; save(); showTab('cars'); }
+    function buyFloor(f, pr) { if (floors>=f) return; if (uc<pr) return alert(pr.toLocaleString()+' UC kerak!'); uc-=pr; floors=f; save(); showTab('house'); }
+    function askWd(cost, realUc) {
+      const pid = document.getElementById('wd-id').value.trim();
+      if (pid.length<5) return alert('To‘g‘ri PUBG ID yozing!');
+      if (uc<cost) return alert(cost.toLocaleString()+' UC kerak!');
+      uc -= cost; save();
+      document.getElementById('wd-res').innerText = '✅ Ariza yaratildi! ID: '+pid+' | '+realUc+' UC (Admin tekshirgach yuboradi).';
+    }
+    function sendChat() {
+      const v = document.getElementById('ch-inp').value.trim(); if (!v) return;
+      chatMsgs.push(uname+': '+v); localStorage.setItem('p3_chat', JSON.stringify(chatMsgs.slice(-15))); showTab('social');
+    }
+
+    save(); showTab('weapons');
+
+    /* --- THREE.JS 3D ENGINE --- */
+    let scene, cam, ren, pGroup, carGroup, chuteMesh, statueGroup;
+    let bots = [], bullets = [], houses3d = [];
+    let running3D = false, anim3D = null, yaw = 0, pitch = -0.15, pHP = 100, matchKills = 0;
+    let joyV = {x:0,y:0}, stance = 'stand', vy = 0, onGround = true, inVeh = false, scoped = false, firing = false, lastFire = 0;
+    let carPos = null, carDropping = false;
+
+    /* Shared Geometries */
+    let gBody, gHead, gSpike, gGun, gLeg, gBul;
+
+    function buildChar(bodyCol, helmCol, gunCol) {
+      const g = new THREE.Group();
+      const mB = new THREE.MeshLambertMaterial({ color: bodyCol });
+      const mH = new THREE.MeshLambertMaterial({ color: helmCol });
+      const mG = new THREE.MeshLambertMaterial({ color: gunCol });
+      const mL = new THREE.MeshLambertMaterial({ color: 0x111827 });
+
+      const l1 = new THREE.Mesh(gLeg, mL); l1.position.set(-0.22, 0.5, 0);
+      const l2 = new THREE.Mesh(gLeg, mL); l2.position.set(0.22, 0.5, 0);
+      const body = new THREE.Mesh(gBody, mB); body.position.set(0, 1.35, 0);
+      const head = new THREE.Mesh(gHead, mH); head.position.set(0, 2.08, 0);
+      const spike = new THREE.Mesh(gSpike, new THREE.MeshLambertMaterial({color:0xfacc15})); spike.position.set(0, 2.45, 0);
+      const backGun = new THREE.Mesh(gGun, mG); backGun.position.set(-0.15, 1.45, 0.35); backGun.rotation.z = 0.5;
+      const handGun = new THREE.Mesh(gGun, mG); handGun.position.set(0.35, 1.35, -0.5); handGun.rotation.x = Math.PI/2;
+
+      g.add(l1, l2, body, head, spike, backGun, handGun);
+      return g;
+    }
+
+    function start3D() {
+      if (typeof THREE === 'undefined') { alert('3D yuklanmadi — internetni tekshiring!'); return; }
+      document.getElementById('scr-lobby').classList.remove('active');
+      document.getElementById('scr-game').classList.add('active');
+      document.getElementById('end-ov').classList.remove('open');
+      try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape'); } catch (e) {}
+
+      const c = document.getElementById('c3d');
+      ren = new THREE.WebGLRenderer({ canvas: c, antialias: true });
+      ren.setSize(window.innerWidth, window.innerHeight);
+      ren.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
+      scene.fog = new THREE.Fog(0x87ceeb, 60, 260);
+      cam = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.1, 350);
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x3f6212, 0.95));
+      const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(40, 80, 30); scene.add(dl);
+
+      gBody = new THREE.BoxGeometry(0.8, 1.0, 0.45);
+      gHead = new THREE.SphereGeometry(0.32, 10, 10);
+      gSpike = new THREE.ConeGeometry(0.1, 0.3, 6);
+      gGun = new THREE.BoxGeometry(0.14, 0.14, 1.0);
+      gLeg = new THREE.BoxGeometry(0.26, 0.95, 0.28);
+      gBul = new THREE.SphereGeometry(0.16, 6, 6);
+
+      /* Ground & Sea */
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(360, 360),
+        new THREE.MeshLambertMaterial({ color: curMap==='park'?0x3f7d3a:(curMap==='build'?0x64748b:0x8fa3b0) })
+      );
+      ground.rotation.x = -Math.PI / 2; scene.add(ground);
+
+      /* Houses & Cover Walls (matching screenshot style) */
+      houses3d = [];
+      const hMat = new THREE.MeshLambertMaterial({ color: 0x2b7a9b });
+      const rMat = new THREE.MeshLambertMaterial({ color: 0x6b4f3a });
+      const wMat = new THREE.MeshLambertMaterial({ color: 0x575b63 });
+
+      if (curMap === 'build') {
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(10, floors*3.2, 8), hMat);
+        hb.position.set(0, (floors*3.2)/2, -16); scene.add(hb);
+      } else if (curMap === 'park') {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(8, 0.6, 8, 24), new THREE.MeshLambertMaterial({color:0xfacc15}));
+        ring.position.set(0, 11, -22); scene.add(ring);
+      } else {
+        for (let i=0; i<16; i++) {
+          const x = (Math.random()-0.5)*220, z = (Math.random()-0.5)*220;
+          if (Math.hypot(x,z) < 16) continue;
+          const house = new THREE.Mesh(new THREE.BoxGeometry(9, 4.5, 7), hMat); house.position.set(x, 2.25, z);
+          const roof = new THREE.Mesh(new THREE.ConeGeometry(7, 2.5, 4), rMat); roof.position.set(x, 5.7, z); roof.rotation.y = Math.PI/4;
+          const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 1.9, 0.6), wMat); wall.position.set(x+7, 0.95, z+4);
+          scene.add(house, roof, wall);
+          houses3d.push({x, z, r:6});
+        }
+        /* Near cover wall just like screenshot */
+        const cw = new THREE.Mesh(new THREE.BoxGeometry(5, 1.8, 0.6), wMat); cw.position.set(0, 0.9, -5); scene.add(cw);
+      }
+
+      const sk = OUTFITS.find(x=>x.id===eqS) || OUTFITS[0];
+      const wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
+      pGroup = buildChar(sk.body, sk.helm, wp.col);
+      pGroup.position.set(0, 0, 0);
+      scene.add(pGroup);
+      document.getElementById('g-wep').innerText = wp.name;
+
+      /* Spawn 99 AI Combatants */
+      bots = []; bullets = [];
+      pHP = 100; matchKills = 0; yaw = 0; inVeh = false; carPos = null; carGroup = null;
+      const botCount = curMap==='erangel' ? 99 : 15;
+      for (let i=0; i<botCount; i++) {
+        const bx = (Math.random()-0.5)*240, bz = (Math.random()-0.5)*240;
+        if (Math.hypot(bx,bz) < 18) { i--; continue; }
+        const bm = buildChar(0xef4444, 0x111827, 0xfacc15);
+        bm.position.set(bx, 0, bz);
+        scene.add(bm);
+        bots.push({ mesh: bm, hp: 100, cd: Math.random()*80 });
+      }
+      updHUD();
+
+      running3D = true;
+      if (anim3D) cancelAnimationFrame(anim3D);
+      loop3D();
+    }
+
+    function exit3D() {
+      running3D = false;
+      if (anim3D) cancelAnimationFrame(anim3D);
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      document.getElementById('scr-game').classList.remove('active');
+      document.getElementById('scr-lobby').classList.add('active');
+      save(); showTab(curTab);
+    }
+
+    function dropVehicle() {
+      if (ownC.length === 0) return alert('Garajda mashina yo‘q! Avval 50,000-200,000 UC ga sotib oling.');
+      const cData = CARS.find(x=>x.id===eqC) || CARS.find(x=>x.id===ownC[0]);
+      if (carGroup) scene.remove(carGroup);
+      carGroup = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.1, 4.8), new THREE.MeshLambertMaterial({color:cData.col}));
+      body.position.y = 0.7;
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.8, 2.2), new THREE.MeshLambertMaterial({color:0x050507}));
+      cabin.position.y = 1.5;
+      chuteMesh = new THREE.Mesh(new THREE.SphereGeometry(2.8, 10, 6, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshLambertMaterial({color:0xffffff, side:THREE.DoubleSide}));
+      chuteMesh.position.y = 5.5;
+      carGroup.add(body, cabin, chuteMesh);
+      carGroup.position.set(pGroup.position.x - Math.sin(yaw)*6, 26, pGroup.position.z - Math.cos(yaw)*6);
+      scene.add(carGroup);
+      carDropping = true; carPos = carGroup.position;
+    }
+
+    function toggleVehicle() {
+      if (!carGroup || carDropping) return alert('Avval 🪂 Chaqir tugmasini bosing!');
+      if (Math.hypot(pGroup.position.x-carGroup.position.x, pGroup.position.z-carGroup.position.z) > 8 && !inVeh) return alert('Mashinaga yaqinroq boring!');
+      inVeh = !inVeh;
+      pGroup.visible = !inVeh;
+      document.getElementById('b-car').classList.toggle('on', inVeh);
+    }
+
+    function toggleScope() { scoped = !scoped; cam.fov = scoped ? 38 : 68; cam.updateProjectionMatrix(); document.getElementById('b-scope').classList.toggle('on', scoped); }
+    function doJump() { if (onGround && !inVeh) { vy = 0.22; onGround = false; stance='stand'; } }
+    function setStance(s) { if (!inVeh) { stance = stance===s?'stand':s; document.getElementById('b-crouch').classList.toggle('on',stance==='crouch'); document.getElementById('b-prone').classList.toggle('on',stance==='prone'); } }
+
+    function fire3D() {
+      const now = Date.now(), wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
+      if (now - lastFire < wp.rate) return; lastFire = now;
+      const dir = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')).normalize();
+      const b = new THREE.Mesh(gBul, new THREE.MeshBasicMaterial({color: wp.col}));
+      b.position.copy(pGroup.position).add(new THREE.Vector3(0, 1.6, 0));
+      scene.add(b);
+      bullets.push({ mesh: b, vel: dir.multiplyScalar(2.4), fp: true, dmg: wp.dmg, life: 60 });
+    }
+
+    function updHUD() {
+      document.getElementById('g-alive').innerText = bots.length + 1;
+      document.getElementById('g-kills').innerText = matchKills;
+      document.getElementById('hp-num').innerText = Math.max(0, Math.round(pHP));
+      document.getElementById('hp-fill').style.width = Math.max(0, pHP) + '%';
+      document.getElementById('rot-tip').style.display = window.innerHeight > window.innerWidth ? 'block' : 'none';
+    }
+
+    function winMatch() {
+      running3D = false;
+      uc += 100000; save();
+      /* Victory Golden Statue */
+      statueGroup = new THREE.Group();
+      const ped = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 2), new THREE.MeshLambertMaterial({color:0xfacc15}));
+      const st = buildChar(0xfacc15, 0xfef08a, 0xfacc15); st.position.y = 0.8;
+      statueGroup.add(ped, st);
+      statueGroup.position.set(pGroup.position.x - Math.sin(yaw)*4, 0, pGroup.position.z - Math.cos(yaw)*4);
+      scene.add(statueGroup);
+      ren.render(scene, cam);
+      document.getElementById('end-title').innerText = '🏆 Siz g‘olib bo‘ldingiz, tabriklaymiz!';
+      document.getElementById('end-desc').innerText = 'Oxirgi tirik qoldingiz! Haykal qo‘yildi va +100,000 UC berildi!';
+      document.getElementById('end-ov').classList.add('open');
+    }
+
+    function loop3D() {
+      if (!running3D) return;
+      anim3D = requestAnimationFrame(loop3D);
+
+      const cData = CARS.find(x=>x.id===eqC) || CARS[0];
+      const spd = inVeh ? cData.spd : (stance==='prone'?0.12:(stance==='crouch'?0.20:0.32));
+      const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+      const rgt = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+      pGroup.position.addScaledVector(fwd, -joyV.y * spd).addScaledVector(rgt, joyV.x * spd);
+      pGroup.position.x = Math.max(-165, Math.min(165, pGroup.position.x));
+      pGroup.position.z = Math.max(-165, Math.min(165, pGroup.position.z));
+      pGroup.rotation.y = yaw;
+
+      if (!onGround) { pGroup.position.y += vy; vy -= 0.012; if (pGroup.position.y <= 0) { pGroup.position.y = 0; vy = 0; onGround = true; } }
+      pGroup.scale.y = stance==='crouch' ? 0.68 : 1;
+      pGroup.rotation.x = stance==='prone' ? Math.PI/2 : 0;
+
+      if (carGroup) {
+        if (carDropping) {
+          carGroup.position.y -= 0.25;
+          if (carGroup.position.y <= 0) { carGroup.position.y = 0; carDropping = false; carGroup.remove(chuteMesh); }
+        } else if (inVeh) {
+          carGroup.position.copy(pGroup.position);
+          if (cData.type==='heli') carGroup.position.y = 4.5;
+          carGroup.rotation.y = yaw;
+        }
+      }
+
+      if (firing) fire3D();
+
+      /* Bots fight player AND each other */
+      for (let i=bots.length-1; i>=0; i--) {
+        const b = bots[i];
+        let target = pGroup, minD = b.mesh.position.distanceTo(pGroup.position);
+        if (i % 3 !== 0 && bots.length > 1) {
+          const other = bots[(i+1) % bots.length];
+          const od = b.mesh.position.distanceTo(other.mesh.position);
+          if (od < minD) { target = other.mesh; minD = od; }
+        }
+        b.mesh.lookAt(target.position.x, 0, target.position.z);
+        if (minD > 10 && minD < 90) {
+          const step = new THREE.Vector3().subVectors(target.position, b.mesh.position).normalize();
+          b.mesh.position.addScaledVector(step, 0.12);
+        }
+        if (--b.cd <= 0 && minD < 55) {
+          b.cd = 55 + Math.random()*50;
+          if (target === pGroup) {
+            if (!inVeh) { /* Car blocks outside bullets! */
+              pHP -= 6; updHUD();
+              if (pHP <= 0) {
+                running3D = false;
+                document.getElementById('end-title').innerText = '💥 Mag‘lub bo‘ldingiz!';
+                document.getElementById('end-desc').innerText = 'O‘ldirilganlar: ' + matchKills;
+                document.getElementById('end-ov').classList.add('open');
+              }
+            }
+          } else {
+            const oi = (i+1) % bots.length;
+            bots[oi].hp -= 35;
+            if (bots[oi].hp <= 0) { scene.remove(bots[oi].mesh); bots.splice(oi, 1); updHUD(); }
+          }
+        }
+      }
+
+      /* Bullets */
+      for (let i=bullets.length-1; i>=0; i--) {
+        const b = bullets[i]; b.mesh.position.add(b.vel); b.life--;
+        let hit = false;
+        for (let j=bots.length-1; j>=0; j--) {
+          if (b.mesh.position.distanceTo(bots[j].mesh.position.clone().add(new THREE.Vector3(0,1.4,0))) < 1.8) {
+            bots[j].hp -= b.dmg; hit = true;
+            if (bots[j].hp <= 0) {
+              scene.remove(bots[j].mesh); bots.splice(j, 1);
+              matchKills++; kills++; save(); updHUD();
+              if (bots.length === 0 && curMap === 'erangel') winMatch();
+            }
+            break;
+          }
+        }
+        if (hit || b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
+      }
+
+      /* 3rd-person camera */
+      const dist = scoped ? 2.2 : (inVeh ? 9.5 : 5.2);
+      const camH = stance==='prone' ? 1.4 : (stance==='crouch' ? 2.2 : (inVeh ? 4.2 : 2.9));
+      cam.position.set(
+        pGroup.position.x + Math.sin(yaw)*dist,
+        pGroup.position.y + camH - Math.sin(pitch)*2,
+        pGroup.position.z + Math.cos(yaw)*dist
+      );
+      cam.lookAt(pGroup.position.x - Math.sin(yaw)*8, pGroup.position.y + 1.6 + Math.sin(pitch)*6, pGroup.position.z - Math.cos(yaw)*8);
+
+      /* Minimap */
+      const mc = document.getElementById('mmap').getContext('2d');
+      mc.fillStyle = '#0f172a'; mc.fillRect(0,0,76,76);
+      mc.fillStyle = '#facc15'; mc.fillRect(38 + pGroup.position.x*0.22, 38 + pGroup.position.z*0.22, 4, 4);
+      mc.fillStyle = '#ef4444';
+      for (const b of bots) mc.fillRect(38 + b.mesh.position.x*0.22, 38 + b.mesh.position.z*0.22, 2, 2);
+
+      ren.render(scene, cam);
+    }
+
+    /* Touch Joystick + Camera Drag */
+    const jz = document.getElementById('joy'), kb = document.getElementById('knob');
+    jz.addEventListener('touchmove', e => {
       e.preventDefault(); const t=e.touches[0], r=jz.getBoundingClientRect();
       let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
-      const maxR=r.width/2-16, d=Math.hypot(dx,dy); if (d>maxR) { dx=(dx/d)*maxR; dy=(dy/d)*maxR; }
-      jk.style.transform='translate('+dx+'px,'+dy+'px)'; joyVec.x=dx/maxR; joyVec.y=dy/maxR;
-    }
-    jz.addEventListener('touchstart',onJoy,{passive:false}); jz.addEventListener('touchmove',onJoy,{passive:false});
-    jz.addEventListener('touchend',()=>{ joyVec={x:0,y:0}; jk.style.transform='translate(0,0)'; });
-    const fb=document.getElementById('fire-btn');
-    fb.addEventListener('touchstart',e=>{e.preventDefault();firing=true;shoot();},{passive:false});
-    fb.addEventListener('touchend',()=>firing=false);
-    fb.addEventListener('mousedown',()=>{firing=true;shoot();});
-    fb.addEventListener('mouseup',()=>firing=false);
+      const mr=r.width/2-15, d=Math.hypot(dx,dy); if (d>mr) { dx=dx/d*mr; dy=dy/d*mr; }
+      kb.style.transform='translate('+dx+'px,'+dy+'px)'; joyV.x=dx/mr; joyV.y=dy/mr;
+    }, {passive:false});
+    jz.addEventListener('touchend', ()=>{ joyV={x:0,y:0}; kb.style.transform='translate(0,0)'; });
+
+    let lx=null, ly=null;
+    const c3 = document.getElementById('c3d');
+    c3.addEventListener('touchstart', e => { lx=e.touches[0].clientX; ly=e.touches[0].clientY; });
+    c3.addEventListener('touchmove', e => {
+      e.preventDefault(); const t=e.touches[0];
+      yaw -= (t.clientX - lx) * 0.006;
+      pitch = Math.max(-0.5, Math.min(0.4, pitch - (t.clientY - ly)*0.004));
+      lx = t.clientX; ly = t.clientY;
+    }, {passive:false});
+
+    const fb = document.getElementById('fire-btn');
+    fb.addEventListener('touchstart', e=>{ e.preventDefault(); firing=true; fire3D(); }, {passive:false});
+    fb.addEventListener('touchend', ()=>firing=false);
   </script>
 </body>
 </html>
