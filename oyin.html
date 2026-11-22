@@ -10,110 +10,143 @@
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: #090d16; color: #fff; }
     .screen { display: none; width: 100%; height: 100%; position: relative; }
-    .screen.active { display: flex; flex-direction: column; }
+    .screen.active { display: block; }
+    canvas { display: block; width: 100%; height: 100%; }
 
-    /* Lobby */
-    .lobby { background: radial-gradient(circle at top, #1e293b, #090d16); padding: 48px 12px 10px; overflow-y: auto; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.07); padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #facc15; }
-    .uc-badge { background: #f59e0b; color: #111; font-weight: 900; padding: 5px 11px; border-radius: 8px; font-size: 13px; }
-    .maps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-    .map-btn { padding: 10px 4px; border-radius: 10px; border: 1.5px solid #334155; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; font-size: 12px; cursor: pointer; }
-    .map-btn.on { border-color: #facc15; background: rgba(250,204,21,0.18); color: #fde047; }
-    .btn-go { width: 100%; padding: 13px; border: none; border-radius: 10px; background: linear-gradient(180deg, #fde047, #eab308); color: #111; font-size: 17px; font-weight: 900; cursor: pointer; margin-bottom: 10px; }
+    /* Lobby HUD */
+    .lb-top { position: absolute; top: 56px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; z-index: 5; }
+    .lb-prof { pointer-events: auto; display: flex; align-items: center; gap: 8px; background: rgba(12,18,30,0.8); border: 1px solid rgba(255,255,255,0.2); border-left: 3px solid #facc15; padding: 6px 11px; border-radius: 8px; }
+    .lb-right { pointer-events: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .uc-pill { background: rgba(12,18,30,0.88); border: 1px solid #f59e0b; color: #fde047; padding: 5px 11px; border-radius: 8px; font-weight: 800; font-size: 13px; }
+    .map-row { display: flex; gap: 4px; }
+    .m-chip { background: rgba(12,18,30,0.82); border: 1px solid #475569; color: #e2e8f0; padding: 5px 8px; border-radius: 7px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .m-chip.on { border-color: #facc15; color: #fde047; background: rgba(250,204,21,0.18); }
 
-    .tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; }
-    .t-btn { padding: 7px 10px; border-radius: 8px; border: 1px solid #334155; background: #111827; color: #cbd5e1; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
-    .t-btn.on { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 20px; }
-    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
+    .lb-bot { position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 8px; pointer-events: none; z-index: 5; }
+    .lb-start-row { display: flex; align-items: flex-end; justify-content: space-between; pointer-events: auto; gap: 8px; }
+    .btn-pubg { background: linear-gradient(180deg,#fde047,#eab308); color: #111827; border: 2px solid #fef08a; border-radius: 7px; padding: 12px 26px; font-size: 17px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 18px rgba(234,179,8,0.45); }
+    .tag { background: rgba(12,18,30,0.82); border: 1px solid rgba(255,255,255,0.2); padding: 5px 9px; border-radius: 7px; font-size: 11px; color: #e2e8f0; }
+    .lb-nav { pointer-events: auto; display: flex; gap: 4px; background: rgba(12,18,30,0.9); border-top: 1px solid rgba(255,255,255,0.2); padding: 6px 4px; border-radius: 10px; }
+    .nav-b { flex: 1; padding: 7px 2px; border: none; border-radius: 7px; background: transparent; color: #e2e8f0; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .nav-b:active { background: rgba(250,204,21,0.2); color: #fde047; }
+
+    /* Inventory / Shop Drawer */
+    .drawer-bg { position: absolute; inset: 0; background: rgba(6,10,18,0.78); display: none; align-items: flex-end; z-index: 25; }
+    .drawer-bg.open { display: flex; }
+    .drawer { width: 100%; max-height: 76dvh; background: #111827; border-top: 2px solid #facc15; border-radius: 18px 18px 0 0; padding: 14px; display: flex; flex-direction: column; }
+    .d-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
+    .d-exit { background: #dc2626; color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-weight: 800; font-size: 12px; cursor: pointer; }
+    .d-body { overflow-y: auto; flex: 1; padding-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card { background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
     .card.eq { border-color: #22c55e; background: rgba(34,197,94,0.14); }
     .c-btn { width: 100%; padding: 7px; border: none; border-radius: 7px; font-weight: 800; font-size: 11px; cursor: pointer; background: #f59e0b; color: #111; margin-top: 6px; }
     .c-btn.own { background: #334155; color: #fff; }
     .c-btn.eq { background: #22c55e; color: #052e16; }
-    .box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 13px; margin-bottom: 14px; }
+    .box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 12px; margin-bottom: 10px; }
     .inp { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334155; background: #090d16; color: #fff; margin: 6px 0; }
 
     /* 3D Game HUD */
-    #scr-game { position: relative; background: #1e293b; }
-    #c3d { width: 100%; height: 100%; display: block; touch-action: none; }
-    .rotate-tip { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); padding: 4px 10px; border-radius: 999px; font-size: 11px; z-index: 15; display: none; }
-    .hud-tl { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 10; }
-    .h-box { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.2); padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 800; }
-    .compass { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); padding: 4px 14px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 2px; z-index: 10; }
-    .hud-tr { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; align-items: flex-start; z-index: 10; }
-    .minimap { width: 76px; height: 76px; background: rgba(15,23,42,0.8); border: 1.5px solid #cbd5e1; border-radius: 6px; }
-    .crosshair { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; pointer-events: none; z-index: 9; }
+    #scr-game { background: #1e293b; }
+    #c3d { touch-action: none; }
+    .hud-tl { position: absolute; top: 10px; left: 10px; display: flex; gap: 5px; z-index: 10; }
+    .h-box { background: rgba(0,0,0,0.68); border: 1px solid rgba(255,255,255,0.22); padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; }
+    .compass { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; z-index: 10; }
+    .hud-tr { position: absolute; top: 10px; right: 10px; z-index: 10; }
+    @media (orientation: portrait) { .hud-tl, .hud-tr, .compass { top: 52px; } }
+    .minimap { width: 72px; height: 72px; background: rgba(15,23,42,0.82); border: 1.5px solid #cbd5e1; border-radius: 6px; }
+    .crosshair { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 2px solid rgba(255,255,255,0.88); border-radius: 50%; pointer-events: none; z-index: 9; }
 
     .joy { position: absolute; bottom: 18px; left: 18px; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
-    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.8); pointer-events: none; }
-    .bot-mid { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; z-index: 10; }
-    .hp-bar { width: 120px; height: 10px; background: #1e293b; border: 1px solid #fff; border-radius: 6px; overflow: hidden; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.82); pointer-events: none; }
+    .bot-mid { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 10; }
+    .bar-w { width: 130px; height: 9px; background: #1e293b; border: 1px solid rgba(255,255,255,0.5); border-radius: 6px; overflow: hidden; }
     .hp-fill { height: 100%; background: #22c55e; width: 100%; }
+    .arm-fill { height: 100%; background: #38bdf8; width: 100%; }
 
     .acts { position: absolute; bottom: 14px; right: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; z-index: 10; }
     .act-r { display: flex; gap: 6px; }
-    .ab { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .ab { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.68); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
     .ab.on { border-color: #facc15; background: rgba(234,179,8,0.4); }
     .fire { width: 74px; height: 74px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.6); background: radial-gradient(#ef4444,#991b1b); color: #fff; font-weight: 900; font-size: 13px; touch-action: none; }
-
-    .end-ov { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
+    .end-ov { position: absolute; inset: 0; background: rgba(0,0,0,0.86); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
     .end-ov.open { display: flex; }
     .end-card { background: #1e293b; border: 2px solid #facc15; border-radius: 16px; padding: 18px; text-align: center; max-width: 340px; width: 100%; }
   </style>
 </head>
 <body>
 
-  <!-- LOBBY -->
-  <div class="screen lobby active" id="scr-lobby">
-    <div class="top-bar">
-      <div>
-        <div style="font-weight:800;font-size:14px;" id="u-name">O‘yinchi</div>
-        <div style="font-size:11px;color:#fde047;">Lvl <span id="u-lvl">1</span> • ☠️ <span id="u-kills">0</span> Kill</div>
+  <!-- 1. SCENIC PUBG LOBBY -->
+  <div class="screen active" id="scr-lobby">
+    <canvas id="lobby-canvas"></canvas>
+
+    <div class="lb-top">
+      <div class="lb-prof">
+        <div style="font-size:20px;">🎖️</div>
+        <div>
+          <div style="font-weight:800;font-size:13px;" id="u-name">O‘yinchi</div>
+          <div style="font-size:11px;color:#fde047;">Lvl <span id="u-lvl">1</span> • ☠️ <span id="u-kills">0</span></div>
+        </div>
       </div>
-      <div class="uc-badge">💵 <span id="u-uc">0</span> UC</div>
+      <div class="lb-right">
+        <div class="uc-pill">💵 <span id="u-uc">0</span> UC</div>
+        <div class="map-row">
+          <button class="m-chip on" onclick="setMap('erangel',this)">🏝️ Erangel</button>
+          <button class="m-chip" onclick="setMap('park',this)">🎡 Park</button>
+          <button class="m-chip" onclick="setMap('build',this)">🏠 Uy</button>
+        </div>
+      </div>
     </div>
 
-    <div class="maps-row">
-      <button class="map-btn on" onclick="setMap('erangel',this)">🏝️ Erangel (100)</button>
-      <button class="map-btn" onclick="setMap('park',this)">🎡 Park</button>
-      <button class="map-btn" onclick="setMap('build',this)">🏠 Uy Qurish</button>
+    <div class="lb-bot">
+      <div class="lb-start-row">
+        <div>
+          <div class="tag" style="margin-bottom:4px;width:fit-content;" id="lb-gear">🔫 M416 • ❤️ 250</div>
+          <button class="btn-pubg" onclick="start3D()">BOSHLASH</button>
+        </div>
+        <div class="tag">🐼 Panda • Yotqizib o‘ynang</div>
+      </div>
+
+      <div class="lb-nav">
+        <button class="nav-b" onclick="openD('weapons')">🔫 Qurol</button>
+        <button class="nav-b" onclick="openD('armor')">🛡️ Bron</button>
+        <button class="nav-b" onclick="openD('outfits')">👕 Kiyim</button>
+        <button class="nav-b" onclick="openD('cars')">🚗 Garaj</button>
+        <button class="nav-b" onclick="openD('house')">🏢 Uy</button>
+        <button class="nav-b" onclick="openD('menu')">💳 Menyu</button>
+      </div>
     </div>
 
-    <button class="btn-go" onclick="start3D()">🎮 BOSHLASH (Yotqizib o‘ynang)</button>
-
-    <div class="tabs">
-      <button class="t-btn on" onclick="showTab('weapons',this)">🔫 Qurol (100)</button>
-      <button class="t-btn" onclick="showTab('outfits',this)">👕 Kiyimlar</button>
-      <button class="t-btn" onclick="showTab('cars',this)">🚗 Garaj</button>
-      <button class="t-btn" onclick="showTab('house',this)">🏢 Uy (8 qavat)</button>
-      <button class="t-btn" onclick="showTab('wd',this)">💳 UC Yechish</button>
-      <button class="t-btn" onclick="showTab('social',this)">🛡️ Klan/Chat/Do‘st</button>
+    <div class="drawer-bg" id="d-bg" onclick="if(event.target===this)closeD()">
+      <div class="drawer">
+        <div class="d-head">
+          <div style="font-weight:800;font-size:15px;" id="d-title">Do‘kon</div>
+          <button class="d-exit" onclick="closeD()">✖ Chiqish</button>
+        </div>
+        <div class="d-body" id="d-body"></div>
+      </div>
     </div>
-
-    <div id="tab-content"></div>
   </div>
 
-  <!-- 3D GAME -->
+  <!-- 2. 3D BATTLE ARENA -->
   <div class="screen" id="scr-game">
     <canvas id="c3d"></canvas>
-    <div class="rotate-tip" id="rot-tip">📱 Telefonni yotqizib (gorizontal) o‘ynang!</div>
     <div class="hud-tl">
-      <button class="h-box" style="background:#dc2626;border:none;color:#fff;" onclick="exit3D()">✖</button>
+      <button class="h-box" style="background:#dc2626;border:none;color:#fff;" onclick="exit3D()">✖ Chiqish</button>
       <div class="h-box">Qolgan <span id="g-alive">100</span></div>
       <div class="h-box">Kill <span id="g-kills">0</span></div>
       <div class="h-box" id="g-wep">M416</div>
     </div>
-    <div class="compass" id="g-comp">NW • N • NE</div>
-    <div class="hud-tr">
-      <canvas class="minimap" id="mmap" width="76" height="76"></canvas>
-    </div>
+    <div class="compass">NW • N • NE</div>
+    <div class="hud-tr"><canvas class="minimap" id="mmap" width="72" height="72"></canvas></div>
     <div class="crosshair"></div>
 
     <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
 
     <div class="bot-mid">
-      <div class="hp-bar"><div class="hp-fill" id="hp-fill"></div></div>
-      <div class="h-box" id="hp-num">100</div>
+      <div class="h-box" id="hp-txt">❤️ 250 | 🛡️ 0</div>
+      <div class="bar-w"><div class="arm-fill" id="arm-fill"></div></div>
+      <div class="bar-w"><div class="hp-fill" id="hp-fill"></div></div>
     </div>
 
     <div class="acts">
@@ -135,8 +168,8 @@
         <h2 id="end-title" style="margin:0 0 8px;"></h2>
         <p id="end-desc" style="font-size:13px;color:#cbd5e1;margin:0 0 14px;"></p>
         <div style="display:flex;gap:8px;">
-          <button class="btn-go" style="margin:0;font-size:14px;" onclick="start3D()">🔄 Yangi match</button>
-          <button class="btn-go" style="margin:0;font-size:14px;background:#334155;color:#fff;" onclick="exit3D()">🏠 Lobbi</button>
+          <button class="btn-pubg" style="flex:1;padding:11px;font-size:14px;" onclick="start3D()">🔄 Match</button>
+          <button class="btn-pubg" style="flex:1;padding:11px;font-size:14px;background:#334155;color:#fff;border-color:#64748b;" onclick="exit3D()">🏠 Lobbi</button>
         </div>
       </div>
     </div>
@@ -150,49 +183,56 @@
         tg.ready(); tg.expand();
         if (tg.requestFullscreen) tg.requestFullscreen();
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          uid = String(tg.initDataUnsafe.user.id);
-          uname = tg.initDataUnsafe.user.first_name;
+          uid = String(tg.initDataUnsafe.user.id); uname = tg.initDataUnsafe.user.first_name;
         }
       }
     } catch (e) {}
     document.getElementById('u-name').innerText = uname;
 
-    /* 100 ta Qurol (50 - 100 UC) */
-    const BASES = ['M416','AKM','AWM','Kar98k','Scar-L','Groza','M762','UMP45','Vector','DP-28'];
+    /* 100 Qurol (50-100 UC) har xil zarba va tezlikda */
+    const BASES = [
+      ['M416',34,115],['AKM',42,135],['AWM',115,620],['Kar98k',92,540],['Scar-L',35,120],
+      ['Groza',46,105],['M762',44,115],['UMP45',30,98],['Vector',26,75],['DP-28',40,130]
+    ];
     const W_SKINS = [
       ['Muzlik',0x38bdf8],['Oltin',0xfacc15],['Firavn',0xeab308],['Ajdar',0xef4444],['Qonli',0xbe123c],
       ['Kiber',0xa855f7],['Neon',0x22d3ee],['Qora',0x18181b],['Zahar',0x22c55e],['Kumush',0xcbd5e1]
     ];
     const WEAPONS = [];
-    for (let i=0; i<10; i++) for (let j=0; j<10; j++) {
-      const idx = i*10 + j;
+    for (let i=0;i<10;i++) for (let j=0;j<10;j++) {
+      const idx = i*10+j;
       WEAPONS.push({
-        id: 'w'+idx, name: BASES[i] + ' ' + W_SKINS[j][0],
-        price: idx===0 ? 0 : 50 + (idx % 6)*10,
-        dmg: 28 + (i%4)*15, rate: i===2||i===3 ? 650 : 120, col: W_SKINS[j][1]
+        id:'w'+idx, name:BASES[i][0]+' '+W_SKINS[j][0],
+        price: idx===0 ? 0 : 50 + ((i+j)%6)*10,
+        dmg: BASES[i][1] + j*2, rate: BASES[i][2], col: W_SKINS[j][1]
       });
     }
 
-    /* PUBG Kiyimlar (1000 - 5000 UC) */
-    const OUTFIT_NAMES = [
+    const ARMORS = [
+      { id:'a0', name:'Oddiy', price:0, shield:0, red:0, col:0x334155 },
+      { id:'a1', name:'1-daraja Kaska+Bron', price:100, shield:80, red:0.25, col:0x64748b },
+      { id:'a2', name:'2-daraja Kaska+Bron', price:300, shield:150, red:0.45, col:0x2563eb },
+      { id:'a3', name:'3-daraja Spetsnaz', price:700, shield:220, red:0.62, col:0x111827 },
+      { id:'a4', name:'Inferno Oltin Bron', price:1500, shield:320, red:0.78, col:0xf59e0b }
+    ];
+
+    const OUTFITS = [
       ['Inferno & Qora',0x18181b,0xea580c,0],['Fir‘avn Oltin',0xeab308,0x1d4ed8,1200],['Mumiya Oq',0xf1f5f9,0xe2e8f0,1500],
       ['Ravon Maxsus',0x0f172a,0x38bdf8,1800],['Joker Kostyum',0x7c3aed,0x22c55e,2200],['Godzilla',0x1e3a8a,0x06b6d4,2800],
       ['Kiber X-Suit',0x4c1d95,0xf472b6,3500],['Qonli Ritsar',0x991b1b,0xfacc15,4200],['Tilla X-Suit',0xd97706,0xfef08a,5000]
-    ];
-    const OUTFITS = OUTFIT_NAMES.map((x,i) => ({ id:'s'+i, name:x[0], body:x[1], helm:x[2], price:x[3] }));
+    ].map((x,i)=>({id:'s'+i,name:x[0],body:x[1],helm:x[2],price:x[3]}));
 
-    /* Mashinalar, Tank, Vertolyot (50,000 - 200,000 UC) */
     const CARS = [
-      { id:'matiz',   name:'Matiz',            price:50000,  col:0x38bdf8, spd:0.42, type:'car' },
-      { id:'tiko',    name:'Tiko',             price:55000,  col:0xef4444, spd:0.40, type:'car' },
-      { id:'damas',   name:'Damas',            price:65000,  col:0xf8fafc, spd:0.38, type:'van' },
-      { id:'malibu1', name:'Malibu 1',         price:90000,  col:0x334155, spd:0.48, type:'car' },
-      { id:'gentra',  name:'Gentra',           price:110000, col:0x1e293b, spd:0.50, type:'car' },
-      { id:'malibu2', name:'Malibu 2 Qopqora', price:150000, col:0x050507, spd:0.56, type:'car' },
-      { id:'lambo',   name:'Lamborghini',      price:180000, col:0xfacc15, spd:0.68, type:'car' },
-      { id:'bugatti', name:'Bugatti',          price:200000, col:0x2563eb, spd:0.72, type:'car' },
-      { id:'tank',    name:'Harbiy Tank',      price:190000, col:0x3f6212, spd:0.36, type:'tank' },
-      { id:'heli',    name:'Vertolyot',        price:200000, col:0x0f172a, spd:0.75, type:'heli' }
+      { id:'matiz', name:'Matiz', price:50000, col:0x38bdf8, hex:'#38bdf8', spd:0.42, type:'car' },
+      { id:'tiko', name:'Tiko', price:55000, col:0xef4444, hex:'#ef4444', spd:0.40, type:'car' },
+      { id:'damas', name:'Damas', price:65000, col:0xf8fafc, hex:'#f8fafc', spd:0.38, type:'van' },
+      { id:'malibu1', name:'Malibu 1', price:90000, col:0x334155, hex:'#334155', spd:0.48, type:'car' },
+      { id:'gentra', name:'Gentra', price:110000, col:0x1e293b, hex:'#1e293b', spd:0.50, type:'car' },
+      { id:'malibu2', name:'Malibu 2 Qopqora', price:150000, col:0x050507, hex:'#09090b', spd:0.56, type:'car' },
+      { id:'lambo', name:'Lamborghini', price:180000, col:0xfacc15, hex:'#facc15', spd:0.68, type:'car' },
+      { id:'bugatti', name:'Bugatti', price:200000, col:0x2563eb, hex:'#2563eb', spd:0.72, type:'car' },
+      { id:'tank', name:'Harbiy Tank', price:190000, col:0x3f6212, hex:'#3f6212', spd:0.36, type:'tank' },
+      { id:'heli', name:'Vertolyot', price:200000, col:0x0f172a, hex:'#0f172a', spd:0.75, type:'heli' }
     ];
 
     let uc = Number(localStorage.getItem('p3_uc') || localStorage.getItem('br_uc') || localStorage.getItem('pg_uc') || 0);
@@ -200,412 +240,78 @@
     let floors = Number(localStorage.getItem('p3_floors') || 1);
     let ownW = JSON.parse(localStorage.getItem('p3_ow') || '["w0"]');
     let eqW = localStorage.getItem('p3_ew') || 'w0';
+    let ownA = JSON.parse(localStorage.getItem('p3_oa') || '["a0"]');
+    let eqA = localStorage.getItem('p3_ea') || 'a0';
     let ownS = JSON.parse(localStorage.getItem('p3_os') || '["s0"]');
     let eqS = localStorage.getItem('p3_es') || 's0';
     let ownC = JSON.parse(localStorage.getItem('p3_oc') || '[]');
     let eqC = localStorage.getItem('p3_ec') || 'malibu2';
-    let curMap = 'erangel', curTab = 'weapons';
+    let curMap = 'erangel', curD = 'weapons';
     let chatMsgs = JSON.parse(localStorage.getItem('p3_chat') || '["Aziz: Salom hammaga!"]');
     let clanName = localStorage.getItem('p3_clan') || 'Klan yo‘q';
 
     function save() {
-      localStorage.setItem('p3_uc', uc); localStorage.setItem('p3_kills', kills); localStorage.setItem('p3_floors', floors);
-      localStorage.setItem('p3_ow', JSON.stringify(ownW)); localStorage.setItem('p3_ew', eqW);
-      localStorage.setItem('p3_os', JSON.stringify(ownS)); localStorage.setItem('p3_es', eqS);
-      localStorage.setItem('p3_oc', JSON.stringify(ownC)); localStorage.setItem('p3_ec', eqC);
+      localStorage.setItem('p3_uc',uc); localStorage.setItem('p3_kills',kills); localStorage.setItem('p3_floors',floors);
+      localStorage.setItem('p3_ow',JSON.stringify(ownW)); localStorage.setItem('p3_ew',eqW);
+      localStorage.setItem('p3_oa',JSON.stringify(ownA)); localStorage.setItem('p3_ea',eqA);
+      localStorage.setItem('p3_os',JSON.stringify(ownS)); localStorage.setItem('p3_es',eqS);
+      localStorage.setItem('p3_oc',JSON.stringify(ownC)); localStorage.setItem('p3_ec',eqC);
       document.getElementById('u-uc').innerText = uc.toLocaleString();
       document.getElementById('u-kills').innerText = kills;
-      document.getElementById('u-lvl').innerText = 1 + Math.floor(kills / 5);
+      document.getElementById('u-lvl').innerText = 1 + Math.floor(kills/5);
+      const w = WEAPONS.find(x=>x.id===eqW)||WEAPONS[0], a = ARMORS.find(x=>x.id===eqA)||ARMORS[0];
+      document.getElementById('lb-gear').innerText = '🔫 '+w.name+' • 🛡️ '+a.shield;
     }
 
-    function setMap(m, btn) {
-      curMap = m;
-      document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-    }
+    function setMap(m, btn) { curMap=m; document.querySelectorAll('.m-chip').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+    function openD(t) { curD=t; document.getElementById('d-bg').classList.add('open'); renderD(); }
+    function closeD() { document.getElementById('d-bg').classList.remove('open'); }
 
-    function showTab(t, btn) {
-      curTab = t;
-      if (btn) { document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
-      const box = document.getElementById('tab-content');
-      if (t==='weapons') {
+    function renderD() {
+      const titles = { weapons:'🔫 Qurollar (100 xil)', armor:'🛡️ Kaska va Bronjiletlar', outfits:'👕 PUBG Kiyimlar', cars:'🚗 Garaj', house:'🏢 Uy Qurish (1-8 qavat)', menu:'💳 UC, Do‘st, Klan & Chat' };
+      document.getElementById('d-title').innerText = titles[curD];
+      const box = document.getElementById('d-body');
+      if (curD==='weapons') {
         box.innerHTML = '<div class="grid">' + WEAPONS.map(w => {
-          const isO = ownW.includes(w.id), isE = eqW===w.id;
-          return '<div class="card '+(isE?'eq':'')+'"><b>'+w.name+'</b><div>Zarba: '+w.dmg+'</div>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyW(\''+w.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':w.price+' UC'))+'</button></div>';
+          const isO=ownW.includes(w.id), isE=eqW===w.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>'+w.name+'</b><div>Zarba: '+w.dmg+' | Tez: '+Math.round(1000/w.rate)+'</div>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyG(\'w\',\''+w.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':w.price+' UC'))+'</button></div>';
         }).join('') + '</div>';
-      } else if (t==='outfits') {
+      } else if (curD==='armor') {
+        box.innerHTML = '<div class="grid">' + ARMORS.filter(a=>a.price>0).map(a => {
+          const isO=ownA.includes(a.id), isE=eqA===a.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>🛡️ '+a.name+'</b><div>Qalqon: +'+a.shield+' (-'+Math.round(a.red*100)+'% zarar)</div>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyG(\'a\',\''+a.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':a.price+' UC'))+'</button></div>';
+        }).join('') + '</div>';
+      } else if (curD==='outfits') {
         box.innerHTML = '<div class="grid">' + OUTFITS.map(s => {
-          const isO = ownS.includes(s.id), isE = eqS===s.id;
+          const isO=ownS.includes(s.id), isE=eqS===s.id;
           return '<div class="card '+(isE?'eq':'')+'"><b>👕 '+s.name+'</b>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyS(\''+s.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':s.price.toLocaleString()+' UC'))+'</button></div>';
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyG(\'s\',\''+s.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':s.price.toLocaleString()+' UC'))+'</button></div>';
         }).join('') + '</div>';
-      } else if (t==='cars') {
+      } else if (curD==='cars') {
         box.innerHTML = '<div class="grid">' + CARS.map(c => {
-          const isO = ownC.includes(c.id), isE = eqC===c.id;
-          return '<div class="card '+(isE?'eq':'')+'"><b>🚗 '+c.name+'</b><div>Tezlik: '+Math.round(c.spd*200)+' km/s</div>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyC(\''+c.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':c.price.toLocaleString()+' UC'))+'</button></div>';
+          const isO=ownC.includes(c.id), isE=eqC===c.id;
+          return '<div class="card '+(isE?'eq':'')+'"><b>🚗 '+c.name+'</b><div>Tezlik: '+Math.round(c.spd*200)+'</div>' +
+            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyG(\'c\',\''+c.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':c.price.toLocaleString()+' UC'))+'</button></div>';
         }).join('') + '</div>';
-      } else if (t==='house') {
-        let h = '<div class="box"><b>🏠 Uy Qurish Xaritasi (1-8 qavat):</b><br>Hozirgi uyingiz: <b>'+floors+' qavatli</b></div><div class="grid">';
-        for (let f=1; f<=8; f++) {
-          const pr = f * 10000, done = floors >= f;
-          h += '<div class="card '+(done?'eq':'')+'"><b>🏢 '+f+'-qavat</b><div>Narxi: '+pr.toLocaleString()+' UC</div>' +
-            '<button class="c-btn '+(done?'eq':'')+'" onclick="buyFloor('+f+','+pr+')">'+(done?'✅ Qurilgan':'Qurish')+'</button></div>';
+      } else if (curD==='house') {
+        let h = '<div class="box">Hozirgi uyingiz: <b>'+floors+' qavatli</b></div><div class="grid">';
+        for (let f=1;f<=8;f++) {
+          const pr=f*10000, done=floors>=f;
+          h += '<div class="card '+(done?'eq':'')+'"><b>🏢 '+f+'-qavat</b><div>'+pr.toLocaleString()+' UC</div>' +
+            '<button class="c-btn '+(done?'eq':'')+'" onclick="buyFl('+f+','+pr+')">'+(done?'✅ Qurilgan':'Qurish')+'</button></div>';
         }
         box.innerHTML = h + '</div>';
-      } else if (t==='wd') {
+      } else {
         box.innerHTML = '<div class="box"><b>💳 UC Yechib olish (Ariza):</b>' +
-          '<input class="inp" type="number" id="wd-id" placeholder="PUBG Mobile ID raqamingiz" />' +
+          '<input class="inp" type="number" id="wd-id" placeholder="PUBG Mobile ID" />' +
           '<button class="c-btn" onclick="askWd(60000,60)">60,000 UC ➔ 60 UC ariza</button>' +
           '<button class="c-btn" onclick="askWd(360000,360)">360,000 UC ➔ 360 UC ariza</button>' +
           '<button class="c-btn" onclick="askWd(720000,720)">720,000 UC ➔ 720 UC ariza</button>' +
-          '<div id="wd-res" style="margin-top:8px;color:#86efac;"></div></div>' +
-          '<div class="box"><b>💎 UC Sotib olish (Do‘kon):</b><br>Haqiqiy pulga UC sotib olish uchun to‘lov tizimi/admin ulanishi kerak.</div>';
-      } else {
-        box.innerHTML = '<div class="box"><b>👥 Do‘st taklif qilish (+1,000 UC):</b>' +
-          '<input class="inp" readonly value="https://t.me/share/url?url=ref_'+uid+'" />' +
-          '<div style="font-size:11px;color:#94a3b8;">Referal avtomatik hisoblanishi uchun bot serveri ulanishi kerak.</div></div>' +
-          '<div class="box"><b>🛡️ Klan: ' + clanName + '</b>' +
-          '<input class="inp" id="cl-inp" placeholder="Klan nomi yozing..." />' +
-          '<button class="c-btn own" onclick="clanName=document.getElementById(\'cl-inp\').value||\'UZB_TEAM\';localStorage.setItem(\'p3_clan\',clanName);showTab(\'social\')">Klan ochish / Kirish</button></div>' +
-          '<div class="box"><b>💬 Chat (Mahalliy demo):</b><div style="max-height:90px;overflow:auto;margin:6px 0;font-size:12px;">' +
-          chatMsgs.map(m=>'<div>'+m+'</div>').join('') + '</div>' +
-          '<input class="inp" id="ch-inp" placeholder="Xabar yozing..." />' +
-          '<button class="c-btn eq" onclick="sendChat()">Yuborish</button></div>';
-      }
-    }
-
-    function buyW(id) { const w=WEAPONS.find(x=>x.id===id); if (!ownW.includes(id)) { if (uc<w.price) return alert('UC kam!'); uc-=w.price; ownW.push(id); } eqW=id; save(); showTab('weapons'); }
-    function buyS(id) { const s=OUTFITS.find(x=>x.id===id); if (!ownS.includes(id)) { if (uc<s.price) return alert('UC kam!'); uc-=s.price; ownS.push(id); } eqS=id; save(); showTab('outfits'); }
-    function buyC(id) { const c=CARS.find(x=>x.id===id); if (!ownC.includes(id)) { if (uc<c.price) return alert('UC kam! '+c.price.toLocaleString()+' UC kerak.'); uc-=c.price; ownC.push(id); } eqC=id; save(); showTab('cars'); }
-    function buyFloor(f, pr) { if (floors>=f) return; if (uc<pr) return alert(pr.toLocaleString()+' UC kerak!'); uc-=pr; floors=f; save(); showTab('house'); }
-    function askWd(cost, realUc) {
-      const pid = document.getElementById('wd-id').value.trim();
-      if (pid.length<5) return alert('To‘g‘ri PUBG ID yozing!');
-      if (uc<cost) return alert(cost.toLocaleString()+' UC kerak!');
-      uc -= cost; save();
-      document.getElementById('wd-res').innerText = '✅ Ariza yaratildi! ID: '+pid+' | '+realUc+' UC (Admin tekshirgach yuboradi).';
-    }
-    function sendChat() {
-      const v = document.getElementById('ch-inp').value.trim(); if (!v) return;
-      chatMsgs.push(uname+': '+v); localStorage.setItem('p3_chat', JSON.stringify(chatMsgs.slice(-15))); showTab('social');
-    }
-
-    save(); showTab('weapons');
-
-    /* --- THREE.JS 3D ENGINE --- */
-    let scene, cam, ren, pGroup, carGroup, chuteMesh, statueGroup;
-    let bots = [], bullets = [], houses3d = [];
-    let running3D = false, anim3D = null, yaw = 0, pitch = -0.15, pHP = 100, matchKills = 0;
-    let joyV = {x:0,y:0}, stance = 'stand', vy = 0, onGround = true, inVeh = false, scoped = false, firing = false, lastFire = 0;
-    let carPos = null, carDropping = false;
-
-    /* Shared Geometries */
-    let gBody, gHead, gSpike, gGun, gLeg, gBul;
-
-    function buildChar(bodyCol, helmCol, gunCol) {
-      const g = new THREE.Group();
-      const mB = new THREE.MeshLambertMaterial({ color: bodyCol });
-      const mH = new THREE.MeshLambertMaterial({ color: helmCol });
-      const mG = new THREE.MeshLambertMaterial({ color: gunCol });
-      const mL = new THREE.MeshLambertMaterial({ color: 0x111827 });
-
-      const l1 = new THREE.Mesh(gLeg, mL); l1.position.set(-0.22, 0.5, 0);
-      const l2 = new THREE.Mesh(gLeg, mL); l2.position.set(0.22, 0.5, 0);
-      const body = new THREE.Mesh(gBody, mB); body.position.set(0, 1.35, 0);
-      const head = new THREE.Mesh(gHead, mH); head.position.set(0, 2.08, 0);
-      const spike = new THREE.Mesh(gSpike, new THREE.MeshLambertMaterial({color:0xfacc15})); spike.position.set(0, 2.45, 0);
-      const backGun = new THREE.Mesh(gGun, mG); backGun.position.set(-0.15, 1.45, 0.35); backGun.rotation.z = 0.5;
-      const handGun = new THREE.Mesh(gGun, mG); handGun.position.set(0.35, 1.35, -0.5); handGun.rotation.x = Math.PI/2;
-
-      g.add(l1, l2, body, head, spike, backGun, handGun);
-      return g;
-    }
-
-    function start3D() {
-      if (typeof THREE === 'undefined') { alert('3D yuklanmadi — internetni tekshiring!'); return; }
-      document.getElementById('scr-lobby').classList.remove('active');
-      document.getElementById('scr-game').classList.add('active');
-      document.getElementById('end-ov').classList.remove('open');
-      try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape'); } catch (e) {}
-
-      const c = document.getElementById('c3d');
-      ren = new THREE.WebGLRenderer({ canvas: c, antialias: true });
-      ren.setSize(window.innerWidth, window.innerHeight);
-      ren.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x87ceeb);
-      scene.fog = new THREE.Fog(0x87ceeb, 60, 260);
-      cam = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.1, 350);
-
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x3f6212, 0.95));
-      const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(40, 80, 30); scene.add(dl);
-
-      gBody = new THREE.BoxGeometry(0.8, 1.0, 0.45);
-      gHead = new THREE.SphereGeometry(0.32, 10, 10);
-      gSpike = new THREE.ConeGeometry(0.1, 0.3, 6);
-      gGun = new THREE.BoxGeometry(0.14, 0.14, 1.0);
-      gLeg = new THREE.BoxGeometry(0.26, 0.95, 0.28);
-      gBul = new THREE.SphereGeometry(0.16, 6, 6);
-
-      /* Ground & Sea */
-      const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(360, 360),
-        new THREE.MeshLambertMaterial({ color: curMap==='park'?0x3f7d3a:(curMap==='build'?0x64748b:0x8fa3b0) })
-      );
-      ground.rotation.x = -Math.PI / 2; scene.add(ground);
-
-      /* Houses & Cover Walls (matching screenshot style) */
-      houses3d = [];
-      const hMat = new THREE.MeshLambertMaterial({ color: 0x2b7a9b });
-      const rMat = new THREE.MeshLambertMaterial({ color: 0x6b4f3a });
-      const wMat = new THREE.MeshLambertMaterial({ color: 0x575b63 });
-
-      if (curMap === 'build') {
-        const hb = new THREE.Mesh(new THREE.BoxGeometry(10, floors*3.2, 8), hMat);
-        hb.position.set(0, (floors*3.2)/2, -16); scene.add(hb);
-      } else if (curMap === 'park') {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(8, 0.6, 8, 24), new THREE.MeshLambertMaterial({color:0xfacc15}));
-        ring.position.set(0, 11, -22); scene.add(ring);
-      } else {
-        for (let i=0; i<16; i++) {
-          const x = (Math.random()-0.5)*220, z = (Math.random()-0.5)*220;
-          if (Math.hypot(x,z) < 16) continue;
-          const house = new THREE.Mesh(new THREE.BoxGeometry(9, 4.5, 7), hMat); house.position.set(x, 2.25, z);
-          const roof = new THREE.Mesh(new THREE.ConeGeometry(7, 2.5, 4), rMat); roof.position.set(x, 5.7, z); roof.rotation.y = Math.PI/4;
-          const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 1.9, 0.6), wMat); wall.position.set(x+7, 0.95, z+4);
-          scene.add(house, roof, wall);
-          houses3d.push({x, z, r:6});
-        }
-        /* Near cover wall just like screenshot */
-        const cw = new THREE.Mesh(new THREE.BoxGeometry(5, 1.8, 0.6), wMat); cw.position.set(0, 0.9, -5); scene.add(cw);
-      }
-
-      const sk = OUTFITS.find(x=>x.id===eqS) || OUTFITS[0];
-      const wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
-      pGroup = buildChar(sk.body, sk.helm, wp.col);
-      pGroup.position.set(0, 0, 0);
-      scene.add(pGroup);
-      document.getElementById('g-wep').innerText = wp.name;
-
-      /* Spawn 99 AI Combatants */
-      bots = []; bullets = [];
-      pHP = 100; matchKills = 0; yaw = 0; inVeh = false; carPos = null; carGroup = null;
-      const botCount = curMap==='erangel' ? 99 : 15;
-      for (let i=0; i<botCount; i++) {
-        const bx = (Math.random()-0.5)*240, bz = (Math.random()-0.5)*240;
-        if (Math.hypot(bx,bz) < 18) { i--; continue; }
-        const bm = buildChar(0xef4444, 0x111827, 0xfacc15);
-        bm.position.set(bx, 0, bz);
-        scene.add(bm);
-        bots.push({ mesh: bm, hp: 100, cd: Math.random()*80 });
-      }
-      updHUD();
-
-      running3D = true;
-      if (anim3D) cancelAnimationFrame(anim3D);
-      loop3D();
-    }
-
-    function exit3D() {
-      running3D = false;
-      if (anim3D) cancelAnimationFrame(anim3D);
-      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
-      document.getElementById('scr-game').classList.remove('active');
-      document.getElementById('scr-lobby').classList.add('active');
-      save(); showTab(curTab);
-    }
-
-    function dropVehicle() {
-      if (ownC.length === 0) return alert('Garajda mashina yo‘q! Avval 50,000-200,000 UC ga sotib oling.');
-      const cData = CARS.find(x=>x.id===eqC) || CARS.find(x=>x.id===ownC[0]);
-      if (carGroup) scene.remove(carGroup);
-      carGroup = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.1, 4.8), new THREE.MeshLambertMaterial({color:cData.col}));
-      body.position.y = 0.7;
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.8, 2.2), new THREE.MeshLambertMaterial({color:0x050507}));
-      cabin.position.y = 1.5;
-      chuteMesh = new THREE.Mesh(new THREE.SphereGeometry(2.8, 10, 6, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshLambertMaterial({color:0xffffff, side:THREE.DoubleSide}));
-      chuteMesh.position.y = 5.5;
-      carGroup.add(body, cabin, chuteMesh);
-      carGroup.position.set(pGroup.position.x - Math.sin(yaw)*6, 26, pGroup.position.z - Math.cos(yaw)*6);
-      scene.add(carGroup);
-      carDropping = true; carPos = carGroup.position;
-    }
-
-    function toggleVehicle() {
-      if (!carGroup || carDropping) return alert('Avval 🪂 Chaqir tugmasini bosing!');
-      if (Math.hypot(pGroup.position.x-carGroup.position.x, pGroup.position.z-carGroup.position.z) > 8 && !inVeh) return alert('Mashinaga yaqinroq boring!');
-      inVeh = !inVeh;
-      pGroup.visible = !inVeh;
-      document.getElementById('b-car').classList.toggle('on', inVeh);
-    }
-
-    function toggleScope() { scoped = !scoped; cam.fov = scoped ? 38 : 68; cam.updateProjectionMatrix(); document.getElementById('b-scope').classList.toggle('on', scoped); }
-    function doJump() { if (onGround && !inVeh) { vy = 0.22; onGround = false; stance='stand'; } }
-    function setStance(s) { if (!inVeh) { stance = stance===s?'stand':s; document.getElementById('b-crouch').classList.toggle('on',stance==='crouch'); document.getElementById('b-prone').classList.toggle('on',stance==='prone'); } }
-
-    function fire3D() {
-      const now = Date.now(), wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
-      if (now - lastFire < wp.rate) return; lastFire = now;
-      const dir = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')).normalize();
-      const b = new THREE.Mesh(gBul, new THREE.MeshBasicMaterial({color: wp.col}));
-      b.position.copy(pGroup.position).add(new THREE.Vector3(0, 1.6, 0));
-      scene.add(b);
-      bullets.push({ mesh: b, vel: dir.multiplyScalar(2.4), fp: true, dmg: wp.dmg, life: 60 });
-    }
-
-    function updHUD() {
-      document.getElementById('g-alive').innerText = bots.length + 1;
-      document.getElementById('g-kills').innerText = matchKills;
-      document.getElementById('hp-num').innerText = Math.max(0, Math.round(pHP));
-      document.getElementById('hp-fill').style.width = Math.max(0, pHP) + '%';
-      document.getElementById('rot-tip').style.display = window.innerHeight > window.innerWidth ? 'block' : 'none';
-    }
-
-    function winMatch() {
-      running3D = false;
-      uc += 100000; save();
-      /* Victory Golden Statue */
-      statueGroup = new THREE.Group();
-      const ped = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 2), new THREE.MeshLambertMaterial({color:0xfacc15}));
-      const st = buildChar(0xfacc15, 0xfef08a, 0xfacc15); st.position.y = 0.8;
-      statueGroup.add(ped, st);
-      statueGroup.position.set(pGroup.position.x - Math.sin(yaw)*4, 0, pGroup.position.z - Math.cos(yaw)*4);
-      scene.add(statueGroup);
-      ren.render(scene, cam);
-      document.getElementById('end-title').innerText = '🏆 Siz g‘olib bo‘ldingiz, tabriklaymiz!';
-      document.getElementById('end-desc').innerText = 'Oxirgi tirik qoldingiz! Haykal qo‘yildi va +100,000 UC berildi!';
-      document.getElementById('end-ov').classList.add('open');
-    }
-
-    function loop3D() {
-      if (!running3D) return;
-      anim3D = requestAnimationFrame(loop3D);
-
-      const cData = CARS.find(x=>x.id===eqC) || CARS[0];
-      const spd = inVeh ? cData.spd : (stance==='prone'?0.12:(stance==='crouch'?0.20:0.32));
-      const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-      const rgt = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-      pGroup.position.addScaledVector(fwd, -joyV.y * spd).addScaledVector(rgt, joyV.x * spd);
-      pGroup.position.x = Math.max(-165, Math.min(165, pGroup.position.x));
-      pGroup.position.z = Math.max(-165, Math.min(165, pGroup.position.z));
-      pGroup.rotation.y = yaw;
-
-      if (!onGround) { pGroup.position.y += vy; vy -= 0.012; if (pGroup.position.y <= 0) { pGroup.position.y = 0; vy = 0; onGround = true; } }
-      pGroup.scale.y = stance==='crouch' ? 0.68 : 1;
-      pGroup.rotation.x = stance==='prone' ? Math.PI/2 : 0;
-
-      if (carGroup) {
-        if (carDropping) {
-          carGroup.position.y -= 0.25;
-          if (carGroup.position.y <= 0) { carGroup.position.y = 0; carDropping = false; carGroup.remove(chuteMesh); }
-        } else if (inVeh) {
-          carGroup.position.copy(pGroup.position);
-          if (cData.type==='heli') carGroup.position.y = 4.5;
-          carGroup.rotation.y = yaw;
-        }
-      }
-
-      if (firing) fire3D();
-
-      /* Bots fight player AND each other */
-      for (let i=bots.length-1; i>=0; i--) {
-        const b = bots[i];
-        let target = pGroup, minD = b.mesh.position.distanceTo(pGroup.position);
-        if (i % 3 !== 0 && bots.length > 1) {
-          const other = bots[(i+1) % bots.length];
-          const od = b.mesh.position.distanceTo(other.mesh.position);
-          if (od < minD) { target = other.mesh; minD = od; }
-        }
-        b.mesh.lookAt(target.position.x, 0, target.position.z);
-        if (minD > 10 && minD < 90) {
-          const step = new THREE.Vector3().subVectors(target.position, b.mesh.position).normalize();
-          b.mesh.position.addScaledVector(step, 0.12);
-        }
-        if (--b.cd <= 0 && minD < 55) {
-          b.cd = 55 + Math.random()*50;
-          if (target === pGroup) {
-            if (!inVeh) { /* Car blocks outside bullets! */
-              pHP -= 6; updHUD();
-              if (pHP <= 0) {
-                running3D = false;
-                document.getElementById('end-title').innerText = '💥 Mag‘lub bo‘ldingiz!';
-                document.getElementById('end-desc').innerText = 'O‘ldirilganlar: ' + matchKills;
-                document.getElementById('end-ov').classList.add('open');
-              }
-            }
-          } else {
-            const oi = (i+1) % bots.length;
-            bots[oi].hp -= 35;
-            if (bots[oi].hp <= 0) { scene.remove(bots[oi].mesh); bots.splice(oi, 1); updHUD(); }
-          }
-        }
-      }
-
-      /* Bullets */
-      for (let i=bullets.length-1; i>=0; i--) {
-        const b = bullets[i]; b.mesh.position.add(b.vel); b.life--;
-        let hit = false;
-        for (let j=bots.length-1; j>=0; j--) {
-          if (b.mesh.position.distanceTo(bots[j].mesh.position.clone().add(new THREE.Vector3(0,1.4,0))) < 1.8) {
-            bots[j].hp -= b.dmg; hit = true;
-            if (bots[j].hp <= 0) {
-              scene.remove(bots[j].mesh); bots.splice(j, 1);
-              matchKills++; kills++; save(); updHUD();
-              if (bots.length === 0 && curMap === 'erangel') winMatch();
-            }
-            break;
-          }
-        }
-        if (hit || b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
-      }
-
-      /* 3rd-person camera */
-      const dist = scoped ? 2.2 : (inVeh ? 9.5 : 5.2);
-      const camH = stance==='prone' ? 1.4 : (stance==='crouch' ? 2.2 : (inVeh ? 4.2 : 2.9));
-      cam.position.set(
-        pGroup.position.x + Math.sin(yaw)*dist,
-        pGroup.position.y + camH - Math.sin(pitch)*2,
-        pGroup.position.z + Math.cos(yaw)*dist
-      );
-      cam.lookAt(pGroup.position.x - Math.sin(yaw)*8, pGroup.position.y + 1.6 + Math.sin(pitch)*6, pGroup.position.z - Math.cos(yaw)*8);
-
-      /* Minimap */
-      const mc = document.getElementById('mmap').getContext('2d');
-      mc.fillStyle = '#0f172a'; mc.fillRect(0,0,76,76);
-      mc.fillStyle = '#facc15'; mc.fillRect(38 + pGroup.position.x*0.22, 38 + pGroup.position.z*0.22, 4, 4);
-      mc.fillStyle = '#ef4444';
-      for (const b of bots) mc.fillRect(38 + b.mesh.position.x*0.22, 38 + b.mesh.position.z*0.22, 2, 2);
-
-      ren.render(scene, cam);
-    }
-
-    /* Touch Joystick + Camera Drag */
-    const jz = document.getElementById('joy'), kb = document.getElementById('knob');
-    jz.addEventListener('touchmove', e => {
-      e.preventDefault(); const t=e.touches[0], r=jz.getBoundingClientRect();
-      let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
-      const mr=r.width/2-15, d=Math.hypot(dx,dy); if (d>mr) { dx=dx/d*mr; dy=dy/d*mr; }
-      kb.style.transform='translate('+dx+'px,'+dy+'px)'; joyV.x=dx/mr; joyV.y=dy/mr;
-    }, {passive:false});
-    jz.addEventListener('touchend', ()=>{ joyV={x:0,y:0}; kb.style.transform='translate(0,0)'; });
-
-    let lx=null, ly=null;
-    const c3 = document.getElementById('c3d');
-    c3.addEventListener('touchstart', e => { lx=e.touches[0].clientX; ly=e.touches[0].clientY; });
-    c3.addEventListener('touchmove', e => {
-      e.preventDefault(); const t=e.touches[0];
-      yaw -= (t.clientX - lx) * 0.006;
-      pitch = Math.max(-0.5, Math.min(0.4, pitch - (t.clientY - ly)*0.004));
-      lx = t.clientX; ly = t.clientY;
-    }, {passive:false});
-
-    const fb = document.getElementById('fire-btn');
-    fb.addEventListener('touchstart', e=>{ e.preventDefault(); firing=true; fire3D(); }, {passive:false});
-    fb.addEventListener('touchend', ()=>firing=false);
-  </script>
-</body>
-</html>
+          '<div id="wd-res" style="margin-top:6px;color:#86efac;"></div></div>' +
+          '<div class="box"><b>👥 Do‘st taklif (+1,000 UC):</b><input class="inp" readonly value="https://t.me/share/url?url=ref_'+uid+'" /></div>' +
+          '<div class="box"><b>🛡️ Klan: '+clanName+'</b><input class="inp" id="cl-i" placeholder="Klan nomi..." />' +
+          '<button class="c-btn own" onclick="clanName=document.getElementById(\'cl-i\').value||\'UZB_PRO\';localStorage.setItem(\'p3_clan\',clanName);renderD()">Saqlash</button></div>' +
+          '<div class="box"><b>💬 Chat:</b><div style="max-height:70px;overflow:auto;margin:4px 0;">'+chatMsgs.map(m=>'<div>'+m+'</div>').join('')+'</div>' +
+          '<input clas
