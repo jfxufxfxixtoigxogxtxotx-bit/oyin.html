@@ -10,51 +10,56 @@
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: #090d16; color: #fff; }
     .screen { display: none; width: 100%; height: 100%; position: relative; }
-    .screen.active { display: flex; flex-direction: column; }
+    .screen.active { display: block; }
 
-    /* Lobby */
-    .lobby { background: radial-gradient(circle at top, #1e293b, #090d16); padding: 48px 12px 10px; overflow-y: auto; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.07); padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #facc15; }
-    .uc-badge { background: #f59e0b; color: #111; font-weight: 900; padding: 5px 11px; border-radius: 8px; font-size: 13px; }
-    .maps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-    .map-btn { padding: 10px 4px; border-radius: 10px; border: 1.5px solid #334155; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; font-size: 12px; cursor: pointer; }
-    .map-btn.on { border-color: #facc15; background: rgba(250,204,21,0.18); color: #fde047; }
-    .btn-go { width: 100%; padding: 13px; border: none; border-radius: 10px; background: linear-gradient(180deg, #fde047, #eab308); color: #111; font-size: 17px; font-weight: 900; cursor: pointer; margin-bottom: 10px; }
+    .lobby { background: radial-gradient(circle at top, #1e293b, #090d16); padding: 58px 12px 26px; overflow-y: auto; height: 100%; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; border-left: 3px solid #facc15; }
+    .uc-badge { background: #f59e0b; color: #111; font-weight: 900; padding: 6px 12px; border-radius: 8px; font-size: 13px; }
+    .maps-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 10px; }
+    .map-btn { padding: 10px 6px; border-radius: 10px; border: 1.5px solid #334155; background: rgba(255,255,255,0.06); color: #fff; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .map-btn.on { border-color: #facc15; background: rgba(250,204,21,0.2); color: #fde047; }
+    .btn-go { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(180deg, #fde047, #eab308); color: #111; font-size: 16px; font-weight: 900; cursor: pointer; margin-bottom: 12px; }
 
-    .tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; }
-    .t-btn { padding: 7px 10px; border-radius: 8px; border: 1px solid #334155; background: #111827; color: #cbd5e1; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; }
+    .t-btn { flex-shrink: 0; padding: 9px 12px; border-radius: 9px; border: 1px solid #334155; background: #111827; color: #cbd5e1; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
     .t-btn.on { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 20px; }
-    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 24px; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
     .card.eq { border-color: #22c55e; background: rgba(34,197,94,0.14); }
-    .c-btn { width: 100%; padding: 7px; border: none; border-radius: 7px; font-weight: 800; font-size: 11px; cursor: pointer; background: #f59e0b; color: #111; margin-top: 6px; }
+    .c-btn { width: 100%; padding: 8px; border: none; border-radius: 7px; font-weight: 800; font-size: 11px; cursor: pointer; background: #f59e0b; color: #111; margin-top: 6px; }
     .c-btn.own { background: #334155; color: #fff; }
     .c-btn.eq { background: #22c55e; color: #052e16; }
-    .box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 13px; margin-bottom: 14px; }
+    .box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 13px; margin-bottom: 12px; }
     .inp { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #334155; background: #090d16; color: #fff; margin: 6px 0; }
 
-    /* 3D Game HUD */
-    #scr-game { position: relative; background: #1e293b; }
+    #scr-game { background: #1e293b; }
     #c3d { width: 100%; height: 100%; display: block; touch-action: none; }
-    .rotate-tip { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); padding: 4px 10px; border-radius: 999px; font-size: 11px; z-index: 15; display: none; }
-    .hud-tl { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 10; }
-    .h-box { background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.2); padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 800; }
-    .compass { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); padding: 4px 14px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 2px; z-index: 10; }
-    .hud-tr { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; align-items: flex-start; z-index: 10; }
-    .minimap { width: 76px; height: 76px; background: rgba(15,23,42,0.8); border: 1.5px solid #cbd5e1; border-radius: 6px; }
-    .crosshair { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; pointer-events: none; z-index: 9; }
+    .rotate-tip { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.78); padding: 4px 10px; border-radius: 999px; font-size: 11px; z-index: 15; display: none; }
+    .hud-tl { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 10; flex-wrap: wrap; max-width: 65%; }
+    .h-box { background: rgba(0,0,0,0.68); border: 1px solid rgba(255,255,255,0.22); padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 800; }
+    .hud-tr { position: absolute; top: 10px; right: 10px; z-index: 10; }
+    .minimap { width: 74px; height: 74px; background: rgba(15,23,42,0.82); border: 1.5px solid #cbd5e1; border-radius: 6px; }
+    .crosshair { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border: 2px solid rgba(255,255,255,0.85); border-radius: 50%; pointer-events: none; z-index: 9; }
 
-    .joy { position: absolute; bottom: 18px; left: 18px; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
-    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.8); pointer-events: none; }
+    .joy { position: absolute; bottom: 16px; left: 16px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(255,255,255,0.85); pointer-events: none; }
     .bot-mid { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; z-index: 10; }
     .hp-bar { width: 120px; height: 10px; background: #1e293b; border: 1px solid #fff; border-radius: 6px; overflow: hidden; }
     .hp-fill { height: 100%; background: #22c55e; width: 100%; }
 
     .acts { position: absolute; bottom: 14px; right: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; z-index: 10; }
     .act-r { display: flex; gap: 6px; }
-    .ab { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
-    .ab.on { border-color: #facc15; background: rgba(234,179,8,0.4); }
-    .fire { width: 74px; height: 74px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.6); background: radial-gradient(#ef4444,#991b1b); color: #fff; font-weight: 900; font-size: 13px; touch-action: none; }
+    .ab { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.68); color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .ab.on { border-color: #facc15; background: rgba(234,179,8,0.42); }
+    .fire { width: 72px; height: 72px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.6); background: radial-gradient(#ef4444,#991b1b); color: #fff; font-weight: 900; font-size: 12px; touch-action: none; }
+
+    .build-panel { position: absolute; bottom: 16px; right: 14px; display: none; flex-direction: column; gap: 6px; z-index: 12; }
+    .bp-btn { background: rgba(15,23,42,0.88); border: 1.5px solid #facc15; color: #fde047; padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; }
+
+    .chat-ov { position: absolute; top: 50px; left: 10px; width: 220px; background: rgba(9,13,22,0.75); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px; z-index: 12; display: none; font-size: 11px; }
+    .chat-list { max-height: 76px; overflow-y: auto; margin-bottom: 6px; }
+    .chat-row { display: flex; gap: 4px; }
+    .chat-row input { flex: 1; padding: 5px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 11px; }
 
     .end-ov { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
     .end-ov.open { display: flex; }
@@ -63,11 +68,10 @@
 </head>
 <body>
 
-  <!-- LOBBY -->
   <div class="screen lobby active" id="scr-lobby">
     <div class="top-bar">
       <div>
-        <div style="font-weight:800;font-size:14px;" id="u-name">O‘yinchi</div>
+        <div style="font-weight:800;font-size:15px;" id="u-name">O‘yinchi</div>
         <div style="font-size:11px;color:#fde047;">Lvl <span id="u-lvl">1</span> • ☠️ <span id="u-kills">0</span> Kill</div>
       </div>
       <div class="uc-badge">💵 <span id="u-uc">0</span> UC</div>
@@ -75,48 +79,55 @@
 
     <div class="maps-row">
       <button class="map-btn on" onclick="setMap('erangel',this)">🏝️ Erangel (100)</button>
-      <button class="map-btn" onclick="setMap('park',this)">🎡 Park</button>
+      <button class="map-btn" onclick="setMap('park',this)">🎡 Park (Mahalla)</button>
       <button class="map-btn" onclick="setMap('build',this)">🏠 Uy Qurish</button>
+      <button class="map-btn" onclick="setMap('online',this)">🌐 Online Park</button>
     </div>
 
     <button class="btn-go" onclick="start3D()">🎮 BOSHLASH (Yotqizib o‘ynang)</button>
 
     <div class="tabs">
       <button class="t-btn on" onclick="showTab('weapons',this)">🔫 Qurol (100)</button>
+      <button class="t-btn" onclick="showTab('armor',this)">🛡️ Bron/Kaska</button>
       <button class="t-btn" onclick="showTab('outfits',this)">👕 Kiyimlar</button>
       <button class="t-btn" onclick="showTab('cars',this)">🚗 Garaj</button>
-      <button class="t-btn" onclick="showTab('house',this)">🏢 Uy (8 qavat)</button>
+      <button class="t-btn" onclick="showTab('house',this)">🏢 Uylar</button>
       <button class="t-btn" onclick="showTab('wd',this)">💳 UC Yechish</button>
-      <button class="t-btn" onclick="showTab('social',this)">🛡️ Klan/Chat/Do‘st</button>
+      <button class="t-btn" onclick="showTab('social',this)">🌐 Online/Do‘st</button>
     </div>
 
     <div id="tab-content"></div>
   </div>
 
-  <!-- 3D GAME -->
   <div class="screen" id="scr-game">
     <canvas id="c3d"></canvas>
     <div class="rotate-tip" id="rot-tip">📱 Telefonni yotqizib (gorizontal) o‘ynang!</div>
     <div class="hud-tl">
       <button class="h-box" style="background:#dc2626;border:none;color:#fff;" onclick="exit3D()">✖</button>
-      <div class="h-box">Qolgan <span id="g-alive">100</span></div>
-      <div class="h-box">Kill <span id="g-kills">0</span></div>
-      <div class="h-box" id="g-wep">M416</div>
+      <div class="h-box" id="box-alive">Qolgan <span id="g-alive">100</span></div>
+      <div class="h-box" id="box-kills">Kill <span id="g-kills">0</span></div>
+      <div class="h-box" id="g-mode">Erangel</div>
     </div>
-    <div class="compass" id="g-comp">NW • N • NE</div>
-    <div class="hud-tr">
-      <canvas class="minimap" id="mmap" width="76" height="76"></canvas>
+    <div class="hud-tr"><canvas class="minimap" id="mmap" width="74" height="74"></canvas></div>
+    <div class="crosshair" id="xhair"></div>
+
+    <div class="chat-ov" id="chat-ov">
+      <div style="font-weight:700;color:#fde047;margin-bottom:4px;" id="onl-stat">🌐 Online Park (0 bot)</div>
+      <div class="chat-list" id="onl-chat"></div>
+      <div class="chat-row">
+        <input id="onl-inp" placeholder="Xabar yozing..." />
+        <button class="h-box" style="background:#22c55e;color:#000;border:none;" onclick="sendOnlChat()">OK</button>
+      </div>
     </div>
-    <div class="crosshair"></div>
 
     <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
 
-    <div class="bot-mid">
+    <div class="bot-mid" id="hp-wrap">
       <div class="hp-bar"><div class="hp-fill" id="hp-fill"></div></div>
       <div class="h-box" id="hp-num">100</div>
     </div>
 
-    <div class="acts">
+    <div class="acts" id="combat-acts">
       <div class="act-r">
         <button class="ab" onclick="dropVehicle()">🪂<span>Chaqir</span></button>
         <button class="ab" id="b-car" onclick="toggleVehicle()">🚗<span>Min</span></button>
@@ -128,6 +139,13 @@
         <button class="ab" id="b-prone" onclick="setStance('prone')">🛌<span>Yot</span></button>
       </div>
       <button class="fire" id="fire-btn">OTISH 🔥</button>
+    </div>
+
+    <div class="build-panel" id="build-panel">
+      <button class="bp-btn" onclick="upgradeFloor3D()">🏗️ +1 Qavat qurish</button>
+      <button class="bp-btn" onclick="nextStyle3D()">🏡 Chiroyli uy almashtirish</button>
+      <button class="bp-btn" onclick="dropVehicle()">🪂 Mashina tushirish</button>
+      <button class="bp-btn" id="b-car2" onclick="toggleVehicle()">🚗 Minish / Tushish</button>
     </div>
 
     <div class="end-ov" id="end-ov">
@@ -144,55 +162,59 @@
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    let uid = '0000', uname = 'O‘yinchi';
+    let uid = 'u' + Math.floor(Math.random()*99999), uname = 'O‘yinchi';
     try {
       if (tg) {
         tg.ready(); tg.expand();
         if (tg.requestFullscreen) tg.requestFullscreen();
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          uid = String(tg.initDataUnsafe.user.id);
+          uid = 'u' + tg.initDataUnsafe.user.id;
           uname = tg.initDataUnsafe.user.first_name;
         }
       }
     } catch (e) {}
     document.getElementById('u-name').innerText = uname;
 
-    /* 100 ta Qurol (50 - 100 UC) */
+    /* 100 Qurol (50-100 UC) */
     const BASES = ['M416','AKM','AWM','Kar98k','Scar-L','Groza','M762','UMP45','Vector','DP-28'];
-    const W_SKINS = [
-      ['Muzlik',0x38bdf8],['Oltin',0xfacc15],['Firavn',0xeab308],['Ajdar',0xef4444],['Qonli',0xbe123c],
-      ['Kiber',0xa855f7],['Neon',0x22d3ee],['Qora',0x18181b],['Zahar',0x22c55e],['Kumush',0xcbd5e1]
-    ];
+    const W_SKINS = [['Muzlik',0x38bdf8],['Oltin',0xfacc15],['Firavn',0xeab308],['Ajdar',0xef4444],['Qonli',0xbe123c],['Kiber',0xa855f7],['Neon',0x22d3ee],['Qora',0x18181b],['Zahar',0x22c55e],['Kumush',0xcbd5e1]];
     const WEAPONS = [];
     for (let i=0; i<10; i++) for (let j=0; j<10; j++) {
-      const idx = i*10 + j;
-      WEAPONS.push({
-        id: 'w'+idx, name: BASES[i] + ' ' + W_SKINS[j][0],
-        price: idx===0 ? 0 : 50 + (idx % 6)*10,
-        dmg: 28 + (i%4)*15, rate: i===2||i===3 ? 650 : 120, col: W_SKINS[j][1]
-      });
+      const idx = i*10+j;
+      WEAPONS.push({ id:'w'+idx, name:BASES[i]+' '+W_SKINS[j][0], price:idx===0?0:50+(idx%6)*10, dmg:24+(i%4)*12, rate:i===2||i===3?620:130, col:W_SKINS[j][1] });
     }
 
-    /* PUBG Kiyimlar (1000 - 5000 UC) */
-    const OUTFIT_NAMES = [
-      ['Inferno & Qora',0x18181b,0xea580c,0],['Fir‘avn Oltin',0xeab308,0x1d4ed8,1200],['Mumiya Oq',0xf1f5f9,0xe2e8f0,1500],
-      ['Ravon Maxsus',0x0f172a,0x38bdf8,1800],['Joker Kostyum',0x7c3aed,0x22c55e,2200],['Godzilla',0x1e3a8a,0x06b6d4,2800],
-      ['Kiber X-Suit',0x4c1d95,0xf472b6,3500],['Qonli Ritsar',0x991b1b,0xfacc15,4200],['Tilla X-Suit',0xd97706,0xfef08a,5000]
+    const HELMS = [
+      {id:'h0',name:'Oddiy Kaska',price:0,hp:100},{id:'h1',name:'Kaska 1-daraja',price:400,hp:130},
+      {id:'h2',name:'Kaska 2-daraja',price:1200,hp:165},{id:'h3',name:'Kaska 3-daraja',price:2500,hp:210}
     ];
-    const OUTFITS = OUTFIT_NAMES.map((x,i) => ({ id:'s'+i, name:x[0], body:x[1], helm:x[2], price:x[3] }));
+    const VESTS = [
+      {id:'v0',name:'Bronjilet yo‘q',price:0,def:0},{id:'v1',name:'Bronjilet 1-daraja',price:500,def:0.25},
+      {id:'v2',name:'Bronjilet 2-daraja',price:1500,def:0.45},{id:'v3',name:'Bronjilet 3-daraja',price:3000,def:0.65}
+    ];
+    const OUTFITS = [
+      ['Inferno & Qora',0x18181b,0xea580c,0],['Fir‘avn Oltin',0xeab308,0x1d4ed8,1200],['Mumiya Oq',0xf1f5f9,0xe2e8f0,1500],
+      ['Ravon Maxsus',0x0f172a,0x38bdf8,1800],['Joker',0x7c3aed,0x22c55e,2200],['Godzilla',0x1e3a8a,0x06b6d4,2800],
+      ['Kiber X-Suit',0x4c1d95,0xf472b6,3500],['Tilla X-Suit',0xd97706,0xfef08a,5000]
+    ].map((x,i)=>({id:'s'+i,name:x[0],body:x[1],helm:x[2],price:x[3]}));
 
-    /* Mashinalar, Tank, Vertolyot (50,000 - 200,000 UC) */
     const CARS = [
-      { id:'matiz',   name:'Matiz',            price:50000,  col:0x38bdf8, spd:0.42, type:'car' },
-      { id:'tiko',    name:'Tiko',             price:55000,  col:0xef4444, spd:0.40, type:'car' },
-      { id:'damas',   name:'Damas',            price:65000,  col:0xf8fafc, spd:0.38, type:'van' },
-      { id:'malibu1', name:'Malibu 1',         price:90000,  col:0x334155, spd:0.48, type:'car' },
-      { id:'gentra',  name:'Gentra',           price:110000, col:0x1e293b, spd:0.50, type:'car' },
-      { id:'malibu2', name:'Malibu 2 Qopqora', price:150000, col:0x050507, spd:0.56, type:'car' },
-      { id:'lambo',   name:'Lamborghini',      price:180000, col:0xfacc15, spd:0.68, type:'car' },
-      { id:'bugatti', name:'Bugatti',          price:200000, col:0x2563eb, spd:0.72, type:'car' },
-      { id:'tank',    name:'Harbiy Tank',      price:190000, col:0x3f6212, spd:0.36, type:'tank' },
-      { id:'heli',    name:'Vertolyot',        price:200000, col:0x0f172a, spd:0.75, type:'heli' }
+      {id:'matiz',name:'Matiz',price:50000,col:0x38bdf8,spd:0.42,type:'car'},
+      {id:'tiko',name:'Tiko',price:55000,col:0xef4444,spd:0.40,type:'car'},
+      {id:'damas',name:'Damas',price:65000,col:0xf8fafc,spd:0.38,type:'van'},
+      {id:'malibu1',name:'Malibu 1',price:90000,col:0x334155,spd:0.48,type:'car'},
+      {id:'gentra',name:'Gentra',price:110000,col:0x1e293b,spd:0.50,type:'car'},
+      {id:'malibu2',name:'Malibu 2 Qopqora',price:150000,col:0x050507,spd:0.56,type:'car'},
+      {id:'lambo',name:'Lamborghini',price:180000,col:0xfacc15,spd:0.68,type:'car'},
+      {id:'bugatti',name:'Bugatti',price:200000,col:0x2563eb,spd:0.72,type:'car'},
+      {id:'tank',name:'Harbiy Tank',price:190000,col:0x3f6212,spd:0.36,type:'tank'},
+      {id:'heli',name:'Vertolyot',price:200000,col:0x0f172a,spd:0.75,type:'heli'}
+    ];
+    const HOUSE_STYLES = [
+      {id:'hs0',name:'Oddiy Uy',price:0,col:0x3b82f6,roof:0x78350f},
+      {id:'hs1',name:'Zamonaviy Villa',price:15000,col:0xf8fafc,roof:0x0f172a},
+      {id:'hs2',name:'Oltin Saroy',price:35000,col:0xfef08a,roof:0xb45309},
+      {id:'hs3',name:'Kiber Bino',price:50000,col:0x312e81,roof:0x06b6d4}
     ];
 
     let uc = Number(localStorage.getItem('p3_uc') || localStorage.getItem('br_uc') || localStorage.getItem('pg_uc') || 0);
@@ -204,53 +226,50 @@
     let eqS = localStorage.getItem('p3_es') || 's0';
     let ownC = JSON.parse(localStorage.getItem('p3_oc') || '[]');
     let eqC = localStorage.getItem('p3_ec') || 'malibu2';
+    let ownH = JSON.parse(localStorage.getItem('p3_oh') || '["h0"]');
+    let eqH = localStorage.getItem('p3_eh') || 'h0';
+    let ownV = JSON.parse(localStorage.getItem('p3_ov') || '["v0"]');
+    let eqV = localStorage.getItem('p3_ev') || 'v0';
+    let ownHS = JSON.parse(localStorage.getItem('p3_ohs') || '["hs0"]');
+    let eqHS = localStorage.getItem('p3_ehs') || 'hs0';
+    let fbUrl = localStorage.getItem('p3_fb') || '';
     let curMap = 'erangel', curTab = 'weapons';
-    let chatMsgs = JSON.parse(localStorage.getItem('p3_chat') || '["Aziz: Salom hammaga!"]');
-    let clanName = localStorage.getItem('p3_clan') || 'Klan yo‘q';
 
     function save() {
       localStorage.setItem('p3_uc', uc); localStorage.setItem('p3_kills', kills); localStorage.setItem('p3_floors', floors);
       localStorage.setItem('p3_ow', JSON.stringify(ownW)); localStorage.setItem('p3_ew', eqW);
       localStorage.setItem('p3_os', JSON.stringify(ownS)); localStorage.setItem('p3_es', eqS);
       localStorage.setItem('p3_oc', JSON.stringify(ownC)); localStorage.setItem('p3_ec', eqC);
+      localStorage.setItem('p3_oh', JSON.stringify(ownH)); localStorage.setItem('p3_eh', eqH);
+      localStorage.setItem('p3_ov', JSON.stringify(ownV)); localStorage.setItem('p3_ev', eqV);
+      localStorage.setItem('p3_ohs', JSON.stringify(ownHS)); localStorage.setItem('p3_ehs', eqHS);
       document.getElementById('u-uc').innerText = uc.toLocaleString();
       document.getElementById('u-kills').innerText = kills;
       document.getElementById('u-lvl').innerText = 1 + Math.floor(kills / 5);
     }
 
-    function setMap(m, btn) {
-      curMap = m;
-      document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-    }
+    function setMap(m, btn) { curMap = m; document.querySelectorAll('.map-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
 
     function showTab(t, btn) {
       curTab = t;
       if (btn) { document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
       const box = document.getElementById('tab-content');
       if (t==='weapons') {
-        box.innerHTML = '<div class="grid">' + WEAPONS.map(w => {
-          const isO = ownW.includes(w.id), isE = eqW===w.id;
-          return '<div class="card '+(isE?'eq':'')+'"><b>'+w.name+'</b><div>Zarba: '+w.dmg+'</div>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyW(\''+w.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':w.price+' UC'))+'</button></div>';
-        }).join('') + '</div>';
+        box.innerHTML = '<div class="grid">' + WEAPONS.map(w => mkCard(w, ownW, eqW, 'Zarba: '+w.dmg, 'buyItem("w","'+w.id+'")')).join('') + '</div>';
+      } else if (t==='armor') {
+        box.innerHTML = '<div class="grid">' +
+          HELMS.map(x => mkCard(x, ownH, eqH, 'Max HP: '+x.hp, 'buyItem("h","'+x.id+'")')).join('') +
+          VESTS.map(x => mkCard(x, ownV, eqV, 'Himoya: '+Math.round(x.def*100)+'%', 'buyItem("v","'+x.id+'")')).join('') + '</div>';
       } else if (t==='outfits') {
-        box.innerHTML = '<div class="grid">' + OUTFITS.map(s => {
-          const isO = ownS.includes(s.id), isE = eqS===s.id;
-          return '<div class="card '+(isE?'eq':'')+'"><b>👕 '+s.name+'</b>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyS(\''+s.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':s.price.toLocaleString()+' UC'))+'</button></div>';
-        }).join('') + '</div>';
+        box.innerHTML = '<div class="grid">' + OUTFITS.map(s => mkCard(s, ownS, eqS, 'PUBG Kiyim', 'buyItem("s","'+s.id+'")')).join('') + '</div>';
       } else if (t==='cars') {
-        box.innerHTML = '<div class="grid">' + CARS.map(c => {
-          const isO = ownC.includes(c.id), isE = eqC===c.id;
-          return '<div class="card '+(isE?'eq':'')+'"><b>🚗 '+c.name+'</b><div>Tezlik: '+Math.round(c.spd*200)+' km/s</div>' +
-            '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick="buyC(\''+c.id+'\')">'+(isE?'✅ Tanlangan':(isO?'Tanlash':c.price.toLocaleString()+' UC'))+'</button></div>';
-        }).join('') + '</div>';
+        box.innerHTML = '<div class="grid">' + CARS.map(c => mkCard(c, ownC, eqC, 'Tezlik: '+Math.round(c.spd*200)+' km/s', 'buyItem("c","'+c.id+'")')).join('') + '</div>';
       } else if (t==='house') {
-        let h = '<div class="box"><b>🏠 Uy Qurish Xaritasi (1-8 qavat):</b><br>Hozirgi uyingiz: <b>'+floors+' qavatli</b></div><div class="grid">';
+        let h = '<div class="box"><b>🏠 Chiroyli Uylar va Qavatlar (Hozir: '+floors+' qavat):</b></div><div class="grid">' +
+          HOUSE_STYLES.map(s => mkCard(s, ownHS, eqHS, 'Uy dizayni', 'buyItem("hs","'+s.id+'")')).join('');
         for (let f=1; f<=8; f++) {
-          const pr = f * 10000, done = floors >= f;
-          h += '<div class="card '+(done?'eq':'')+'"><b>🏢 '+f+'-qavat</b><div>Narxi: '+pr.toLocaleString()+' UC</div>' +
+          const pr = f*10000, done = floors>=f;
+          h += '<div class="card '+(done?'eq':'')+'"><b>🏢 '+f+'-qavat</b><div>'+pr.toLocaleString()+' UC</div>' +
             '<button class="c-btn '+(done?'eq':'')+'" onclick="buyFloor('+f+','+pr+')">'+(done?'✅ Qurilgan':'Qurish')+'</button></div>';
         }
         box.innerHTML = h + '</div>';
@@ -261,70 +280,94 @@
           '<button class="c-btn" onclick="askWd(360000,360)">360,000 UC ➔ 360 UC ariza</button>' +
           '<button class="c-btn" onclick="askWd(720000,720)">720,000 UC ➔ 720 UC ariza</button>' +
           '<div id="wd-res" style="margin-top:8px;color:#86efac;"></div></div>' +
-          '<div class="box"><b>💎 UC Sotib olish (Do‘kon):</b><br>Haqiqiy pulga UC sotib olish uchun to‘lov tizimi/admin ulanishi kerak.</div>';
+          '<div class="box"><b>💎 UC Sotib olish:</b><br>Haqiqiy pulga UC sotib olish uchun to‘lov tizimi/admin ulanishi kerak.</div>';
       } else {
-        box.innerHTML = '<div class="box"><b>👥 Do‘st taklif qilish (+1,000 UC):</b>' +
-          '<input class="inp" readonly value="https://t.me/share/url?url=ref_'+uid+'" />' +
-          '<div style="font-size:11px;color:#94a3b8;">Referal avtomatik hisoblanishi uchun bot serveri ulanishi kerak.</div></div>' +
-          '<div class="box"><b>🛡️ Klan: ' + clanName + '</b>' +
-          '<input class="inp" id="cl-inp" placeholder="Klan nomi yozing..." />' +
-          '<button class="c-btn own" onclick="clanName=document.getElementById(\'cl-inp\').value||\'UZB_TEAM\';localStorage.setItem(\'p3_clan\',clanName);showTab(\'social\')">Klan ochish / Kirish</button></div>' +
-          '<div class="box"><b>💬 Chat (Mahalliy demo):</b><div style="max-height:90px;overflow:auto;margin:6px 0;font-size:12px;">' +
-          chatMsgs.map(m=>'<div>'+m+'</div>').join('') + '</div>' +
-          '<input class="inp" id="ch-inp" placeholder="Xabar yozing..." />' +
-          '<button class="c-btn eq" onclick="sendChat()">Yuborish</button></div>';
+        box.innerHTML = '<div class="box"><b>🌐 Online Park bazasi (Firebase):</b>' +
+          '<div style="font-size:11px;color:#94a3b8;">Haqiqiy odamlar bir-birini ko‘rishi va jonli chat qilishi uchun bepul Firebase Realtime DB URL kiriting:</div>' +
+          '<input class="inp" id="fb-inp" value="'+fbUrl+'" placeholder="https://loyiha-default-rtdb.firebaseio.com" />' +
+          '<button class="c-btn eq" onclick="saveFb()">Firebase ulash</button></div>' +
+          '<div class="box"><b>👥 Do‘st taklif qilish (+1,000 UC):</b>' +
+          '<input class="inp" readonly value="https://t.me/share/url?url=ref_'+uid+'" /></div>';
       }
     }
 
-    function buyW(id) { const w=WEAPONS.find(x=>x.id===id); if (!ownW.includes(id)) { if (uc<w.price) return alert('UC kam!'); uc-=w.price; ownW.push(id); } eqW=id; save(); showTab('weapons'); }
-    function buyS(id) { const s=OUTFITS.find(x=>x.id===id); if (!ownS.includes(id)) { if (uc<s.price) return alert('UC kam!'); uc-=s.price; ownS.push(id); } eqS=id; save(); showTab('outfits'); }
-    function buyC(id) { const c=CARS.find(x=>x.id===id); if (!ownC.includes(id)) { if (uc<c.price) return alert('UC kam! '+c.price.toLocaleString()+' UC kerak.'); uc-=c.price; ownC.push(id); } eqC=id; save(); showTab('cars'); }
-    function buyFloor(f, pr) { if (floors>=f) return; if (uc<pr) return alert(pr.toLocaleString()+' UC kerak!'); uc-=pr; floors=f; save(); showTab('house'); }
+    function mkCard(item, ownArr, eqId, sub, fn) {
+      const isO = ownArr.includes(item.id), isE = eqId===item.id;
+      return '<div class="card '+(isE?'eq':'')+'"><div><b>'+item.name+'</b><div style="color:#94a3b8;font-size:11px;">'+sub+'</div></div>' +
+        '<button class="c-btn '+(isE?'eq':(isO?'own':''))+'" onclick=\''+fn+'\'>'+(isE?'✅ Tanlangan':(isO?'Tanlash':item.price.toLocaleString()+' UC'))+'</button></div>';
+    }
+
+    function buyItem(type, id) {
+      const map = { w:[WEAPONS,ownW,'ew'], s:[OUTFITS,ownS,'es'], c:[CARS,ownC,'ec'], h:[HELMS,ownH,'eh'], v:[VESTS,ownV,'ev'], hs:[HOUSE_STYLES,ownHS,'ehs'] };
+      const [arr, own, eqK] = map[type], item = arr.find(x=>x.id===id);
+      if (!own.includes(id)) { if (uc<item.price) return alert('UC yetarli emas! '+item.price.toLocaleString()+' UC kerak.'); uc-=item.price; own.push(id); }
+      if (eqK==='ew') eqW=id; if (eqK==='es') eqS=id; if (eqK==='ec') eqC=id;
+      if (eqK==='eh') eqH=id; if (eqK==='ev') eqV=id; if (eqK==='ehs') eqHS=id;
+      save(); showTab(curTab);
+    }
+
+    function buyFloor(f, pr) {
+      if (floors>=f) return false;
+      if (uc<pr) { alert(pr.toLocaleString()+' UC kerak!'); return false; }
+      uc-=pr; floors=f; save();
+      if (document.getElementById('scr-lobby').classList.contains('active')) showTab('house');
+      return true;
+    }
+
     function askWd(cost, realUc) {
       const pid = document.getElementById('wd-id').value.trim();
       if (pid.length<5) return alert('To‘g‘ri PUBG ID yozing!');
       if (uc<cost) return alert(cost.toLocaleString()+' UC kerak!');
       uc -= cost; save();
-      document.getElementById('wd-res').innerText = '✅ Ariza yaratildi! ID: '+pid+' | '+realUc+' UC (Admin tekshirgach yuboradi).';
+      document.getElementById('wd-res').innerText = '✅ Ariza yuborildi! ID: '+pid+' | '+realUc+' UC';
     }
-    function sendChat() {
-      const v = document.getElementById('ch-inp').value.trim(); if (!v) return;
-      chatMsgs.push(uname+': '+v); localStorage.setItem('p3_chat', JSON.stringify(chatMsgs.slice(-15))); showTab('social');
-    }
+    function saveFb() { fbUrl = document.getElementById('fb-inp').value.trim().replace(/\/$/,''); localStorage.setItem('p3_fb', fbUrl); alert('Saqlandi!'); }
 
     save(); showTab('weapons');
 
-    /* --- THREE.JS 3D ENGINE --- */
-    let scene, cam, ren, pGroup, carGroup, chuteMesh, statueGroup;
-    let bots = [], bullets = [], houses3d = [];
-    let running3D = false, anim3D = null, yaw = 0, pitch = -0.15, pHP = 100, matchKills = 0;
+    /* --- 3D ENGINE --- */
+    let scene, cam, ren, pGroup, carGroup, chuteMesh, playerHouseGroup, kids = [];
+    let bots = [], bullets = [], remotePlayers = {}, lastSync = 0;
+    let running3D = false, anim3D = null, yaw = 0, pitch = -0.15, pHP = 100, maxHP = 100, matchKills = 0;
     let joyV = {x:0,y:0}, stance = 'stand', vy = 0, onGround = true, inVeh = false, scoped = false, firing = false, lastFire = 0;
-    let carPos = null, carDropping = false;
-
-    /* Shared Geometries */
+    let carDropping = false, carouselGroup = null;
     let gBody, gHead, gSpike, gGun, gLeg, gBul;
 
-    function buildChar(bodyCol, helmCol, gunCol) {
+    function buildChar(bodyCol, helmCol, gunCol, showGun=true) {
       const g = new THREE.Group();
-      const mB = new THREE.MeshLambertMaterial({ color: bodyCol });
-      const mH = new THREE.MeshLambertMaterial({ color: helmCol });
-      const mG = new THREE.MeshLambertMaterial({ color: gunCol });
-      const mL = new THREE.MeshLambertMaterial({ color: 0x111827 });
+      const l1 = new THREE.Mesh(gLeg, new THREE.MeshLambertMaterial({color:0x111827})); l1.position.set(-0.22,0.5,0);
+      const l2 = new THREE.Mesh(gLeg, new THREE.MeshLambertMaterial({color:0x111827})); l2.position.set(0.22,0.5,0);
+      const body = new THREE.Mesh(gBody, new THREE.MeshLambertMaterial({color:bodyCol})); body.position.set(0,1.35,0);
+      const head = new THREE.Mesh(gHead, new THREE.MeshLambertMaterial({color:helmCol})); head.position.set(0,2.08,0);
+      const spike = new THREE.Mesh(gSpike, new THREE.MeshLambertMaterial({color:0xfacc15})); spike.position.set(0,2.45,0);
+      g.add(l1, l2, body, head, spike);
+      if (showGun) {
+        const bg = new THREE.Mesh(gGun, new THREE.MeshLambertMaterial({color:gunCol})); bg.position.set(-0.15,1.45,0.35); bg.rotation.z=0.5;
+        const hg = new THREE.Mesh(gGun, new THREE.MeshLambertMaterial({color:gunCol})); hg.position.set(0.35,1.35,-0.5); hg.rotation.x=Math.PI/2;
+        g.add(bg, hg);
+      }
+      return g;
+    }
 
-      const l1 = new THREE.Mesh(gLeg, mL); l1.position.set(-0.22, 0.5, 0);
-      const l2 = new THREE.Mesh(gLeg, mL); l2.position.set(0.22, 0.5, 0);
-      const body = new THREE.Mesh(gBody, mB); body.position.set(0, 1.35, 0);
-      const head = new THREE.Mesh(gHead, mH); head.position.set(0, 2.08, 0);
-      const spike = new THREE.Mesh(gSpike, new THREE.MeshLambertMaterial({color:0xfacc15})); spike.position.set(0, 2.45, 0);
-      const backGun = new THREE.Mesh(gGun, mG); backGun.position.set(-0.15, 1.45, 0.35); backGun.rotation.z = 0.5;
-      const handGun = new THREE.Mesh(gGun, mG); handGun.position.set(0.35, 1.35, -0.5); handGun.rotation.x = Math.PI/2;
-
-      g.add(l1, l2, body, head, spike, backGun, handGun);
+    function buildHouse3D(x, z, fl, col, roofCol) {
+      const g = new THREE.Group();
+      for (let i=0; i<fl; i++) {
+        const box = new THREE.Mesh(new THREE.BoxGeometry(10, 3.2, 8), new THREE.MeshLambertMaterial({color:col}));
+        box.position.y = 1.6 + i*3.2;
+        const win = new THREE.Mesh(new THREE.BoxGeometry(8.2, 1.2, 8.2), new THREE.MeshLambertMaterial({color:0xfef08a}));
+        win.position.y = 1.8 + i*3.2;
+        g.add(box, win);
+      }
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(7.6, 2.8, 4), new THREE.MeshLambertMaterial({color:roofCol}));
+      roof.position.y = fl*3.2 + 1.4; roof.rotation.y = Math.PI/4;
+      g.add(roof);
+      g.position.set(x, 0, z);
+      scene.add(g);
       return g;
     }
 
     function start3D() {
-      if (typeof THREE === 'undefined') { alert('3D yuklanmadi — internetni tekshiring!'); return; }
+      if (typeof THREE === 'undefined') return alert('3D yuklanmadi — internetni tekshiring!');
       document.getElementById('scr-lobby').classList.remove('active');
       document.getElementById('scr-game').classList.add('active');
       document.getElementById('end-ov').classList.remove('open');
@@ -337,76 +380,124 @@
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x87ceeb);
-      scene.fog = new THREE.Fog(0x87ceeb, 60, 260);
-      cam = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.1, 350);
-
+      scene.fog = new THREE.Fog(0x87ceeb, 70, 260);
+      cam = new THREE.PerspectiveCamera(68, window.innerWidth/window.innerHeight, 0.1, 350);
       scene.add(new THREE.HemisphereLight(0xffffff, 0x3f6212, 0.95));
-      const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(40, 80, 30); scene.add(dl);
+      const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(40,80,30); scene.add(dl);
 
-      gBody = new THREE.BoxGeometry(0.8, 1.0, 0.45);
-      gHead = new THREE.SphereGeometry(0.32, 10, 10);
-      gSpike = new THREE.ConeGeometry(0.1, 0.3, 6);
-      gGun = new THREE.BoxGeometry(0.14, 0.14, 1.0);
-      gLeg = new THREE.BoxGeometry(0.26, 0.95, 0.28);
-      gBul = new THREE.SphereGeometry(0.16, 6, 6);
+      gBody = new THREE.BoxGeometry(0.8,1.0,0.45); gHead = new THREE.SphereGeometry(0.32,10,10);
+      gSpike = new THREE.ConeGeometry(0.1,0.3,6); gGun = new THREE.BoxGeometry(0.14,0.14,1.0);
+      gLeg = new THREE.BoxGeometry(0.26,0.95,0.28); gBul = new THREE.SphereGeometry(0.16,6,6);
 
-      /* Ground & Sea */
-      const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(360, 360),
-        new THREE.MeshLambertMaterial({ color: curMap==='park'?0x3f7d3a:(curMap==='build'?0x64748b:0x8fa3b0) })
-      );
-      ground.rotation.x = -Math.PI / 2; scene.add(ground);
+      const gCol = curMap==='erangel' ? 0x8fa3b0 : 0x4b8b3b;
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(360,360), new THREE.MeshLambertMaterial({color:gCol}));
+      ground.rotation.x = -Math.PI/2; scene.add(ground);
 
-      /* Houses & Cover Walls (matching screenshot style) */
-      houses3d = [];
-      const hMat = new THREE.MeshLambertMaterial({ color: 0x2b7a9b });
-      const rMat = new THREE.MeshLambertMaterial({ color: 0x6b4f3a });
-      const wMat = new THREE.MeshLambertMaterial({ color: 0x575b63 });
+      /* Roads */
+      const rd = new THREE.Mesh(new THREE.PlaneGeometry(10, 340), new THREE.MeshLambertMaterial({color:0x334155}));
+      rd.rotation.x = -Math.PI/2; rd.position.y = 0.02; scene.add(rd);
 
-      if (curMap === 'build') {
-        const hb = new THREE.Mesh(new THREE.BoxGeometry(10, floors*3.2, 8), hMat);
-        hb.position.set(0, (floors*3.2)/2, -16); scene.add(hb);
-      } else if (curMap === 'park') {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(8, 0.6, 8, 24), new THREE.MeshLambertMaterial({color:0xfacc15}));
-        ring.position.set(0, 11, -22); scene.add(ring);
-      } else {
+      bots = []; bullets = []; kids = []; remotePlayers = {}; carouselGroup = null; playerHouseGroup = null;
+      const isCombat = curMap === 'erangel';
+      document.getElementById('combat-acts').style.display = isCombat ? 'flex' : 'none';
+      document.getElementById('xhair').style.display = isCombat ? 'block' : 'none';
+      document.getElementById('hp-wrap').style.display = isCombat ? 'flex' : 'none';
+      document.getElementById('box-alive').style.display = isCombat ? 'block' : 'none';
+      document.getElementById('box-kills').style.display = isCombat ? 'block' : 'none';
+      document.getElementById('build-panel').style.display = curMap==='build' ? 'flex' : 'none';
+      document.getElementById('chat-ov').style.display = curMap==='online' ? 'block' : 'none';
+
+      const names = {erangel:'Erangel (100)', park:'Park & Mahalla', build:'Uy Qurish', online:'Online Park'};
+      document.getElementById('g-mode').innerText = names[curMap];
+
+      if (curMap === 'erangel') {
+        const wMat = new THREE.MeshLambertMaterial({color:0x575b63});
         for (let i=0; i<16; i++) {
-          const x = (Math.random()-0.5)*220, z = (Math.random()-0.5)*220;
-          if (Math.hypot(x,z) < 16) continue;
-          const house = new THREE.Mesh(new THREE.BoxGeometry(9, 4.5, 7), hMat); house.position.set(x, 2.25, z);
-          const roof = new THREE.Mesh(new THREE.ConeGeometry(7, 2.5, 4), rMat); roof.position.set(x, 5.7, z); roof.rotation.y = Math.PI/4;
-          const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 1.9, 0.6), wMat); wall.position.set(x+7, 0.95, z+4);
-          scene.add(house, roof, wall);
-          houses3d.push({x, z, r:6});
+          const x=(Math.random()-0.5)*220, z=(Math.random()-0.5)*220;
+          if (Math.hypot(x,z)<18) continue;
+          buildHouse3D(x, z, 1+(i%2), 0x2b7a9b, 0x6b4f3a);
         }
-        /* Near cover wall just like screenshot */
-        const cw = new THREE.Mesh(new THREE.BoxGeometry(5, 1.8, 0.6), wMat); cw.position.set(0, 0.9, -5); scene.add(cw);
+        const cw = new THREE.Mesh(new THREE.BoxGeometry(5,1.8,0.6), wMat); cw.position.set(0,0.9,-5); scene.add(cw);
+        for (let i=0; i<99; i++) {
+          const bx=(Math.random()-0.5)*240, bz=(Math.random()-0.5)*240;
+          if (Math.hypot(bx,bz)<20) { i--; continue; }
+          const bm = buildChar(0xef4444, 0x111827, 0xfacc15, true);
+          bm.position.set(bx,0,bz); scene.add(bm);
+          bots.push({mesh:bm, hp:100, cd:40+Math.random()*70});
+        }
+      } else if (curMap === 'park' || curMap === 'build') {
+        /* Mahalla chiroyli katta uylar */
+        const cols = [0xfef08a, 0x93c5fd, 0xfda4af, 0xa7f3d0, 0xfdba74];
+        for (let i=0; i<8; i++) {
+          const x = (i%2===0?-22:22), z = -50 + Math.floor(i/2)*28;
+          buildHouse3D(x, z, 2+(i%3), cols[i%cols.length], 0x7c2d12);
+        }
+        if (curMap === 'build') {
+          const hs = HOUSE_STYLES.find(x=>x.id===eqHS) || HOUSE_STYLES[0];
+          playerHouseGroup = buildHouse3D(0, -18, floors, hs.col, hs.roof);
+        } else {
+          /* Park: Bolalar maydonchasi + Avtosalon */
+          carouselGroup = new THREE.Group();
+          const base = new THREE.Mesh(new THREE.CylinderGeometry(5,5,0.4,16), new THREE.MeshLambertMaterial({color:0xfacc15}));
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,4,8), new THREE.MeshLambertMaterial({color:0xef4444})); pole.position.y=2;
+          const top = new THREE.Mesh(new THREE.ConeGeometry(5.5,1.8,12), new THREE.MeshLambertMaterial({color:0x3b82f6})); top.position.y=4.5;
+          carouselGroup.add(base, pole, top); carouselGroup.position.set(-14, 0, -18); scene.add(carouselGroup);
+
+          /* Avtosalon binosi + ko'rgazma mashinalari */
+          const salon = new THREE.Mesh(new THREE.BoxGeometry(16, 4.5, 10), new THREE.MeshLambertMaterial({color:0x1e293b}));
+          salon.position.set(16, 2.25, -18); scene.add(salon);
+          [0xfacc15, 0x050507, 0x2563eb].forEach((cc,idx) => {
+            const dc = new THREE.Mesh(new THREE.BoxGeometry(2.4,1,4.4), new THREE.MeshLambertMaterial({color:cc}));
+            dc.position.set(11+idx*5, 0.5, -11); scene.add(dc);
+          });
+
+          /* Tinch o'ynayotgan bolalar/odamlar */
+          for (let i=0; i<12; i++) {
+            const km = buildChar(cols[i%cols.length], 0xfacc15, 0, false);
+            km.scale.set(0.75,0.75,0.75);
+            km.position.set(-18+Math.random()*16, 0, -24+Math.random()*16);
+            scene.add(km);
+            kids.push({mesh:km, ang:Math.random()*6.28});
+          }
+        }
+      } else if (curMap === 'online') {
+        /* Online Park: 0 bot! */
+        buildHouse3D(-22, -20, 2, 0x93c5fd, 0x7c2d12);
+        buildHouse3D(22, -20, 3, 0xfef08a, 0xb45309);
+        document.getElementById('onl-stat').innerText = fbUrl ? '🌐 Online Park (Jonli, 0 bot)' : '🌐 Online Park (Firebase ulanmagan)';
+        document.getElementById('onl-chat').innerHTML = fbUrl ? 'Ulanmoqda...' : '<div>Haqiqiy odamlar ko‘rinishi uchun menyudan <b>🌐 Online/Do‘st</b> ga kirib bepul Firebase URL ulang.</div>';
       }
 
-      const sk = OUTFITS.find(x=>x.id===eqS) || OUTFITS[0];
-      const wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
-      pGroup = buildChar(sk.body, sk.helm, wp.col);
-      pGroup.position.set(0, 0, 0);
+      const sk = OUTFITS.find(x=>x.id===eqS)||OUTFITS[0], wp = WEAPONS.find(x=>x.id===eqW)||WEAPONS[0];
+      const hm = HELMS.find(x=>x.id===eqH)||HELMS[0];
+      pGroup = buildChar(sk.body, sk.helm, wp.col, isCombat);
       scene.add(pGroup);
-      document.getElementById('g-wep').innerText = wp.name;
 
-      /* Spawn 99 AI Combatants */
-      bots = []; bullets = [];
-      pHP = 100; matchKills = 0; yaw = 0; inVeh = false; carPos = null; carGroup = null;
-      const botCount = curMap==='erangel' ? 99 : 15;
-      for (let i=0; i<botCount; i++) {
-        const bx = (Math.random()-0.5)*240, bz = (Math.random()-0.5)*240;
-        if (Math.hypot(bx,bz) < 18) { i--; continue; }
-        const bm = buildChar(0xef4444, 0x111827, 0xfacc15);
-        bm.position.set(bx, 0, bz);
-        scene.add(bm);
-        bots.push({ mesh: bm, hp: 100, cd: Math.random()*80 });
-      }
+      maxHP = hm.hp; pHP = maxHP; matchKills = 0; yaw = 0; inVeh = false; carGroup = null;
       updHUD();
-
       running3D = true;
       if (anim3D) cancelAnimationFrame(anim3D);
       loop3D();
+    }
+
+    function upgradeFloor3D() {
+      if (floors >= 8) return alert('Maksimum 8 qavat qurilgan!');
+      const nextF = floors + 1;
+      if (buyFloor(nextF, nextF*10000)) {
+        if (playerHouseGroup) scene.remove(playerHouseGroup);
+        const hs = HOUSE_STYLES.find(x=>x.id===eqHS)||HOUSE_STYLES[0];
+        playerHouseGroup = buildHouse3D(0, -18, floors, hs.col, hs.roof);
+        alert('✅ ' + floors + '-qavat qurildi!');
+      }
+    }
+
+    function nextStyle3D() {
+      if (ownHS.length <= 1) return alert('Chiroyli uylar sotib olish uchun menyudagi 🏢 Uylar bo‘limiga kiring!');
+      const idx = (ownHS.indexOf(eqHS) + 1) % ownHS.length;
+      eqHS = ownHS[idx]; save();
+      if (playerHouseGroup) scene.remove(playerHouseGroup);
+      const hs = HOUSE_STYLES.find(x=>x.id===eqHS)||HOUSE_STYLES[0];
+      playerHouseGroup = buildHouse3D(0, -18, floors, hs.col, hs.roof);
     }
 
     function exit3D() {
@@ -419,193 +510,170 @@
     }
 
     function dropVehicle() {
-      if (ownC.length === 0) return alert('Garajda mashina yo‘q! Avval 50,000-200,000 UC ga sotib oling.');
+      if (ownC.length === 0) return alert('Garajda mashina yo‘q! Avval menyudan sotib oling.');
       const cData = CARS.find(x=>x.id===eqC) || CARS.find(x=>x.id===ownC[0]);
       if (carGroup) scene.remove(carGroup);
       carGroup = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.1, 4.8), new THREE.MeshLambertMaterial({color:cData.col}));
-      body.position.y = 0.7;
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.8, 2.2), new THREE.MeshLambertMaterial({color:0x050507}));
-      cabin.position.y = 1.5;
-      chuteMesh = new THREE.Mesh(new THREE.SphereGeometry(2.8, 10, 6, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshLambertMaterial({color:0xffffff, side:THREE.DoubleSide}));
-      chuteMesh.position.y = 5.5;
+      const body = new THREE.Mesh(new THREE.BoxGeometry(2.6,1.1,4.8), new THREE.MeshLambertMaterial({color:cData.col})); body.position.y=0.7;
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.1,0.8,2.2), new THREE.MeshLambertMaterial({color:0x050507})); cabin.position.y=1.5;
+      chuteMesh = new THREE.Mesh(new THREE.SphereGeometry(2.8,10,6,0,Math.PI*2,0,Math.PI/2), new THREE.MeshLambertMaterial({color:0xffffff,side:THREE.DoubleSide})); chuteMesh.position.y=5.5;
       carGroup.add(body, cabin, chuteMesh);
-      carGroup.position.set(pGroup.position.x - Math.sin(yaw)*6, 26, pGroup.position.z - Math.cos(yaw)*6);
-      scene.add(carGroup);
-      carDropping = true; carPos = carGroup.position;
+      carGroup.position.set(pGroup.position.x-Math.sin(yaw)*6, 26, pGroup.position.z-Math.cos(yaw)*6);
+      scene.add(carGroup); carDropping = true;
     }
 
     function toggleVehicle() {
       if (!carGroup || carDropping) return alert('Avval 🪂 Chaqir tugmasini bosing!');
       if (Math.hypot(pGroup.position.x-carGroup.position.x, pGroup.position.z-carGroup.position.z) > 8 && !inVeh) return alert('Mashinaga yaqinroq boring!');
-      inVeh = !inVeh;
-      pGroup.visible = !inVeh;
+      inVeh = !inVeh; pGroup.visible = !inVeh;
       document.getElementById('b-car').classList.toggle('on', inVeh);
     }
 
-    function toggleScope() { scoped = !scoped; cam.fov = scoped ? 38 : 68; cam.updateProjectionMatrix(); document.getElementById('b-scope').classList.toggle('on', scoped); }
-    function doJump() { if (onGround && !inVeh) { vy = 0.22; onGround = false; stance='stand'; } }
-    function setStance(s) { if (!inVeh) { stance = stance===s?'stand':s; document.getElementById('b-crouch').classList.toggle('on',stance==='crouch'); document.getElementById('b-prone').classList.toggle('on',stance==='prone'); } }
+    function toggleScope() { scoped = !scoped; cam.fov = scoped?38:68; cam.updateProjectionMatrix(); document.getElementById('b-scope').classList.toggle('on', scoped); }
+    function doJump() { if (onGround && !inVeh) { vy=0.22; onGround=false; stance='stand'; } }
+    function setStance(s) { if (!inVeh) { stance=stance===s?'stand':s; document.getElementById('b-crouch').classList.toggle('on',stance==='crouch'); document.getElementById('b-prone').classList.toggle('on',stance==='prone'); } }
 
     function fire3D() {
-      const now = Date.now(), wp = WEAPONS.find(x=>x.id===eqW) || WEAPONS[0];
+      if (curMap !== 'erangel') return;
+      const now = Date.now(), wp = WEAPONS.find(x=>x.id===eqW)||WEAPONS[0];
       if (now - lastFire < wp.rate) return; lastFire = now;
-      const dir = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')).normalize();
-      const b = new THREE.Mesh(gBul, new THREE.MeshBasicMaterial({color: wp.col}));
-      b.position.copy(pGroup.position).add(new THREE.Vector3(0, 1.6, 0));
-      scene.add(b);
-      bullets.push({ mesh: b, vel: dir.multiplyScalar(2.4), fp: true, dmg: wp.dmg, life: 60 });
+      const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(pitch,yaw,0,'YXZ')).normalize();
+      const b = new THREE.Mesh(gBul, new THREE.MeshBasicMaterial({color:wp.col}));
+      b.position.copy(pGroup.position).add(new THREE.Vector3(0,1.6,0));
+      scene.add(b); bullets.push({mesh:b, vel:dir.multiplyScalar(2.4), dmg:wp.dmg, life:60});
     }
 
     function updHUD() {
       document.getElementById('g-alive').innerText = bots.length + 1;
       document.getElementById('g-kills').innerText = matchKills;
       document.getElementById('hp-num').innerText = Math.max(0, Math.round(pHP));
-      document.getElementById('hp-fill').style.width = Math.max(0, pHP) + '%';
+      document.getElementById('hp-fill').style.width = Math.max(0, (pHP/maxHP)*100) + '%';
       document.getElementById('rot-tip').style.display = window.innerHeight > window.innerWidth ? 'block' : 'none';
     }
 
     function winMatch() {
-      running3D = false;
-      uc += 100000; save();
-      /* Victory Golden Statue */
-      statueGroup = new THREE.Group();
-      const ped = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 2), new THREE.MeshLambertMaterial({color:0xfacc15}));
-      const st = buildChar(0xfacc15, 0xfef08a, 0xfacc15); st.position.y = 0.8;
-      statueGroup.add(ped, st);
-      statueGroup.position.set(pGroup.position.x - Math.sin(yaw)*4, 0, pGroup.position.z - Math.cos(yaw)*4);
-      scene.add(statueGroup);
-      ren.render(scene, cam);
+      running3D = false; uc += 100000; save();
+      const st = new THREE.Group();
+      const ped = new THREE.Mesh(new THREE.BoxGeometry(2,1.5,2), new THREE.MeshLambertMaterial({color:0xfacc15}));
+      const ch = buildChar(0xfacc15,0xfef08a,0xfacc15,true); ch.position.y=0.8; st.add(ped, ch);
+      st.position.set(pGroup.position.x-Math.sin(yaw)*4, 0, pGroup.position.z-Math.cos(yaw)*4);
+      scene.add(st); ren.render(scene, cam);
       document.getElementById('end-title').innerText = '🏆 Siz g‘olib bo‘ldingiz, tabriklaymiz!';
       document.getElementById('end-desc').innerText = 'Oxirgi tirik qoldingiz! Haykal qo‘yildi va +100,000 UC berildi!';
       document.getElementById('end-ov').classList.add('open');
+    }
+
+    async function syncOnline() {
+      if (!fbUrl || curMap !== 'online') return;
+      try {
+        fetch(fbUrl + '/players/' + uid + '.json', {
+          method:'PUT', body: JSON.stringify({ n:uname, x:pGroup.position.x, z:pGroup.position.z, y:yaw, t:Date.now() })
+        });
+        const r = await fetch(fbUrl + '/players.json'); const d = await r.json() || {};
+        const now = Date.now();
+        Object.keys(d).forEach(k => {
+          if (k === uid || now - d[k].t > 12000) return;
+          if (!remotePlayers[k]) { remotePlayers[k] = buildChar(0x38bdf8,0xfacc15,0,false); scene.add(remotePlayers[k]); }
+          remotePlayers[k].position.set(d[k].x, 0, d[k].z); remotePlayers[k].rotation.y = d[k].y;
+        });
+        const cr = await fetch(fbUrl + '/chat.json'); const cd = await cr.json() || {};
+        const msgs = Object.values(cd).slice(-6).map(m => '<div><b>'+m.n+':</b> '+m.m+'</div>').join('');
+        if (msgs) document.getElementById('onl-chat').innerHTML = msgs;
+      } catch (e) {}
+    }
+
+    async function sendOnlChat() {
+      const inp = document.getElementById('onl-inp'), v = inp.value.trim();
+      if (!v) return; inp.value = '';
+      if (!fbUrl) { document.getElementById('onl-chat').innerHTML += '<div><b>'+uname+':</b> '+v+'</div>'; return; }
+      fetch(fbUrl + '/chat.json', { method:'POST', body: JSON.stringify({n:uname, m:v}) });
     }
 
     function loop3D() {
       if (!running3D) return;
       anim3D = requestAnimationFrame(loop3D);
 
-      const cData = CARS.find(x=>x.id===eqC) || CARS[0];
+      const cData = CARS.find(x=>x.id===eqC)||CARS[0], vs = VESTS.find(x=>x.id===eqV)||VESTS[0];
       const spd = inVeh ? cData.spd : (stance==='prone'?0.12:(stance==='crouch'?0.20:0.32));
-      const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-      const rgt = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-      pGroup.position.addScaledVector(fwd, -joyV.y * spd).addScaledVector(rgt, joyV.x * spd);
-      pGroup.position.x = Math.max(-165, Math.min(165, pGroup.position.x));
-      pGroup.position.z = Math.max(-165, Math.min(165, pGroup.position.z));
+      const fwd = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw)), rgt = new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+      pGroup.position.addScaledVector(fwd, -joyV.y*spd).addScaledVector(rgt, joyV.x*spd);
+      pGroup.position.x = Math.max(-165,Math.min(165,pGroup.position.x)); pGroup.position.z = Math.max(-165,Math.min(165,pGroup.position.z));
       pGroup.rotation.y = yaw;
 
-      if (!onGround) { pGroup.position.y += vy; vy -= 0.012; if (pGroup.position.y <= 0) { pGroup.position.y = 0; vy = 0; onGround = true; } }
-      pGroup.scale.y = stance==='crouch' ? 0.68 : 1;
-      pGroup.rotation.x = stance==='prone' ? Math.PI/2 : 0;
+      if (!onGround) { pGroup.position.y+=vy; vy-=0.012; if (pGroup.position.y<=0) { pGroup.position.y=0; vy=0; onGround=true; } }
+      pGroup.scale.y = stance==='crouch' ? 0.68 : 1; pGroup.rotation.x = stance==='prone' ? Math.PI/2 : 0;
 
       if (carGroup) {
-        if (carDropping) {
-          carGroup.position.y -= 0.25;
-          if (carGroup.position.y <= 0) { carGroup.position.y = 0; carDropping = false; carGroup.remove(chuteMesh); }
-        } else if (inVeh) {
-          carGroup.position.copy(pGroup.position);
-          if (cData.type==='heli') carGroup.position.y = 4.5;
-          carGroup.rotation.y = yaw;
-        }
+        if (carDropping) { carGroup.position.y-=0.25; if (carGroup.position.y<=0) { carGroup.position.y=0; carDropping=false; carGroup.remove(chuteMesh); } }
+        else if (inVeh) { carGroup.position.copy(pGroup.position); if (cData.type==='heli') carGroup.position.y=4.5; carGroup.rotation.y=yaw; }
       }
+      if (carouselGroup) carouselGroup.rotation.y += 0.02;
+      for (const k of kids) { k.mesh.position.x += Math.cos(k.ang)*0.04; k.mesh.position.z += Math.sin(k.ang)*0.04; if (Math.random()<0.02) k.ang += 1; k.mesh.rotation.y = -k.ang; }
 
+      if (curMap === 'online' && Date.now() - lastSync > 1200) { lastSync = Date.now(); syncOnline(); }
       if (firing) fire3D();
 
-      /* Bots fight player AND each other */
       for (let i=bots.length-1; i>=0; i--) {
-        const b = bots[i];
-        let target = pGroup, minD = b.mesh.position.distanceTo(pGroup.position);
-        if (i % 3 !== 0 && bots.length > 1) {
-          const other = bots[(i+1) % bots.length];
-          const od = b.mesh.position.distanceTo(other.mesh.position);
-          if (od < minD) { target = other.mesh; minD = od; }
-        }
-        b.mesh.lookAt(target.position.x, 0, target.position.z);
-        if (minD > 10 && minD < 90) {
-          const step = new THREE.Vector3().subVectors(target.position, b.mesh.position).normalize();
-          b.mesh.position.addScaledVector(step, 0.12);
-        }
-        if (--b.cd <= 0 && minD < 55) {
-          b.cd = 55 + Math.random()*50;
-          if (target === pGroup) {
-            if (!inVeh) { /* Car blocks outside bullets! */
-              pHP -= 6; updHUD();
-              if (pHP <= 0) {
-                running3D = false;
-                document.getElementById('end-title').innerText = '💥 Mag‘lub bo‘ldingiz!';
-                document.getElementById('end-desc').innerText = 'O‘ldirilganlar: ' + matchKills;
-                document.getElementById('end-ov').classList.add('open');
-              }
+        const b = bots[i]; let tgt = pGroup, md = b.mesh.position.distanceTo(pGroup.position);
+        if (i%3!==0 && bots.length>1) { const o = bots[(i+1)%bots.length], od = b.mesh.position.distanceTo(o.mesh.position); if (od<md) { tgt=o.mesh; md=od; } }
+        b.mesh.lookAt(tgt.position.x,0,tgt.position.z);
+        if (md>10 && md<90) { b.mesh.position.addScaledVector(new THREE.Vector3().subVectors(tgt.position,b.mesh.position).normalize(), 0.11); }
+        if (--b.cd<=0 && md<55) {
+          b.cd = 70+Math.random()*60;
+          if (tgt===pGroup) {
+            if (!inVeh) {
+              const rawDmg = 1 + Math.floor(Math.random()*4);
+              const finalDmg = Math.max(1, Math.round(rawDmg * (1 - vs.def)));
+              pHP -= finalDmg; updHUD();
+              if (pHP<=0) { running3D=false; document.getElementById('end-title').innerText='💥 Mag‘lub bo‘ldingiz!'; document.getElementById('end-desc').innerText='Kill: '+matchKills; document.getElementById('end-ov').classList.add('open'); }
             }
           } else {
-            const oi = (i+1) % bots.length;
-            bots[oi].hp -= 35;
-            if (bots[oi].hp <= 0) { scene.remove(bots[oi].mesh); bots.splice(oi, 1); updHUD(); }
+            const oi=(i+1)%bots.length; bots[oi].hp-=30;
+            if (bots[oi].hp<=0) { scene.remove(bots[oi].mesh); bots.splice(oi,1); updHUD(); }
           }
         }
       }
 
-      /* Bullets */
       for (let i=bullets.length-1; i>=0; i--) {
-        const b = bullets[i]; b.mesh.position.add(b.vel); b.life--;
-        let hit = false;
+        const b=bullets[i]; b.mesh.position.add(b.vel); b.life--; let hit=false;
         for (let j=bots.length-1; j>=0; j--) {
           if (b.mesh.position.distanceTo(bots[j].mesh.position.clone().add(new THREE.Vector3(0,1.4,0))) < 1.8) {
-            bots[j].hp -= b.dmg; hit = true;
-            if (bots[j].hp <= 0) {
-              scene.remove(bots[j].mesh); bots.splice(j, 1);
-              matchKills++; kills++; save(); updHUD();
-              if (bots.length === 0 && curMap === 'erangel') winMatch();
-            }
+            bots[j].hp -= b.dmg; hit=true;
+            if (bots[j].hp<=0) { scene.remove(bots[j].mesh); bots.splice(j,1); matchKills++; kills++; save(); updHUD(); if (bots.length===0 && curMap==='erangel') winMatch(); }
             break;
           }
         }
-        if (hit || b.life <= 0) { scene.remove(b.mesh); bullets.splice(i, 1); }
+        if (hit || b.life<=0) { scene.remove(b.mesh); bullets.splice(i,1); }
       }
 
-      /* 3rd-person camera */
-      const dist = scoped ? 2.2 : (inVeh ? 9.5 : 5.2);
-      const camH = stance==='prone' ? 1.4 : (stance==='crouch' ? 2.2 : (inVeh ? 4.2 : 2.9));
-      cam.position.set(
-        pGroup.position.x + Math.sin(yaw)*dist,
-        pGroup.position.y + camH - Math.sin(pitch)*2,
-        pGroup.position.z + Math.cos(yaw)*dist
-      );
-      cam.lookAt(pGroup.position.x - Math.sin(yaw)*8, pGroup.position.y + 1.6 + Math.sin(pitch)*6, pGroup.position.z - Math.cos(yaw)*8);
+      const dist = scoped?2.2:(inVeh?9.5:5.2), camH = stance==='prone'?1.4:(stance==='crouch'?2.2:(inVeh?4.2:2.9));
+      cam.position.set(pGroup.position.x+Math.sin(yaw)*dist, pGroup.position.y+camH-Math.sin(pitch)*2, pGroup.position.z+Math.cos(yaw)*dist);
+      cam.lookAt(pGroup.position.x-Math.sin(yaw)*8, pGroup.position.y+1.6+Math.sin(pitch)*6, pGroup.position.z-Math.cos(yaw)*8);
 
-      /* Minimap */
-      const mc = document.getElementById('mmap').getContext('2d');
-      mc.fillStyle = '#0f172a'; mc.fillRect(0,0,76,76);
-      mc.fillStyle = '#facc15'; mc.fillRect(38 + pGroup.position.x*0.22, 38 + pGroup.position.z*0.22, 4, 4);
-      mc.fillStyle = '#ef4444';
-      for (const b of bots) mc.fillRect(38 + b.mesh.position.x*0.22, 38 + b.mesh.position.z*0.22, 2, 2);
-
+      const mc=document.getElementById('mmap').getContext('2d'); mc.fillStyle='#0f172a'; mc.fillRect(0,0,74,74);
+      mc.fillStyle='#facc15'; mc.fillRect(37+pGroup.position.x*0.2, 37+pGroup.position.z*0.2, 4, 4);
+      mc.fillStyle='#ef4444'; for (const b of bots) mc.fillRect(37+b.mesh.position.x*0.2, 37+b.mesh.position.z*0.2, 2, 2);
       ren.render(scene, cam);
     }
 
-    /* Touch Joystick + Camera Drag */
-    const jz = document.getElementById('joy'), kb = document.getElementById('knob');
-    jz.addEventListener('touchmove', e => {
-      e.preventDefault(); const t=e.touches[0], r=jz.getBoundingClientRect();
-      let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
-      const mr=r.width/2-15, d=Math.hypot(dx,dy); if (d>mr) { dx=dx/d*mr; dy=dy/d*mr; }
-      kb.style.transform='translate('+dx+'px,'+dy+'px)'; joyV.x=dx/mr; joyV.y=dy/mr;
-    }, {passive:false});
-    jz.addEventListener('touchend', ()=>{ joyV={x:0,y:0}; kb.style.transform='translate(0,0)'; });
+    window.addEventListener('resize', () => {
+      if (ren && cam && running3D) {
+        ren.setSize(window.innerWidth, window.innerHeight);
+        cam.aspect = window.innerWidth / window.innerHeight;
+        cam.updateProjectionMatrix();
+        document.getElementById('rot-tip').style.display = window.innerHeight > window.innerWidth ? 'block' : 'none';
+      }
+    });
 
-    let lx=null, ly=null;
-    const c3 = document.getElementById('c3d');
-    c3.addEventListener('touchstart', e => { lx=e.touches[0].clientX; ly=e.touches[0].clientY; });
-    c3.addEventListener('touchmove', e => {
-      e.preventDefault(); const t=e.touches[0];
-      yaw -= (t.clientX - lx) * 0.006;
-      pitch = Math.max(-0.5, Math.min(0.4, pitch - (t.clientY - ly)*0.004));
-      lx = t.clientX; ly = t.clientY;
-    }, {passive:false});
-
-    const fb = document.getElementById('fire-btn');
-    fb.addEventListener('touchstart', e=>{ e.preventDefault(); firing=true; fire3D(); }, {passive:false});
-    fb.addEventListener('touchend', ()=>firing=false);
+    const jz=document.getElementById('joy'), kb=document.getElementById('knob');
+    jz.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0],r=jz.getBoundingClientRect();let dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2);const mr=r.width/2-15,d=Math.hypot(dx,dy);if(d>mr){dx=dx/d*mr;dy=dy/d*mr;}kb.style.transform='translate('+dx+'px,'+dy+'px)';joyV.x=dx/mr;joyV.y=dy/mr;},{passive:false});
+    jz.addEventListener('touchend',()=>{joyV={x:0,y:0};kb.style.transform='translate(0,0)';});
+    let lx=null,ly=null; const c3=document.getElementById('c3d');
+    c3.addEventListener('touchstart',e=>{lx=e.touches[0].clientX;ly=e.touches[0].clientY;});
+    c3.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];yaw-=(t.clientX-lx)*0.006;pitch=Math.max(-0.5,Math.min(0.4,pitch-(t.clientY-ly)*0.004));lx=t.clientX;ly=t.clientY;},{passive:false});
+    const fb=document.getElementById('fire-btn');
+    fb.addEventListener('touchstart',e=>{e.preventDefault();firing=true;fire3D();},{passive:false});
+    fb.addEventListener('touchend',()=>firing=false);
   </script>
 </body>
 </html>
