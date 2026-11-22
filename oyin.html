@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Battle Arena Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a; color: #f8fafc;
+    }
+    .screen { display: none; width: 100%; height: 100%; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* Lobby & Shop */
+    .lobby {
+      padding: 16px; overflow-y: auto;
+      background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%);
+    }
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .uc-badge {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #111827; font-weight: 800; padding: 6px 14px; border-radius: 999px; font-size: 15px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #0f766e);
+      border-radius: 22px; padding: 20px; text-align: center; margin-bottom: 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+    }
+    .hero h2 { margin: 0 0 6px; font-size: 22px; }
+    .hero p { margin: 0 0 16px; font-size: 13px; color: #e2e8f0; }
+    .btn-start {
+      width: 100%; padding: 15px; border: none; border-radius: 16px;
+      background: #22c55e; color: #052e16; font-size: 17px; font-weight: 800; cursor: pointer;
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tab-btn {
+      flex: 1; padding: 11px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05); color: #cbd5e1; font-weight: 700; cursor: pointer;
+    }
+    .tab-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .item-card {
+      background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .item-card.equipped { border-color: #22c55e; background: rgba(34,197,94,0.12); }
+    .item-icon { font-size: 32px; margin-bottom: 6px; }
+    .item-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .item-desc { font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+    .item-btn {
+      width: 100%; padding: 9px; border-radius: 12px; border: none;
+      font-weight: 700; font-size: 13px; cursor: pointer;
+      background: #f59e0b; color: #111827;
+    }
+    .item-btn.own { background: #334155; color: #fff; }
+    .item-btn.eq { background: #22c55e; color: #052e16; }
+
+    .withdraw-box {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px; padding: 16px;
+    }
+    .withdraw-box input {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
+      background: #0f172a; color: #fff; margin: 8px 0 12px; font-size: 15px;
+    }
+
+    /* Game Screen */
+    #scr-game { position: relative; background: #2d4c2b; }
+    #game-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    .hud-top {
+      position: absolute; top: 10px; left: 10px; right: 110px;
+      display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none;
+    }
+    .hud-pill {
+      background: rgba(15,23,42,0.78); border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      pointer-events: auto;
+    }
+    .exit-btn {
+      background: rgba(239,68,68,0.88); color: #fff; border: none; cursor: pointer;
+    }
+    .joy-zone {
+      position: absolute; bottom: 24px; left: 22px; width: 124px; height: 124px;
+      border-radius: 50%; background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.25); touch-action: none;
+    }
+    .joy-knob {
+      position: absolute; left: 50%; top: 50%; width: 52px; height: 52px;
+      margin: -26px 0 0 -26px; border-radius: 50%;
+      background: rgba(255,255,255,0.78); pointer-events: none;
+    }
+    .fire-btn {
+      position: absolute; bottom: 32px; right: 24px; width: 92px; height: 92px;
+      border-radius: 50%; border: 3px solid rgba(255,255,255,0.5);
+      background: radial-gradient(circle, #ef4444, #b91c1c);
+      color: #fff; font-weight: 800; font-size: 15px; touch-action: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+    }
+    .fire-btn:active { transform: scale(0.94); }
+
+    .gameover-overlay {
+      position: absolute; inset: 0; background: rgba(15,23,42,0.86);
+      display: none; align-items: center; justify-content: center; padding: 20px; z-index: 20;
+    }
+    .gameover-overlay.open { display: flex; }
+    .go-card {
+      width: 100%; max-width: 340px; background: #1e293b; border-radius: 22px;
+      padding: 22px; text-align: center; border: 1px solid rgba(255,255,255,0.14);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Lobby / Do'kon -->
+  <div class="screen lobby active" id="scr-lobby">
+    <div class="header">
+      <div>
+        <div style="font-weight:800;font-size:17px;">⚔️ Battle Arena</div>
+        <div style="font-size:12px;color:#94a3b8;" id="player-name">O‘yinchi</div>
+      </div>
+      <div class="uc-badge">💵 <span id="uc-bal">0</span> UC</div>
+    </div>
+
+    <div class="hero">
+      <h2>Jangga tayyormisiz?</h2>
+      <p>Katta xaritada dushmanlarni toping! Har bir mag‘lub etilgan raqib uchun <b>+100 UC</b> beriladi.</p>
+      <button class="btn-start" onclick="startGame()">🎮 O‘yinni boshlash</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="btn-tab-shop" onclick="switchTab('shop')">🛒 Do‘kon (35 UC)</button>
+      <button class="tab-btn" id="btn-tab-wd" onclick="switchTab('wd')">💳 PUBG ID So‘rov</button>
+    </div>
+
+    <div id="panel-shop" class="shop-grid"></div>
+
+    <div id="panel-wd" class="withdraw-box" style="display:none;">
+      <h3 style="margin:0 0 6px;">PUBG Mobile ID ga so‘rov</h3>
+      <p style="margin:0 0 10px;font-size:12px;color:#94a3b8;">
+        Eslatma: O‘yindagi UC — virtual valyuta. Agar bot admini turnir sovrini sifatida qo‘lda UC yuboradigan bo‘lsa, ID raqamingizni shu yerga kiritib so‘rov qoldiring.
+      </p>
+      <input type="number" id="pubg-id" placeholder="PUBG ID (masalan: 5123456789)" />
+      <input type="number" id="wd-amount" placeholder="Yechmoqchi bo‘lgan UC (kamida 100)" />
+      <button class="btn-start" style="background:#f59e0b;color:#111827;" onclick="sendWithdraw()">📩 So‘rov yuborish</button>
+      <div id="wd-status" style="margin-top:10px;font-size:13px;color:#86efac;"></div>
+    </div>
+  </div>
+
+  <!-- 2. Katta ekranli O'yin -->
+  <div class="screen" id="scr-game">
+    <canvas id="game-canvas"></canvas>
+
+    <div class="hud-top">
+      <button class="hud-pill exit-btn" onclick="exitGame()">✖ Chiqish</button>
+      <div class="hud-pill">❤️ <span id="hud-hp">100</span></div>
+      <div class="hud-pill">💵 <span id="hud-uc">0</span> UC</div>
+      <div class="hud-pill">☠️ <span id="hud-kills">0</span></div>
+      <div class="hud-pill" id="hud-wep">🔫 Oddiy</div>
+    </div>
+
+    <div class="joy-zone" id="joy-zone">
+      <div class="joy-knob" id="joy-knob"></div>
+    </div>
+    <button class="fire-btn" id="fire-btn">OTISH 🔥</button>
+
+    <div class="gameover-overlay" id="go-modal">
+      <div class="go-card">
+        <h2 style="margin:0 0 8px;">💥 Mag‘lub bo‘ldingiz!</h2>
+        <p style="color:#cbd5e1;font-size:14px;" id="go-stats"></p>
+        <button class="btn-start" style="margin-bottom:10px;" onclick="startGame()">🔄 Qayta o‘ynash</button>
+        <button class="btn-start" style="background:#334155;color:#fff;" onclick="exitGame()">🛒 Do‘konga qaytish</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.requestFullscreen) {
+        try { tg.requestFullscreen(); } catch (e) {}
+      }
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        document.getElementById('player-name').innerText = tg.initDataUnsafe.user.first_name;
+      }
+    }
+
+    const WEAPONS = {
+      starter: { id: 'starter', icon: '✊', name: 'Boshlang‘ich', desc: 'Bepul qurol', price: 0, dmg: 34, rate: 420, speed: 11, range: 270, color: '#fde047' },
+      knife:   { id: 'knife',   icon: '🔪', name: 'Pichoq',       desc: 'Yaqindan kuchli zarba', price: 35, dmg: 100, rate: 280, speed: 12, range: 115, color: '#e2e8f0', melee: true },
+      pistol:  { id: 'pistol',  icon: '🔫', name: 'To‘pponcha',   desc: 'Aniq va tez', price: 35, dmg: 50, rate: 300, speed: 14, range: 430, color: '#facc15' },
+      rifle:   { id: 'rifle',   icon: '💥', name: 'Avtomat AKM',  desc: 'Juda tez otadi!', price: 35, dmg: 35, rate: 115, speed: 16, range: 520, color: '#38bdf8' },
+      sniper:  { id: 'sniper',  icon: '🎯', name: 'Snayper AWM',  desc: '1 o‘qda qulatadi!', price: 35, dmg: 120, rate: 720, speed: 23, range: 760, color: '#f87171' }
+    };
+
+    let uc = Number(localStorage.getItem('pg_uc') || 0);
+    let owned = JSON.parse(localStorage.getItem('pg_owned') || '["starter"]');
+    let equipped = localStorage.getItem('pg_eq') || 'starter';
+    if (!WEAPONS[equipped]) equipped = 'starter';
+
+    function saveProgress() {
+      localStorage.setItem('pg_uc', uc);
+      localStorage.setItem('pg_owned', JSON.stringify(owned));
+      localStorage.setItem('pg_eq', equipped);
+      document.getElementById('uc-bal').innerText = uc;
+      document.getElementById('hud-uc').innerText = uc;
+    }
+
+    function renderShop() {
+      const box = document.getElementById('panel-shop');
+      box.innerHTML = Object.values(WEAPONS).filter(w => w.price > 0).map(w => {
+        const isOwn = owned.includes(w.id);
+        const isEq = equipped === w.id;
+        let btnClass = 'item-btn';
+        let btnText = '💵 ' + w.price + ' UC';
+        if (isEq) { btnClass += ' eq'; btnText = '✅ Tanlangan'; }
+        else if (isOwn) { btnClass += ' own'; btnText = 'Tanlash'; }
+        return '<div class="item-card ' + (isEq ? 'equipped' : '') + '">' +
+          '<div><div class="item-icon">' + w.icon + '</div>' +
+          '<div class="item-name">' + w.name + '</div>' +
+          '<div class="item-desc">' + w.desc + '</div></div>' +
+          '<button class="' + btnClass + '" onclick="buyOrEquip(\'' + w.id + '\')">' + btnText + '</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function buyOrEquip(id) {
+      const w = WEAPONS[id];
+      if (owned.includes(id)) {
+        equipped = id;
+      } else {
+        if (uc < w.price) {
+          alert('❌ UC yetarli emas! Avval o‘yinga kirib raqib yengib ' + w.price + ' UC yig‘ing (1 ta raqib = 100 UC).');
+          return;
+        }
+        uc -= w.price;
+        owned.push(id);
+        equipped = id;
+      }
+      saveProgress();
+      renderShop();
+    }
+
+    function switchTab(t) {
+      document.getElementById('btn-tab-shop').classList.toggle('active', t === 'shop');
+      document.getElementById('btn-tab-wd').classList.toggle('active', t === 'wd');
+      document.getElementById('panel-shop').style.display = t === 'shop' ? 'grid' : 'none';
+      document.getElementById('panel-wd').style.display = t === 'wd' ? 'block' : 'none';
+    }
+
+    function sendWithdraw() {
+      const pid = document.getElementById('pubg-id').value.trim();
+      const amt = Number(document.getElementById('wd-amount').value.trim());
+      if (!pid || pid.length < 5) { alert('To‘g‘ri PUBG ID kiriting!'); return; }
+      if (!amt || amt < 100) { alert('Kamida 100 UC kiriting!'); return; }
+      if (amt > uc) { alert('Sizda buncha UC yo‘q! Balans: ' + uc + ' UC'); return; }
+      uc -= amt;
+      saveProgress();
+      document.getElementById('wd-status').innerText =
+        '✅ So‘rov yaratildi! PUBG ID: ' + pid + ' | Miqdor: ' + amt + ' UC (Admin tekshirgach qo‘lda yuboriladi).';
+    }
+
+    saveProgress();
+    renderShop();
+
+    /* --- GAME ENGINE --- */
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const WORLD = 1700;
+    let running = false;
+    let animId = null;
+
+    let player, enemies, bullets, floats, trees;
+    let joyVec = { x: 0, y: 0 };
+    let firing = false;
+    let lastShot = 0;
+    let kills = 0;
+    let slashTimer = 0;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function startGame() {
+      document.getElementById('scr-lobby').classList.remove('active');
+      document.getElementById('scr-game').classList.add('active');
+      document.getElementById('go-modal').classList.remove('open');
+      resizeCanvas();
+
+      const w = WEAPONS[equipped];
+      document.getElementById('hud-wep').innerText = w.icon + ' ' + w.name;
+
+      player = { x: WORLD / 2, y: WORLD / 2, r: 18, hp: 100, speed: 4.1, angle: 0 };
+      enemies = [];
+      bullets = [];
+      floats = [];
+      trees = [];
+      kills = 0;
+      document.getElementById('hud-kills').innerText = '0';
+      document.getElementById('hud-hp').innerText = '100';
+
+      for (let i = 0; i < 38; i++) {
+        trees.push({
+          x: 60 + Math.random() * (WORLD - 120),
+          y: 60 + Math.random() * (WORLD - 120),
+          r: 22 + Math.random() * 20,
+          type: Math.random() > 0.35 ? 'tree' : 'crate'
+        });
+      }
+      for (let i = 0; i < 9; i++) spawnEnemy();
+
+      running = true;
+      if (animId) cancelAnimationFrame(animId);
+      loop();
+    }
+
+    function exitGame() {
+      running = false;
+      firing = false;
+      if (animId) cancelAnimationFrame(animId);
+      document.getElementById('scr-game').classList.remove('active');
+      document.getElementById('scr-lobby').classList.add('active');
+      saveProgress();
+      renderShop();
+    }
+
+    function spawnEnemy() {
+      let ex, ey;
+      do {
+        ex = 70 + Math.random() * (WORLD - 140);
+        ey = 70 + Math.random() * (WORLD - 140);
+      } while (Math.hypot(ex - player.x, ey - player.y) < 320);
+      enemies.push({
+        x: ex, y: ey, r: 18, hp: 100, maxHp: 100,
+        speed: 1.6 + Math.random() * 1.1,
+        lastFire: Date.now() + Math.random() * 1500
+      });
+    }
+
+    function shoot() {
+      const now = Date.now();
+      const w = WEAPONS[equipped];
+      if (now - lastShot < w.rate) return;
+      lastShot = now;
+
+      /* Auto-aim nearest enemy */
+      let target = null, bestD = w.range + 120;
+      for (const e of enemies) {
+        const d = Math.hypot(e.x - player.x, e.y - player.y);
+        if (d < bestD) { bestD = d; target = e; }
+      }
+      const ang = target ? Math.atan2(target.y - player.y, target.x - player.x) : player.angle;
+      player.angle = ang;
+
+      if (w.melee) {
+        slashTimer = 10;
+        for (let i = enemies.length - 1; i >= 0; i--) {
+          const e = enemies[i];
+          if (Math.hypot(e.x - player.x, e.y - player.y) <= w.range) {
+            damageEnemy(i, w.dmg);
+          }
+        }
+      } else {
+        bullets.push({
+          x: player.x + Math.cos(ang) * 20,
+          y: player.y + Math.sin(ang) * 20,
+          vx: Math.cos(ang) * w.speed,
+          vy: Math.sin(ang) * w.speed,
+          dmg: w.dmg,
+          fromPlayer: true,
+          color: w.color,
+          life: w.range / w.speed
+        });
+      }
+    }
+
+    function damageEnemy(idx, dmg) {
+      const e = enemies[idx];
+      if (!e) return;
+      e.hp -= dmg;
+      if (e.hp <= 0) {
+        floats.push({ x: e.x, y: e.y - 10, txt: '+100 UC', life: 48 });
+        enemies.splice(idx, 1);
+        kills += 1;
+        uc += 100;
+        saveProgress();
+        document.getElementById('hud-kills').innerText = kills;
+        spawnEnemy();
+      }
+    }
+
+    function loop() {
+      if (!running) return;
+      update();
+      draw();
+      animId = requestAnimationFrame(loop);
+    }
+
+    function update() {
+      player.x = Math.max(20, Math.min(WORLD - 20, player.x + joyVec.x * player.speed));
+      player.y = Math.max(20, Math.min(WORLD - 20, player.y + joyVec.y * player.speed));
+      if (Math.hypot(joyVec.x, joyVec.y) > 0.1) {
+        player.angle = Math.atan2(joyVec.y, joyVec.x);
+      }
+
+      if (firing) shoot();
+      if (slashTimer > 0) slashTimer--;
+
+      const now = Date.now();
+      for (const e of enemies) {
+        const dx = player.x - e.x, dy = player.y - e.y;
+        const d = Math.hypot(dx, dy);
+        if (d > 140) {
+          e.x += (dx / d) * e.speed;
+          e.y += (dy / d) * e.speed;
+        }
+        if (d < 420 && now - e.lastFire > 1500) {
+          e.lastFire = now;
+          const a = Math.atan2(dy, dx);
+          bullets.push({
+            x: e.x, y: e.y, vx: Math.cos(a) * 6.5, vy: Math.sin(a) * 6.5,
+            dmg: 10, fromPlayer: false, color: '#fb7185', life: 65
+          });
+        }
+      }
+
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i];
+        b.x += b.vx; b.y += b.vy; b.life--;
+        if (b.life <= 0 || b.x < 0 || b.y < 0 || b.x > WORLD || b.y > WORLD) {
+          bullets.splice(i, 1); continue;
+        }
+        if (b.fromPlayer) {
+          for (let j = enemies.length - 1; j >= 0; j--) {
+            const e = enemies[j];
+            if (Math.hypot(b.x - e.x, b.y - e.y) < e.r + 6) {
+              damageEnemy(j, b.dmg);
+              bullets.splice(i, 1);
+              break;
+            }
+          }
+        } else {
+          if (Math.hypot(b.x - player.x, b.y - player.y) < player.r + 5) {
+            player.hp = Math.max(0, player.hp - b.dmg);
+            document.getElementById('hud-hp').innerText = player.hp;
+            bullets.splice(i, 1);
+            if (player.hp <= 0) {
+              running = false;
+              document.getElementById('go-stats').innerText =
+                'Yo‘q qilingan raqiblar: ' + kills + ' ta | Jami balans: ' + uc + ' UC';
+              document.getElementById('go-modal').classList.add('open');
+            }
+          }
+        }
+      }
+
+      for (let i = floats.length - 1; i >= 0; i--) {
+        floats[i].y -= 1;
+        floats[i].life--;
+        if (floats[i].life <= 0) floats.splice(i, 1);
+      }
+    }
+
+    function draw() {
+      const W = canvas.width, H = canvas.height;
+      const camX = Math.max(0, Math.min(WORLD - W, player.x - W / 2));
+      const camY = Math.max(0, Math.min(WORLD - H, player.y - H / 2));
+
+      ctx.fillStyle = '#385e34';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.save();
+      ctx.translate(-camX, -camY);
+
+      /* Grid */
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= WORLD; x += 100) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD); ctx.stroke();
+      }
+      for (let y = 0; y <= WORLD; y += 100) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD, y); ctx.stroke();
+      }
+      ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 6;
+      ctx.strokeRect(0, 0, WORLD, WORLD);
+
+      /* Trees & Crates */
+      for (const t of trees) {
+        if (t.type === 'tree') {
+          ctx.fillStyle = '#1f4d24';
+          ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = '#926239';
+          ctx.fillRect(t.x - 18, t.y - 18, 36, 36);
+        }
+      }
+
+      /* Enemies */
+      for (const e of enemies) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#111'; ctx.fillRect(e.x - 18, e.y - 28, 36, 5);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(e.x - 18, e.y - 28, 36 * (e.hp / e.maxHp), 5);
+      }
+
+      /* Slash effect */
+      if (slashTimer > 0) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, 75, player.angle - 1.1, player.angle + 1.1);
+        ctx.stroke();
+      }
+
+      /* Player */
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(player.x, player.y);
+      ctx.lineTo(player.x + Math.cos(player.angle) * 26, player.y + Math.sin(player.angle) * 26);
+      ctx.stroke();
+
+      /* Bullets */
+      for (const b of bullets) {
+        ctx.fillStyle = b.color;
+        ctx.beginPath(); ctx.arc(b.x, b.y, 5, 0, Math.PI * 2); ctx.fill();
+      }
+
+      /* Floating +100 UC */
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center';
+      for (const f of floats) {
+        ctx.fillStyle = '#fde047';
+        ctx.fillText(f.txt, f.x, f.y);
+      }
+      ctx.restore();
+
+      /* Minimap */
+      const ms = 86, mx = W - ms - 10, my = 10;
+      ctx.fillStyle = 'rgba(15,23,42,0.75)';
+      ctx.fillRect(mx, my, ms, ms);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.strokeRect(mx, my, ms, ms);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(mx + (player.x / WORLD) * ms - 2, my + (player.y / WORLD) * ms - 2, 5, 5);
+      ctx.fillStyle = '#ef4444';
+      for (const e of enemies) {
+        ctx.fillRect(mx + (e.x / WORLD) * ms - 1.5, my + (e.y / WORLD) * ms - 1.5, 3, 3);
+      }
+    }
+
+    /* Touch Joystick */
+    const joyZone = document.getElementById('joy-zone');
+    const joyKnob = document.getElementById('joy-knob');
+    function handleJoy(e) {
+      e.preventDefault();
+      const t = e.touches[0];
+      const rect = joyZone.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      let dx = t.clientX - cx, dy = t.clientY - cy;
+      const maxR = rect.width / 2 - 18;
+      const dist = Math.hypot(dx, dy);
+      if (dist > maxR) { dx = (dx / dist) * maxR; dy = (dy / dist) * maxR; }
+      joyKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      joyVec.x = dx / maxR;
+      joyVec.y = dy / maxR;
+    }
+    joyZone.addEventListener('touchstart', handleJoy, { passive: false });
+    joyZone.addEventListener('touchmove', handleJoy, { passive: false });
+    joyZone.addEventListener('touchend', () => {
+      joyVec = { x: 0, y: 0 };
+      joyKnob.style.transform = 'translate(0,0)';
+    });
+
+    const fireBtn = document.getElementById('fire-btn');
+    fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); firing = true; shoot(); }, { passive: false });
+    fireBtn.addEventListener('touchend', () => { firing = false; });
+    fireBtn.addEventListener('mousedown', () => { firing = true; shoot(); });
+    fireBtn.addEventListener('mouseup', () => { firing = false; });
+  </script>
+</body>
+</html>
