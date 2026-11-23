@@ -8,134 +8,135 @@
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; padding: 54px 12px 24px; font-family: sans-serif; background: #090d16; color: #fff; }
-    .top { background: linear-gradient(135deg, #b45309, #111827); border: 1.5px solid #facc15; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
-    .top h2 { margin: 0 0 4px; font-size: 19px; color: #fde047; }
-    .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; }
-    .t-btn { flex-shrink: 0; padding: 8px 12px; border-radius: 9px; border: 1px solid #334155; background: #1e293b; color: #cbd5e1; font-size: 12px; font-weight: 700; cursor: pointer; }
-    .t-btn.on { background: #facc15; color: #111; border-color: #facc15; }
-
+    .top-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .adm-btn {
+      background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none;
+      padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;
+    }
+    .hero { background: linear-gradient(135deg, #b45309, #111827); border: 1.5px solid #facc15; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; }
     .acc-card { background: #111827; border: 1.5px solid #334155; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
-    .acc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .tag { display: inline-block; background: rgba(250,204,21,0.16); color: #fde047; border: 1px solid rgba(250,204,21,0.35); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin: 2px 4px 2px 0; }
+    .acc-card.busy { border-color: #ef4444; opacity: 0.85; }
+    .tag { display: inline-block; background: rgba(250,204,21,0.15); color: #fde047; border: 1px solid rgba(250,204,21,0.35); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin: 2px 4px 2px 0; }
     .price-row { display: flex; justify-content: space-between; font-size: 12px; color: #cbd5e1; background: #1e293b; padding: 8px 10px; border-radius: 10px; margin: 10px 0; }
     .btn-rent { width: 100%; padding: 12px; border: none; border-radius: 11px; background: linear-gradient(180deg, #fde047, #eab308); color: #111; font-weight: 900; font-size: 14px; cursor: pointer; }
-
+    .btn-busy { width: 100%; padding: 12px; border: none; border-radius: 11px; background: #7f1d1d; color: #fecaca; font-weight: 900; font-size: 13px; }
     .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.82); display: none; align-items: flex-end; z-index: 30; }
     .modal-bg.open { display: flex; }
     .modal { width: 100%; background: #111827; border-top: 2px solid #facc15; border-radius: 20px 20px 0 0; padding: 16px; }
     .dur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
     .dur-btn { padding: 10px; border-radius: 10px; border: 1.5px solid #334155; background: #1e293b; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
     .dur-btn.on { border-color: #22c55e; background: rgba(34,197,94,0.18); color: #86efac; }
-    .rules { background: #1e293b; border-radius: 12px; padding: 10px; font-size: 12px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.45; }
   </style>
 </head>
 <body>
-  <div class="top">
-    <h2>🛒 PUBG Mobile Arenda</h2>
-    <div style="font-size:12px;color:#e2e8f0;">Eng zo‘r skinli akkauntlarni arzon narxda ijaraga oling!</div>
+  <div class="top-row">
+    <b style="font-size:17px;color:#fde047;">🛒 PUBG Arenda</b>
+    <button class="adm-btn" onclick="contactAdmin()">📞 Admin bilan bog‘lanish</button>
   </div>
 
-  <div class="tabs">
-    <button class="t-btn on" onclick="filterAcc('all',this)">🔥 Hammasi</button>
-    <button class="t-btn" onclick="filterAcc('vip',this)">👑 VIP / Mifik</button>
-    <button class="t-btn" onclick="filterAcc('glacier',this)">❄️ Muzlik M416</button>
-    <button class="t-btn" onclick="filterAcc('cheap',this)">💸 Arzon</button>
+  <div class="hero">
+    <div style="font-weight:800;font-size:14px;">Akkaunt tanlang — videosi va karta botga keladi!</div>
+    <div style="font-size:11px;color:#e2e8f0;margin-top:3px;">⚠️ Band qilingan akkauntlarni boshqa odam xarid qilgan bo‘ladi.</div>
   </div>
 
-  <div id="acc-list"></div>
-
-  <div class="rules">
-    <b>📜 Arenda Qoidalari:</b><br>
-    1. Chit (vzlom) ishlatish qat’iyan taqiqlanadi.<br>
-    2. Akkaunt paroli yoki bog‘lanishlarini o‘zgartirish mumkin emas.<br>
-    3. Vaqt tugagach akkauntdan chiqish shart.
-  </div>
+  <div id="acc-list">Yuklanmoqda...</div>
 
   <div class="modal-bg" id="m-bg" onclick="if(event.target===this)closeModal()">
     <div class="modal">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <b id="m-title" style="font-size:16px;color:#fde047;"></b>
+        <b id="m-title" style="font-size:15px;color:#fde047;"></b>
         <button onclick="closeModal()" style="background:#334155;color:#fff;border:none;border-radius:8px;padding:6px 10px;">✕</button>
       </div>
-      <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Qancha vaqtga arendaga olasiz?</div>
       <div class="dur-grid" id="dur-grid"></div>
       <div style="background:#1e293b;padding:10px;border-radius:10px;font-size:12px;margin-bottom:10px;">
-        💳 <b>Jami to‘lov:</b> <span id="m-total" style="color:#4ade80;font-weight:800;">0</span> so‘m<br>
-        <span style="color:#94a3b8;">Buyurtma bergach, botga to‘lov chekini (skrinshot) yuboring.</span>
+        💳 <b>Narxi:</b> <span id="m-total" style="color:#4ade80;font-weight:800;">0</span> so‘m<br>
+        <span style="color:#94a3b8;">Tugmani bossangiz botga akkaunt videosi va karta raqami boradi.</span>
       </div>
-      <button class="btn-rent" onclick="confirmRent()">📩 Buyurtma yuborish</button>
+      <button class="btn-rent" onclick="confirmRent()">📩 Akkauntni olish</button>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     try { if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
-    const botUser = new URLSearchParams(window.location.search).get('bot') || '';
+    const qs = new URLSearchParams(window.location.search);
+    const botUser = qs.get('bot') || '';
+    const admUser = qs.get('adm') || '';
+    const fbUrl = qs.get('fb') || '';
 
-    /* AKKAUNTLAR RO'YXATI (O'zingiz xohlagancha o'zgartirishingiz mumkin) */
-    const ACCOUNTS = [
-      { id:'ACC01', cat:'glacier', title:'❄️ M416 Muzlik 7-Lvl + Fir‘avn', lvl:78, rank:'Zavoyevatel', skins:['M416 Muzlik 7-lvl','Fir‘avn 6-lvl','Lamborghini','Inferno Kaska'], h1:15000 },
-      { id:'ACC02', cat:'vip',     title:'🧻 Mumiya + AWM Ajdar + Bugatti', lvl:82, rank:'As Dominator', skins:['Mumiya Oq','M416 Masxaraboz','Bugatti Ko‘k','380 Mifik'], h1:20000 },
-      { id:'ACC03', cat:'glacier', title:'🔥 AKM Muzlik + Qora Malibu 2', lvl:71, rank:'As Master', skins:['M416 Muzlik 4-lvl','AKM Muzlik','Qora Malibu','X-Suit'], h1:12000 },
-      { id:'ACC04', cat:'cheap',   title:'⚡ Arzon Start Akkaunt (RP 100)', lvl:64, rank:'Krona', skins:['RP Kiyimlar','Scar-L Oltin','UAZ Skin'], h1:7000 }
+    let ACCOUNTS = [
+      { id:'ACC01', title:'❄️ M416 Muzlik 7-Lvl + Fir‘avn', details:'M416 Muzlik 7-lvl, Fir‘avn 6-lvl, Lamborghini, Inferno Kaska', price:15000, hours:1, busy:false },
+      { id:'ACC02', title:'🧻 Mumiya + AWM Ajdar + Bugatti', details:'Mumiya Oq, M416 Masxaraboz, Bugatti Ko‘k, 380 Mifik', price:20000, hours:1, busy:false },
+      { id:'ACC03', title:'🔥 AKM Muzlik + Qora Malibu 2', details:'M416 Muzlik 4-lvl, AKM Muzlik, Qora Malibu, X-Suit', price:12000, hours:1, busy:false }
     ];
 
-    let curCat = 'all', selAcc = null, selHrs = 1;
+    function contactAdmin() {
+      if (admUser && tg && tg.openTelegramLink) tg.openTelegramLink('https://t.me/' + admUser);
+      else if (botUser && tg && tg.openTelegramLink) tg.openTelegramLink('https://t.me/' + botUser + '?start=contact');
+      else alert('Admin bilan bog‘lanish uchun botga yozing!');
+    }
 
-    function filterAcc(cat, btn) {
-      curCat = cat;
-      document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'));
-      if (btn) btn.classList.add('on');
+    async function loadAccs() {
+      if (fbUrl) {
+        try {
+          const r = await fetch(fbUrl + '/arenda_accs.json');
+          const d = await r.json();
+          if (d) ACCOUNTS = Object.values(d);
+        } catch (e) {}
+      }
       renderAccs();
     }
 
     function renderAccs() {
-      const list = ACCOUNTS.filter(a => curCat==='all' || a.cat===curCat);
-      document.getElementById('acc-list').innerHTML = list.map(a =>
-        '<div class="acc-card">' +
-          '<div class="acc-head"><div><b style="font-size:15px;">' + a.title + '</b>' +
-          '<div style="font-size:11px;color:#94a3b8;margin-top:2px;">ID: ' + a.id + ' • Lvl ' + a.lvl + ' • ' + a.rank + '</div></div></div>' +
-          '<div>' + a.skins.map(s=>'<span class="tag">'+s+'</span>').join('') + '</div>' +
-          '<div class="price-row"><span>1 soat: <b>'+a.h1.toLocaleString()+'</b></span><span>3 soat: <b>'+(a.h1*2.5).toLocaleString()+'</b></span><span>1 kun: <b>'+(a.h1*7).toLocaleString()+'</b></span></div>' +
-          '<button class="btn-rent" onclick="openRent(\''+a.id+'\')">🔑 Arenda olish</button>' +
-        '</div>'
-      ).join('');
+      document.getElementById('acc-list').innerHTML = ACCOUNTS.map(a => {
+        const tags = String(a.details || '').split(',').map(s=>'<span class="tag">'+s.trim()+'</span>').join('');
+        const btn = a.busy
+          ? '<button class="btn-busy" onclick="alert(\'⛔ Bu akkauntni boshqa odam xarid qilgan!\')">🔒 Boshqa odam xarid qilgan</button>'
+          : '<button class="btn-rent" onclick="openRent(\''+a.id+'\')">🔑 Akkauntni olish</button>';
+        return '<div class="acc-card '+(a.busy?'busy':'')+'">' +
+          '<b style="font-size:15px;">'+a.title+'</b>' +
+          '<div style="font-size:11px;color:#94a3b8;margin:3px 0 6px;">ID: '+a.id+' • Boshlang‘ich: '+Number(a.price).toLocaleString()+' so‘m ('+(a.hours||1)+' soat)</div>' +
+          '<div>'+tags+'</div>' +
+          '<div class="price-row"><span>1 soat: <b>'+Number(a.price).toLocaleString()+'</b></span><span>3 soat: <b>'+Math.round(a.price*2.5).toLocaleString()+'</b></span><span>24 soat: <b>'+(a.price*7).toLocaleString()+'</b></span></div>' +
+          btn + '</div>';
+      }).join('');
     }
 
+    let selAcc = null, selHrs = 1;
     function openRent(id) {
-      selAcc = ACCOUNTS.find(a=>a.id===id);
-      selHrs = 1;
+      selAcc = ACCOUNTS.find(x=>x.id===id);
+      if (selAcc.busy) return alert('⛔ Bu akkauntni boshqa odam xarid qilgan!');
+      selHrs = Number(selAcc.hours || 1);
       document.getElementById('m-title').innerText = selAcc.title;
       renderDur();
       document.getElementById('m-bg').classList.add('open');
     }
     function closeModal() { document.getElementById('m-bg').classList.remove('open'); }
-
     function calcPrice(h) {
-      if (h===1) return selAcc.h1;
-      if (h===3) return Math.round(selAcc.h1*2.5);
-      if (h===12) return Math.round(selAcc.h1*5);
-      return selAcc.h1*7;
+      const base = Number(selAcc.price);
+      if (h === Number(selAcc.hours || 1)) return base;
+      if (h===3) return Math.round(base*2.5);
+      if (h===12) return Math.round(base*5);
+      return base*7;
     }
-
     function renderDur() {
-      const opts = [[1,'1 soat'],[3,'3 soat'],[12,'12 soat'],[24,'24 soat (1 kun)']];
+      const h0 = Number(selAcc.hours || 1);
+      const opts = [[h0, h0+' soat'], [3,'3 soat'], [12,'12 soat'], [24,'24 soat']];
       document.getElementById('dur-grid').innerHTML = opts.map(([h,lbl]) =>
         '<button class="dur-btn '+(selHrs===h?'on':'')+'" onclick="selHrs='+h+';renderDur()">'+lbl+'<br><small>'+calcPrice(h).toLocaleString()+' so‘m</small></button>'
       ).join('');
       document.getElementById('m-total').innerText = calcPrice(selHrs).toLocaleString();
     }
-
     function confirmRent() {
       const pr = calcPrice(selHrs);
       if (botUser && tg && tg.openTelegramLink) {
         tg.openTelegramLink('https://t.me/' + botUser + '?start=rent-' + selAcc.id + '-' + selHrs + '-' + pr);
       } else {
-        alert('Buyurtma: ' + selAcc.id + ' | ' + selHrs + ' soat | ' + pr.toLocaleString() + ' so‘m');
+        alert('Botga yozing: /start rent-' + selAcc.id + '-' + selHrs + '-' + pr);
       }
     }
 
-    renderAccs();
+    loadAccs();
   </script>
 </body>
-      </html>
+</html>
