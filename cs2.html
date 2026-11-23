@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Counter-Strike 2</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: #0c111b; color: #fff; }
+    .scr { display: none; width: 100%; height: 100%; position: relative; }
+    .scr.on { display: block; }
+    .menu { padding: 54px 14px 24px; overflow-y: auto; height: 100%; background: linear-gradient(135deg, #111827, #1e293b 65%, #7c2d12); }
+    .cs-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f97316; padding-bottom: 10px; margin-bottom: 14px; }
+    .panel { background: rgba(15,23,42,0.82); border: 1px solid #334155; border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+    .maps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .m-btn { padding: 14px 8px; border-radius: 10px; border: 2px solid #334155; background: #0f172a; color: #fff; font-weight: 800; cursor: pointer; }
+    .m-btn.on { border-color: #f97316; background: rgba(249,115,22,0.2); color: #fdba74; }
+    .btn-play { width: 100%; padding: 15px; border: none; border-radius: 10px; background: linear-gradient(180deg, #22c55e, #15803d); color: #fff; font-size: 18px; font-weight: 900; cursor: pointer; }
+    .bot-row { display: flex; gap: 6px; margin-top: 8px; }
+    .b-opt { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-weight: 800; cursor: pointer; }
+    .b-opt.on { background: #f97316; color: #111; border-color: #f97316; }
+
+    #c3d { width: 100%; height: 100%; display: block; touch-action: none; }
+    .hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
+    .pill { pointer-events: auto; background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 7px; font-size: 12px; font-weight: 800; }
+    .xhair { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid #22c55e; border-radius: 50%; pointer-events: none; z-index: 9; }
+    .joy { position: absolute; bottom: 16px; left: 16px; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.85); pointer-events: none; }
+    .acts { position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px; align-items: flex-end; z-index: 10; }
+    .ab { width: 54px; height: 54px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.75); color: #fff; font-weight: 800; font-size: 11px; touch-action: none; }
+    .fire { width: 74px; height: 74px; border-radius: 50%; border: 3px solid #fff; background: #dc2626; color: #fff; font-weight: 900; font-size: 13px; touch-action: none; }
+
+    .shop-ov { position: absolute; inset: 0; background: rgba(9,13,22,0.88); display: none; align-items: center; justify-content: center; padding: 14px; z-index: 25; }
+    .shop-ov.on { display: flex; }
+    .shop-box { background: #1e293b; border: 2px solid #f97316; border-radius: 16px; padding: 14px; width: 100%; max-width: 380px; max-height: 85dvh; overflow-y: auto; }
+    .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+    .w-btn { padding: 10px; border-radius: 9px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="scr menu on" id="scr-menu">
+    <div class="cs-head">
+      <div>
+        <button class="b-opt" style="padding:5px 9px;margin-right:6px;" onclick="window.location.href='./menu.html'+window.location.search">← Menyu</button>
+        <b style="font-size:18px;color:#fdba74;">COUNTER-STRIKE 2</b>
+      </div>
+      <span style="font-size:12px;color:#22c55e;font-weight:800;">● TAYYOR</span>
+    </div>
+
+    <div class="panel">
+      <b>🗺️ Xaritani tanlang (O‘yinga kirish):</b>
+      <div class="maps">
+        <button class="m-btn on" onclick="pickMap('dust2',this)">🏜️ Dust 2</button>
+        <button class="m-btn" onclick="pickMap('haus',this)">🏠 Haus (Uy)</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <b>⚙️ Nastroyka — Botlar soni:</b>
+      <div class="bot-row">
+        <button class="b-opt" onclick="setBots(0,this)">0 (O‘chirish)</button>
+        <button class="b-opt" onclick="setBots(2,this)">2</button>
+        <button class="b-opt on" onclick="setBots(5,this)">5</button>
+        <button class="b-opt" onclick="setBots(10,this)">10</button>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#94a3b8;">🌐 Online o‘ynash uchun Firebase URL (ixtiyoriy):</div>
+      <input id="fb-inp" style="width:100%;padding:8px;border-radius:7px;border:1px solid #334155;background:#090d16;color:#fff;margin-top:4px;" placeholder="https://loyiha-default-rtdb.firebaseio.com" />
+    </div>
+
+    <button class="btn-play" onclick="startCS()">▶ O‘YINNI BOSHLASH</button>
+  </div>
+
+  <div class="scr" id="scr-cs">
+    <canvas id="c3d"></canvas>
+    <div class="xhair"></div>
+    <div class="hud">
+      <div style="display:flex;gap:6px;">
+        <button class="pill" style="background:#dc2626;" onclick="exitCS()">✖</button>
+        <div class="pill">❤️ <span id="cs-hp">100</span></div>
+        <div class="pill" style="color:#4ade80;">$ <span id="cs-mon">16000</span></div>
+        <div class="pill">☠️ <span id="cs-k">0</span></div>
+      </div>
+      <button class="pill" style="background:#f97316;color:#111;" ontouchstart="event.preventDefault();openShop()" onclick="openShop()">🛒 Do‘kon</button>
+    </div>
+
+    <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
+    <div class="acts">
+      <button class="ab" ontouchstart="event.preventDefault();doJump()" onclick="doJump()">SAKRA</button>
+      <button class="fire" ontouchstart="event.preventDefault();firing=true;shootCS()" ontouchend="firing=false" onclick="shootCS()">OTISH</button>
+    </div>
+
+    <div class="shop-ov" id="shop-ov">
+      <div class="shop-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b>🛒 Tirilgan joy Do‘koni ($<span id="sh-mon">16000</span>)</b>
+          <button class="b-opt" style="flex:0;padding:5px 10px;" onclick="closeShop()">✕</button>
+        </div>
+        <div class="w-grid" id="w-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
+    let uid = 'cs' + Math.floor(Math.random()*99999);
+    try { if(tg){ tg.ready(); tg.expand(); if(tg.initDataUnsafe?.user) uid='cs'+tg.initDataUnsafe.user.id; } } catch(e){}
+
+    const CS_WEPS = [
+      {id:'usp',name:'🔫 USP-S',price:200,dmg:35,rate:260,col:0x94a3b8},
+      {id:'glock',name:'🔫 Glock-18',price:200,dmg:30,rate:220,col:0x334155},
+      {id:'deagle',name:'💥 Desert Eagle',price:700,dmg:65,rate:420,col:0xfacc15},
+      {id:'p90',name:'🔥 P90',price:2350,dmg:28,rate:95,col:0x38bdf8},
+      {id:'ak47',name:'🔥 AK-47',price:2700,dmg:45,rate:130,col:0xb45309},
+      {id:'m4a1',name:'💠 M4A1-S',price:2900,dmg:42,rate:115,col:0x3b82f6},
+      {id:'awp',name:'🎯 AWP',price:4750,dmg:120,rate:850,col:0x22c55e},
+      {id:'kerambit',name:'🌙 Kerambit',price:0,dmg:90,rate:280,col:0x2dd4bf,melee:true}
+    ];
+
+    let curMap = 'dust2', botCount = 5, fbUrl = localStorage.getItem('p3_fb') || '';
+    document.getElementById('fb-inp').value = fbUrl;
+
+    function pickMap(m, btn) { curMap=m; document.querySelectorAll('.m-btn').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+    function setBots(n, btn) { botCount=n; document.querySelectorAll('.b-opt').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+
+    let scene, cam, ren, pMesh, bots = [], bullets = [], remote = {}, run = false, anim = null;
+    let yaw = 0, pitch = 0, joy = {x:0,y:0}, vy = 0, onG = true, hp = 100, money = 16000, kills = 0, curWep = CS_WEPS[4];
+    let firing = false, lastShot = 0, lastSync = 0, hitCd = 0;
+
+    function mkSoldier(col) {
+      const g = new THREE.Group();
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.85,1.1,0.5), new THREE.MeshLambertMaterial({color:col})); b.position.y=1.3;
+      const h = new THREE.Mesh(new THREE.SphereGeometry(0.32,8,8), new THREE.MeshLambertMaterial({color:0x1e293b})); h.position.y=2.05;
+      const l = new THREE.Mesh(new THREE.BoxGeometry(0.7,0.8,0.4), new THREE.MeshLambertMaterial({color:0x0f172a})); l.position.y=0.4;
+      g.add(b, h, l); return g;
+    }
+
+    function startCS() {
+      if (typeof THREE === 'undefined') return alert('Internetni tekshiring!');
+      fbUrl = document.getElementById('fb-inp').value.trim().replace(/\/$/,'');
+      localStorage.setItem('p3_fb', fbUrl);
+      document.getElementById('scr-menu').classList.remove('on');
+      document.getElementById('scr-cs').classList.add('on');
+      try { if (screen.orientation?.lock) screen.orientation.lock('landscape'); } catch(e){}
+
+      ren = new THREE.WebGLRenderer({canvas:document.getElementById('c3d'), antialias:true});
+      ren.setSize(window.innerWidth, window.innerHeight);
+      scene = new THREE.Scene(); scene.background = new THREE.Color(curMap==='dust2'?0xfde68a:0x93c5fd);
+      cam = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 300);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x451a03, 1.0));
+
+      const gCol = curMap==='dust2' ? 0xd6b888 : 0x4b8b3b;
+      const gr = new THREE.Mesh(new THREE.PlaneGeometry(240,240), new THREE.MeshLambertMaterial({color:gCol}));
+      gr.rotation.x=-Math.PI/2; scene.add(gr);
+
+      if (curMap === 'dust2') {
+        const wm = new THREE.MeshLambertMaterial({color:0xc29b61}), cm = new THREE.MeshLambertMaterial({color:0x78350f});
+        [[-15,0,-20,16,5,2],[18,0,-32,2,5,22],[0,0,-45,26,5,2]].forEach(([x,y,z,w,h,d])=>{
+          const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),wm); m.position.set(x,h/2,z); scene.add(m);
+        });
+        for(let i=0;i<10;i++){ const k=new THREE.Mesh(new THREE.BoxGeometry(2.5,2.5,2.5),cm); k.position.set((Math.random()-0.5)*50,1.25,-10-Math.random()*45); scene.add(k); }
+      } else {
+        /* Haus xaritasi */
+        const hm = new THREE.MeshLambertMaterial({color:0x64748b});
+        [[-14,-20,2,5,24],[14,-20,2,5,24],[0,-32,30,5,2],[-8,-8,14,5,2],[8,-8,14,5,2]].forEach(([x,z,w,h,d])=>{
+          const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),hm); m.position.set(x,h/2,z); scene.add(m);
+        });
+      }
+
+      pMesh = mkSoldier(0x2563eb); pMesh.position.set(0,0,12); scene.add(pMesh);
+      bots = []; bullets = []; remote = {}; hp = 100; money = 16000; kills = 0; yaw = 0;
+      for (let i=0; i<botCount; i++) spawnBot();
+      updCS();
+      run = true; if (anim) cancelAnimationFrame(anim); loopCS();
+    }
+
+    function spawnBot() {
+      const bm = mkSoldier(0xdc2626);
+      bm.position.set((Math.random()-0.5)*45, 0, -15-Math.random()*35);
+      scene.add(bm); bots.push({mesh:bm, hp:100, cd:90+Math.random()*90});
+    }
+    function exitCS() { run=false; if(anim)cancelAnimationFrame(anim); document.getElementById('scr-cs').classList.remove('on'); document.getElementById('scr-menu').classList.add('on'); }
+    function doJump() { if (onG) { vy=0.23; onG=false; } }
+
+    function openShop() {
+      document.getElementById('sh-mon').innerText = money;
+      document.getElementById('w-list').innerHTML = CS_WEPS.map(w =>
+        '<button class="w-btn" onclick="buyCS(\''+w.id+'\')">'+w.name+'<br><span style="color:#4ade80;">$'+w.price+'</span></button>'
+      ).join('');
+      document.getElementById('shop-ov').classList.add('on');
+    }
+    function closeShop() { document.getElementById('shop-ov').classList.remove('on'); }
+    function buyCS(id) {
+      const w = CS_WEPS.find(x=>x.id===id);
+      if (money < w.price) return alert('Pul yetarli emas!');
+      money -= w.price; curWep = w; updCS(); closeShop();
+    }
+
+    function shootCS() {
+      const now = Date.now(); if (now - lastShot < curWep.rate) return; lastShot = now;
+      if (curWep.melee) {
+        for (let i=bots.length-1; i>=0; i--) if (pMesh.position.distanceTo(bots[i].mesh.position)<4) hitCS(i, curWep.dmg);
+      } else {
+        const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(pitch,yaw,0,'YXZ')).normalize();
+        const b = new THREE.Mesh(new THREE.SphereGeometry(0.14,6,6), new THREE.MeshBasicMaterial({color:curWep.col}));
+        b.position.copy(pMesh.position).add(new THREE.Vector3(0,1.6,0)); scene.add(b);
+        bullets.push({mesh:b, vel:dir.multiplyScalar(2.4), life:50});
+      }
+    }
+    function hitCS(i, dmg) {
+      bots[i].hp -= dmg;
+      if (bots[i].hp<=0) { scene.remove(bots[i].mesh); bots.splice(i,1); kills++; money+=300; updCS(); spawnBot(); }
+    }
+    function updCS() { document.getElementById('cs-hp').innerText=hp; document.getElementById('cs-mon').innerText=money; document.getElementById('cs-k').innerText=kills; }
+
+    async function syncCS() {
+      if (!fbUrl) return;
+      try {
+        fetch(fbUrl+'/cs2/'+uid+'.json', {method:'PUT', body:JSON.stringify({x:pMesh.position.x,z:pMesh.position.z,y:yaw,t:Date.now()})});
+        const r=await fetch(fbUrl+'/cs2.json'), d=await r.json()||{}, now=Date.now();
+        Object.keys(d).forEach(k=>{
+          if(k===uid||now-d[k].t>12000) return;
+          if(!remote[k]){ remote[k]=mkSoldier(0xf97316); scene.add(remote[k]); }
+          remote[k].position.set(d[k].x,0,d[k].z); remote[k].rotation.y=d[k].y;
+        });
+      } catch(e){}
+    }
+
+    function loopCS() {
+      if (!run) return; anim = requestAnimationFrame(loopCS);
+      if (hitCd>0) hitCd--;
+      const fwd=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw)), rgt=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+      pMesh.position.addScaledVector(fwd,-joy.y*0.28).addScaledVector(rgt,joy.x*0.28); pMesh.rotation.y=yaw;
+      if (!onG) { pMesh.position.y+=vy; vy-=0.014; if(pMesh.position.y<=0){pMesh.position.y=0;vy=0;onG=true;} }
+      if (firing) shootCS();
+      if (fbUrl && Date.now()-lastSync>1100) { lastSync=Date.now(); syncCS(); }
+
+      for (const b of bots) {
+        const d = b.mesh.position.distanceTo(pMesh.position);
+        b.mesh.lookAt(pMesh.position.x,0,pMesh.position.z);
+        if (d>10 && d<60) b.mesh.position.addScaledVector(new THREE.Vector3().subVectors(pMesh.position,b.mesh.position).normalize(),0.08);
+        if (--b.cd<=0 && d<35 && hitCd===0) {
+          b.cd=130+Math.random()*90; hitCd=40; hp-=3; updCS();
+          if (hp<=0) { hp=100; pMesh.position.set(0,0,12); updCS(); }
+        }
+      }
+      for (let i=bullets.length-1;i>=0;i--) {
+        const b=bullets[i]; b.mesh.position.add(b.vel); b.life--; let hit=false;
+        for (let j=bots.length-1;j>=0;j--) if(b.mesh.position.distanceTo(bots[j].mesh.position.clone().add(new THREE.Vector3(0,1.4,0)))<1.6){ hitCS(j,curWep.dmg); hit=true; break; }
+        if (hit||b.life<=0) { scene.remove(b.mesh); bullets.splice(i,1); }
+      }
+      cam.position.set(pMesh.position.x+Math.sin(yaw)*4.5, pMesh.position.y+2.5-Math.sin(pitch)*1.5, pMesh.position.z+Math.cos(yaw)*4.5);
+      cam.lookAt(pMesh.position.x-Math.sin(yaw)*8, pMesh.position.y+1.6+Math.sin(pitch)*5, pMesh.position.z-Math.cos(yaw)*8);
+      ren.render(scene, cam);
+    }
+
+    window.addEventListener('resize',()=>{ if(ren&&cam&&run){ ren.setSize(window.innerWidth,window.innerHeight); cam.aspect=window.innerWidth/window.innerHeight; cam.updateProjectionMatrix(); } });
+    const jz=document.getElementById('joy'), kb=document.getElementById('knob');
+    function onJoy(e){ e.preventDefault(); const t=e.targetTouches[0]; if(!t)return; const r=jz.getBoundingClientRect(); let dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2); const mr=r.width/2-15,d=Math.hypot(dx,dy); if(d>mr){dx=dx/d*mr;dy=dy/d*mr;} kb.style.transform='translate('+dx+'px,'+dy+'px)'; joy.x=dx/mr; joy.y=dy/mr; }
+    jz.addEventListener('touchstart',onJoy,{passive:false}); jz.addEventListener('touchmove',onJoy,{passive:false});
+    jz.addEventListener('touchend',()=>{joy={x:0,y:0};kb.style.transform='translate(0,0)';});
+    let lx=null,ly=null; const c3=document.getElementById('c3d');
+    c3.addEventListener('touchstart',e=>{if(e.targetTouches[0]){lx=e.targetTouches[0].clientX;ly=e.targetTouches[0].clientY;}});
+    c3.addEventListener('touchmove',e=>{e.preventDefault();const t=e.targetTouches[0];if(!t)return;yaw-=(t.clientX-lx)*0.006;pitch=Math.max(-0.4,Math.min(0.4,pitch-(t.clientY-ly)*0.004));lx=t.clientX;ly=t.clientY;},{passive:false});
+  </script>
+</body>
+</html>
