@@ -7,44 +7,36 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; padding: 54px 14px 20px; min-height: 100dvh; font-family: sans-serif; background: radial-gradient(circle at top, #1e293b, #090d16); color: #fff; }
+    body { margin: 0; padding: 54px 14px 24px; min-height: 100dvh; font-family: sans-serif; background: radial-gradient(circle at top, #1e293b, #090d16); color: #fff; }
     h2 { margin: 0 0 4px; font-size: 20px; }
     p { margin: 0 0 12px; color: #94a3b8; font-size: 13px; }
-    .bonus-box {
-      background: linear-gradient(135deg, #15803d, #0f172a); border: 1.5px solid #22c55e;
-      border-radius: 14px; padding: 12px; margin-bottom: 14px; font-size: 12px;
-    }
-    .game-card { border-radius: 18px; overflow: hidden; margin-bottom: 14px; border: 2px solid rgba(255,255,255,0.14); background: #111827; cursor: pointer; }
-    .banner { height: 128px; display: flex; align-items: center; justify-content: space-between; padding: 16px; }
+    .bonus-box { background: linear-gradient(135deg, #15803d, #0f172a); border: 1.5px solid #22c55e; border-radius: 14px; padding: 11px; margin-bottom: 12px; font-size: 12px; }
+    .game-card { border-radius: 16px; overflow: hidden; margin-bottom: 12px; border: 2px solid rgba(255,255,255,0.14); background: #111827; cursor: pointer; }
+    .banner { height: 108px; display: flex; align-items: center; justify-content: space-between; padding: 14px; }
     .pubg-bg { background: linear-gradient(135deg, #b45309, #1e293b 70%); border-bottom: 3px solid #facc15; }
     .rblx-bg { background: linear-gradient(135deg, #dc2626, #0f172a 75%); border-bottom: 3px solid #ef4444; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; margin-bottom: 6px; }
-    .card-foot { padding: 11px 16px; display: flex; justify-content: space-between; align-items: center; }
-    .play-btn { border: none; padding: 9px 18px; border-radius: 10px; font-weight: 900; font-size: 13px; cursor: pointer; }
+    .cs2-bg { background: linear-gradient(135deg, #ea580c, #0f172a 75%); border-bottom: 3px solid #fb923c; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; margin-bottom: 4px; }
+    .card-foot { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .play-btn { border: none; padding: 8px 16px; border-radius: 9px; font-weight: 900; font-size: 12px; cursor: pointer; }
   </style>
 </head>
 <body>
   <h2>🎮 O‘yinni tanlang</h2>
   <p id="salom">Xush kelibsiz!</p>
-
   <div class="bonus-box" id="bonus-box"></div>
 
   <div class="game-card" onclick="go('oyin.html')">
     <div class="banner pubg-bg">
       <div>
-        <span class="badge" style="background:#facc15;color:#111;">3D BATTLE ROYALE</span>
-        <div style="font-size:22px;font-weight:900;">PUBG MOBILE 2</div>
-        <div style="font-size:12px;color:#fde68a;">Erangel • Metro Royale • Park • Uylar</div>
+        <span class="badge" style="background:#facc15;color:#111;">BATTLE ROYALE</span>
+        <div style="font-size:20px;font-weight:900;">PUBG MOBILE 2</div>
+        <div style="font-size:11px;color:#fde68a;">Erangel • Metro Royale • Park • Uylar</div>
       </div>
-      <svg width="72" height="72" viewBox="0 0 80 80">
-        <circle cx="40" cy="40" r="34" fill="rgba(250,204,21,0.18)" stroke="#facc15" stroke-width="2"/>
-        <path d="M22 44 C22 26, 58 26, 58 44 L54 54 L26 54 Z" fill="#1e293b" stroke="#facc15" stroke-width="2.5"/>
-        <rect x="28" y="39" width="24" height="7" rx="3" fill="#38bdf8"/>
-        <polygon points="40,14 35,27 45,27" fill="#facc15"/>
-      </svg>
+      <div style="font-size:44px;">🪖</div>
     </div>
     <div class="card-foot">
-      <span style="font-size:12px;color:#fde047;">💵 <b id="show-uc">0</b> Virtual UC</span>
+      <span style="font-size:12px;color:#fde047;">💵 <b id="show-uc">0</b> UC</span>
       <button class="play-btn" style="background:#facc15;color:#111;">O‘YNASH ▶</button>
     </div>
   </div>
@@ -53,19 +45,29 @@
     <div class="banner rblx-bg">
       <div>
         <span class="badge" style="background:#ef4444;color:#fff;">3D KUBIK OLAMI</span>
-        <div style="font-size:23px;font-weight:900;">ROBLOX</div>
-        <div style="font-size:12px;color:#fecaca;">Kiyimlar • Obby • Brookhaven • Sword</div>
+        <div style="font-size:21px;font-weight:900;">ROBLOX</div>
+        <div style="font-size:11px;color:#fecaca;">Uzun Parkur • Malibu 2 • Kerambit • Online</div>
       </div>
-      <svg width="72" height="72" viewBox="0 0 80 80">
-        <g transform="rotate(-14 40 40)">
-          <rect x="16" y="16" width="48" height="48" rx="8" fill="#ffffff" stroke="#ef4444" stroke-width="4"/>
-          <rect x="33" y="33" width="14" height="14" rx="2" fill="#0f172a"/>
-        </g>
-      </svg>
+      <div style="font-size:44px;">🟥</div>
     </div>
     <div class="card-foot">
-      <span style="font-size:12px;color:#86efac;">💎 <b id="show-rbx">0</b> Virtual R$</span>
+      <span style="font-size:12px;color:#86efac;">💎 <b id="show-rbx">0</b> R$</span>
       <button class="play-btn" style="background:#ef4444;color:#fff;">O‘YNASH ▶</button>
+    </div>
+  </div>
+
+  <div class="game-card" onclick="go('cs2.html')">
+    <div class="banner cs2-bg">
+      <div>
+        <span class="badge" style="background:#fb923c;color:#111;">TAKTIK OTISHMA</span>
+        <div style="font-size:20px;font-weight:900;">COUNTER-STRIKE 2</div>
+        <div style="font-size:11px;color:#fed7aa;">Dust 2 • Haus • Do‘kon • Online & Botlar</div>
+      </div>
+      <div style="font-size:44px;">🎯</div>
+    </div>
+    <div class="card-foot">
+      <span style="font-size:12px;color:#cbd5e1;">5v5 • Qurol Do‘koni</span>
+      <button class="play-btn" style="background:#fb923c;color:#111;">O‘YNASH ▶</button>
     </div>
   </div>
 
@@ -79,30 +81,19 @@
         }
       }
     } catch (e) {}
-
-    const DAY = 24 * 60 * 60 * 1000;
-    const now = Date.now();
-    const last = Number(localStorage.getItem('daily_claim_ts') || 0);
+    const DAY = 86400000, now = Date.now(), last = Number(localStorage.getItem('daily_claim_ts') || 0);
     let uc = Number(localStorage.getItem('p3_uc') || localStorage.getItem('br_uc') || localStorage.getItem('pg_uc') || 0);
     let rbx = Number(localStorage.getItem('r_bal') || 0);
-
     if (now - last >= DAY) {
-      uc += 200000;
-      rbx += 200000000;
-      localStorage.setItem('p3_uc', uc);
-      localStorage.setItem('r_bal', rbx);
-      localStorage.setItem('daily_claim_ts', now);
-      document.getElementById('bonus-box').innerHTML =
-        '🎁 <b>Bugungi tekin kunlik bonus berildi!</b><br>+200,000 Virtual UC (PUBG 2) va +200,000,000 Virtual R$ (Roblox)!';
+      uc += 200000; rbx += 200000000;
+      localStorage.setItem('p3_uc', uc); localStorage.setItem('r_bal', rbx); localStorage.setItem('daily_claim_ts', now);
+      document.getElementById('bonus-box').innerHTML = '🎁 <b>Kunlik bonus berildi!</b> +200,000 UC va +200,000,000 R$!';
     } else {
       const hrs = Math.ceil((DAY - (now - last)) / 3600000);
-      document.getElementById('bonus-box').innerHTML =
-        '✅ Bugungi kunlik bonus olingan! Keyingi <b>+200,000 UC</b> va <b>+200,000,000 R$</b> bonus <b>' + hrs + ' soat</b>dan keyin beriladi.';
+      document.getElementById('bonus-box').innerHTML = '✅ Bugungi bonus olingan. Keyingisi <b>' + hrs + ' soat</b>da.';
     }
-
     document.getElementById('show-uc').innerText = uc.toLocaleString();
     document.getElementById('show-rbx').innerText = rbx.toLocaleString();
-
     const qs = window.location.search || '';
     function go(file) { window.location.href = './' + file + qs; }
   </script>
