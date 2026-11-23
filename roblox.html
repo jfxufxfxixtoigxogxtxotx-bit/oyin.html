@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Roblox 3D Hub</title>
+  <title>Roblox 3D</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
@@ -11,34 +11,34 @@
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: #0f172a; color: #fff; }
     .scr { display: none; width: 100%; height: 100%; position: relative; }
     .scr.on { display: block; }
-    .hub { padding: 54px 12px 26px; overflow-y: auto; height: 100%; background: #0f172a; }
-    .top { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px 12px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid #ef4444; }
+    .hub { padding: 54px 12px 26px; overflow-y: auto; height: 100%; }
+    .top { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid #ef4444; }
     .rbx-pill { background: #22c55e; color: #052e16; padding: 5px 10px; border-radius: 8px; font-weight: 900; font-size: 12px; }
     .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
     .t-btn { flex: 1; padding: 9px; border-radius: 9px; border: 1px solid #334155; background: #1e293b; color: #cbd5e1; font-weight: 700; font-size: 12px; cursor: pointer; }
     .t-btn.on { background: #ef4444; color: #fff; border-color: #ef4444; }
-
-    .map-card { background: #1e293b; border: 1.5px solid #334155; border-radius: 14px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .map-card { background: #1e293b; border: 1.5px solid #334155; border-radius: 14px; padding: 12px; margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .card { background: #1e293b; border: 1.5px solid #334155; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
-    .card.eq { border-color: #22c55e; background: rgba(34,197,94,0.12); }
-
+    .card { background: #1e293b; border: 1.5px solid #334155; border-radius: 12px; padding: 10px; font-size: 12px; }
+    .card.eq { border-color: #22c55e; }
     .btn { border: none; border-radius: 8px; padding: 8px 12px; font-weight: 800; cursor: pointer; font-size: 12px; }
     .btn-red { background: #ef4444; color: #fff; }
     .btn-buy { width: 100%; margin-top: 6px; background: #facc15; color: #111; }
     .btn-buy.own { background: #334155; color: #fff; }
     .btn-buy.eq { background: #22c55e; color: #052e16; }
-
     .box { background: #1e293b; border-radius: 14px; padding: 12px; border: 1px solid #334155; }
     .inp { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #090d16; color: #fff; margin: 6px 0; font-size: 14px; }
 
     #c3d { width: 100%; height: 100%; display: block; touch-action: none; }
-    .hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
-    .pill { pointer-events: auto; background: rgba(0,0,0,0.72); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; border: 1px solid rgba(255,255,255,0.2); }
-    .joy { position: absolute; bottom: 18px; left: 18px; width: 104px; height: 104px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
-    .knob { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%; background: rgba(255,255,255,0.85); pointer-events: none; }
-    .acts { position: absolute; bottom: 20px; right: 18px; display: flex; gap: 10px; z-index: 10; }
-    .ab { width: 64px; height: 64px; border-radius: 50%; border: 2px solid #fff; font-weight: 900; font-size: 12px; color: #fff; cursor: pointer; }
+    .hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 10; pointer-events: none; }
+    .pill { pointer-events: auto; background: rgba(0,0,0,0.72); padding: 6px 11px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1px solid rgba(255,255,255,0.2); }
+    .rot-tip { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.78); padding: 4px 10px; border-radius: 999px; font-size: 11px; z-index: 15; display: none; }
+    .chat-box { position: absolute; top: 46px; left: 10px; width: 205px; background: rgba(9,13,22,0.72); border-radius: 9px; padding: 6px; font-size: 11px; z-index: 10; }
+    .joy { position: absolute; bottom: 16px; left: 16px; width: 102px; height: 102px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.3); touch-action: none; z-index: 10; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(255,255,255,0.85); pointer-events: none; }
+    .acts { position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px; align-items: flex-end; z-index: 10; }
+    .ab { width: 54px; height: 54px; border-radius: 50%; border: 2px solid #fff; font-weight: 900; font-size: 11px; color: #fff; background: rgba(0,0,0,0.7); touch-action: none; }
+    .ab-big { width: 68px; height: 68px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -54,20 +54,24 @@
     <div class="tabs">
       <button class="t-btn on" onclick="openTab('maps',this)">🗺️ Xaritalar</button>
       <button class="t-btn" onclick="openTab('skins',this)">👕 Kiyimlar</button>
-      <button class="t-btn" onclick="openTab('order',this)">💎 Robux Olish</button>
+      <button class="t-btn" onclick="openTab('order',this)">💎 Robux</button>
     </div>
 
     <div id="tab-maps">
       <div class="map-card">
-        <div><b>🧱 Obby Parkur (Minora)</b><div style="font-size:11px;color:#94a3b8;">Sakrab kubokka chiqing (+50 R$)</div></div>
+        <div><b>🧱 Katta Obby Parkur (30 bosqich)</b><div style="font-size:11px;color:#94a3b8;">Harakatlanuvchi plitalar & Checkpoint (+500 R$)</div></div>
         <button class="btn btn-red" onclick="playRbx('obby')">Kirish</button>
       </div>
       <div class="map-card">
-        <div><b>🏡 Brookhaven Shahar</b><div style="font-size:11px;color:#94a3b8;">Uylar, yo‘llar va kubik shahar</div></div>
+        <div><b>🌐 Online Otishmali Parkur</b><div style="font-size:11px;color:#94a3b8;">Haqiqiy odamlar bilan parkur + pistolet!</div></div>
+        <button class="btn btn-red" onclick="playRbx('online_obby')">Kirish</button>
+      </div>
+      <div class="map-card">
+        <div><b>🏡 Brookhaven (Qora Malibu 2)</b><div style="font-size:11px;color:#94a3b8;">Uylar va qop-qora Malibu 2 haydash</div></div>
         <button class="btn btn-red" onclick="playRbx('city')">Kirish</button>
       </div>
       <div class="map-card">
-        <div><b>⚔️ Sword Arena</b><div style="font-size:11px;color:#94a3b8;">Qilich bilan jang (+25 R$)</div></div>
+        <div><b>⚔️ Arena (Kerambit + Pistolet)</b><div style="font-size:11px;color:#94a3b8;">Kerambit pichog‘i va pistolet bilan jang</div></div>
         <button class="btn btn-red" onclick="playRbx('sword')">Kirish</button>
       </div>
     </div>
@@ -75,104 +79,99 @@
     <div id="tab-skins" class="grid" style="display:none;"></div>
 
     <div id="tab-order" class="box" style="display:none;">
-      <b style="font-size:15px;">💎 Haqiqiy Robux buyurtmasi</b>
-      <div style="font-size:11px;color:#94a3b8;margin:4px 0 8px;">Roblox nikingiz va kerakli Robux miqdorini yozing — buyurtma Adminga boradi, Admin tasdiqlagach akkauntingizga yetkaziladi.</div>
-      <input class="inp" id="rbx-nick" placeholder="Roblox Akkaunt Niki (masalan: Ali_UZ)" />
-      <input class="inp" type="number" id="rbx-amt" placeholder="Qancha Robux kerak? (masalan: 400)" />
+      <b>💎 Haqiqiy Robux buyurtmasi</b>
+      <input class="inp" id="rbx-nick" placeholder="Roblox Akkaunt Niki" />
+      <input class="inp" type="number" id="rbx-amt" placeholder="Qancha Robux kerak?" />
       <button class="btn" style="background:#22c55e;color:#052e16;width:100%;padding:12px;" onclick="orderRobux()">📩 Buyurtma yuborish</button>
-      <div id="ord-msg" style="margin-top:8px;font-size:12px;color:#86efac;"></div>
+      <div style="margin-top:10px;font-size:11px;color:#94a3b8;">Online Parkur uchun Firebase URL (ixtiyoriy):</div>
+      <input class="inp" id="fb-inp" placeholder="https://loyiha-default-rtdb.firebaseio.com" />
+      <button class="btn" style="background:#3b82f6;color:#fff;width:100%;" onclick="saveFb()">Firebase ulash</button>
     </div>
   </div>
 
   <div class="scr" id="scr-3d">
     <canvas id="c3d"></canvas>
+    <div class="rot-tip" id="rot-tip">📱 Telefonni yotqizib o‘ynang!</div>
     <div class="hud">
       <button class="pill" style="background:#dc2626;color:#fff;" onclick="exitRbx()">✖ Chiqish</button>
       <div class="pill" id="r-info">Obby</div>
     </div>
+    <div class="chat-box" id="chat-box">
+      <div id="c-log" style="max-height:58px;overflow:auto;margin-bottom:4px;"></div>
+      <div style="display:flex;gap:4px;">
+        <input id="c-inp" style="flex:1;padding:4px;border-radius:5px;border:none;background:#0f172a;color:#fff;font-size:11px;" placeholder="Yozing..." />
+        <button onclick="sendChat()" style="background:#22c55e;border:none;border-radius:5px;padding:4px 7px;font-weight:800;">OK</button>
+      </div>
+    </div>
     <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
     <div class="acts">
-      <button class="ab" style="background:#ef4444;display:none;" id="btn-sw" onclick="swingSword()">⚔️</button>
-      <button class="ab" style="background:#22c55e;color:#052e16;" onclick="doJump()">SAKRA</button>
+      <button class="ab" id="b-mic" ontouchstart="event.preventDefault();toggleMic()" onclick="toggleMic()">🎤<span>Mik</span></button>
+      <button class="ab" id="b-car" style="display:none;" ontouchstart="event.preventDefault();toggleMalibu()" onclick="toggleMalibu()">🚗<span>Malibu</span></button>
+      <button class="ab" id="b-wep" style="display:none;" ontouchstart="event.preventDefault();switchWep()" onclick="switchWep()">🔄<span id="wep-lbl">Kerambit</span></button>
+      <button class="ab" id="b-atk" style="display:none;background:#ef4444;" ontouchstart="event.preventDefault();doAttack()" onclick="doAttack()">🔥<span>Ur/Ot</span></button>
+      <button class="ab ab-big" id="b-jmp" style="background:#22c55e;color:#052e16;" ontouchstart="event.preventDefault();doJump()" onclick="doJump()">SAKRA</button>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    try { if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
-    const params = new URLSearchParams(window.location.search);
-    const botUser = params.get('bot') || '';
+    let uid = 'r' + Math.floor(Math.random()*99999), uname = 'Robloxchi';
+    try { if (tg) { tg.ready(); tg.expand(); if (tg.initDataUnsafe?.user) { uid='r'+tg.initDataUnsafe.user.id; uname=tg.initDataUnsafe.user.first_name; } } } catch (e) {}
+    const botUser = new URLSearchParams(window.location.search).get('bot') || '';
 
     const RBX_SKINS = [
-      {id:'noob',   icon:'🟨', name:'Noob Klassik',    price:0,        head:0xfacc15, shirt:0x2563eb, pants:0x22c55e, hat:'none'},
-      {id:'bacon',  icon:'🥓', name:'Bacon Hair',      price:50000,    head:0xfde68a, shirt:0x1e293b, pants:0x334155, hat:'hair'},
-      {id:'korblox',icon:'💀', name:'Korblox Ritsar',  price:500000,   head:0x0f172a, shirt:0x1e3a8a, pants:0x0f172a, hat:'horns'},
-      {id:'ninja',  icon:'🥷', name:'Yashil Ninja',    price:1000000,  head:0x18181b, shirt:0x166534, pants:0x18181b, hat:'band'},
-      {id:'hacker', icon:'🕶️', name:'Hacker Neon',     price:2500000,  head:0x18181b, shirt:0x090d16, pants:0x14532d, hat:'visor'},
-      {id:'hero',   icon:'🦸', name:'Superhero Qizil', price:3000000,  head:0xfde68a, shirt:0xdc2626, pants:0x1d4ed8, hat:'cape'},
-      {id:'dom',    icon:'👑', name:'Oltin Dominus',   price:5000000,  head:0xfacc15, shirt:0xb45309, pants:0x111827, hat:'crown'},
-      {id:'astro',  icon:'👨‍🚀', name:'Astronaut Oq',    price:10000000, head:0xf8fafc, shirt:0xe2e8f0, pants:0xcbd5e1, hat:'helmet'},
-      {id:'king',   icon:'💎', name:'Tilla Qirol VIP', price:50000000, head:0x38bdf8, shirt:0xfacc15, pants:0x1d4ed8, hat:'crown'}
+      {id:'noob',icon:'🟨',name:'Noob',price:0,head:0xfacc15,shirt:0x2563eb,pants:0x22c55e,hat:'none'},
+      {id:'bacon',icon:'🥓',name:'Bacon Hair',price:50000,head:0xfde68a,shirt:0x1e293b,pants:0x334155,hat:'hair'},
+      {id:'korblox',icon:'💀',name:'Korblox',price:500000,head:0x0f172a,shirt:0x1e3a8a,pants:0x0f172a,hat:'horns'},
+      {id:'ninja',icon:'🥷',name:'Ninja',price:1000000,head:0x18181b,shirt:0x166534,pants:0x18181b,hat:'band'},
+      {id:'hacker',icon:'🕶️',name:'Hacker',price:2500000,head:0x18181b,shirt:0x090d16,pants:0x14532d,hat:'visor'},
+      {id:'hero',icon:'🦸',name:'Superhero',price:3000000,head:0xfde68a,shirt:0xdc2626,pants:0x1d4ed8,hat:'cape'},
+      {id:'dom',icon:'👑',name:'Dominus',price:5000000,head:0xfacc15,shirt:0xb45309,pants:0x111827,hat:'crown'},
+      {id:'astro',icon:'👨‍🚀',name:'Astronaut',price:10000000,head:0xf8fafc,shirt:0xe2e8f0,pants:0xcbd5e1,hat:'helmet'}
     ];
 
     let rbx = Number(localStorage.getItem('r_bal') || 0);
     let ownR = JSON.parse(localStorage.getItem('r_own') || '["noob"]');
     let eqR = localStorage.getItem('r_eq') || 'noob';
+    let fbUrl = localStorage.getItem('p3_fb') || '';
+    document.getElementById('fb-inp').value = fbUrl;
 
     function saveRbx() {
-      localStorage.setItem('r_bal', rbx);
-      localStorage.setItem('r_own', JSON.stringify(ownR));
-      localStorage.setItem('r_eq', eqR);
+      localStorage.setItem('r_bal', rbx); localStorage.setItem('r_own', JSON.stringify(ownR)); localStorage.setItem('r_eq', eqR);
       document.getElementById('rbx-bal').innerText = rbx.toLocaleString();
     }
-    function addRbx(n) { rbx += n; saveRbx(); }
-
+    function saveFb() { fbUrl = document.getElementById('fb-inp').value.trim().replace(/\/$/,''); localStorage.setItem('p3_fb', fbUrl); alert('Saqlandi!'); }
     function openTab(t, btn) {
-      document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on'));
-      if (btn) btn.classList.add('on');
-      document.getElementById('tab-maps').style.display = t==='maps'?'block':'none';
-      document.getElementById('tab-skins').style.display = t==='skins'?'grid':'none';
-      document.getElementById('tab-order').style.display = t==='order'?'block':'none';
-      if (t==='skins') renderSkins();
-    }
-
-    function renderSkins() {
-      document.getElementById('tab-skins').innerHTML = RBX_SKINS.map(s => {
-        const isO = ownR.includes(s.id), isE = eqR===s.id;
-        return '<div class="card '+(isE?'eq':'')+'"><div><div style="font-size:26px;">'+s.icon+'</div><b>'+s.name+'</b></div>' +
-          '<button class="btn btn-buy '+(isE?'eq':(isO?'own':''))+'" onclick="buySkin(\''+s.id+'\')">' +
-          (isE?'✅ Kiyilgan':(isO?'Kiyish':s.price.toLocaleString()+' R$'))+'</button></div>';
+      document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('on')); if(btn)btn.classList.add('on');
+      document.getElementById('tab-maps').style.display=t==='maps'?'block':'none';
+      document.getElementById('tab-skins').style.display=t==='skins'?'grid':'none';
+      document.getElementById('tab-order').style.display=t==='order'?'block':'none';
+      if (t==='skins') document.getElementById('tab-skins').innerHTML = RBX_SKINS.map(s => {
+        const isO=ownR.includes(s.id), isE=eqR===s.id;
+        return '<div class="card '+(isE?'eq':'')+'"><div><div style="font-size:24px;">'+s.icon+'</div><b>'+s.name+'</b></div>' +
+          '<button class="btn btn-buy '+(isE?'eq':(isO?'own':''))+'" onclick="buySkin(\''+s.id+'\')">'+(isE?'✅ Kiyilgan':(isO?'Kiyish':s.price.toLocaleString()+' R$'))+'</button></div>';
       }).join('');
     }
-
     function buySkin(id) {
-      const s = RBX_SKINS.find(x=>x.id===id);
-      if (!ownR.includes(id)) {
-        if (rbx < s.price) return alert('Virtual R$ yetarli emas! Menyu orqali kunlik bonus oling.');
-        rbx -= s.price; ownR.push(id);
-      }
-      eqR = id; saveRbx(); renderSkins();
+      const s=RBX_SKINS.find(x=>x.id===id);
+      if(!ownR.includes(id)){ if(rbx<s.price) return alert('R$ kam!'); rbx-=s.price; ownR.push(id); }
+      eqR=id; saveRbx(); openTab('skins');
     }
-
     function orderRobux() {
-      const rawNick = document.getElementById('rbx-nick').value.trim();
-      const cleanNick = rawNick.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+      const nick = document.getElementById('rbx-nick').value.trim().replace(/[^a-zA-Z0-9_]/g,'').slice(0,20);
       const amt = Number(document.getElementById('rbx-amt').value.trim());
-      if (cleanNick.length < 3 || !amt || amt < 10) return alert('To‘g‘ri Roblox niki va miqdor kiriting!');
-      if (botUser && tg && tg.openTelegramLink) {
-        tg.openTelegramLink('https://t.me/' + botUser + '?start=rbx-' + cleanNick + '-' + amt);
-      } else {
-        document.getElementById('ord-msg').innerText = '✅ Buyurtma tayyor: ' + cleanNick + ' | ' + amt + ' Robux.';
-      }
+      if (nick.length<3 || !amt) return alert('To‘g‘ri nik va miqdor yozing!');
+      if (botUser && tg && tg.openTelegramLink) tg.openTelegramLink('https://t.me/'+botUser+'?start=rbx-'+nick+'-'+amt);
+      else alert('Buyurtma: '+nick+' | '+amt+' Robux');
     }
-
     saveRbx();
 
-    /* Roblox 3D Engine */
-    let scene, cam, ren, pMesh, plats = [], enemies = [], goalMesh = null;
-    let run = false, anim = null, yaw = 0, vy = 0, onG = false, curMode = 'obby', joy = {x:0,y:0};
+    /* 3D Engine */
+    let scene, cam, ren, pMesh, malibuMesh, plats = [], movers = [], enemies = [], bullets = [], goalMesh = null, remote = {};
+    let run = false, anim = null, yaw = 0, vy = 0, onG = false, curMode = 'obby', joy = {x:0,y:0}, inCar = false;
+    let curWep = 'kerambit', checkPt = {x:0,y:1.5,z:0}, lastSync = 0, tTick = 0, jumpLock = 0;
 
-    function mkBlockChar(sk) {
+    function mkChar(sk, withWeps=false) {
       const g = new THREE.Group();
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.7,0.7,0.7), new THREE.MeshLambertMaterial({color:sk.head})); head.position.y=2.25;
       const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0,1.0,0.5), new THREE.MeshLambertMaterial({color:sk.shirt})); torso.position.y=1.4;
@@ -181,23 +180,11 @@
       const a1 = new THREE.Mesh(new THREE.BoxGeometry(0.38,0.95,0.45), new THREE.MeshLambertMaterial({color:sk.head})); a1.position.set(-0.72,1.4,0);
       const a2 = new THREE.Mesh(new THREE.BoxGeometry(0.38,0.95,0.45), new THREE.MeshLambertMaterial({color:sk.head})); a2.position.set(0.72,1.4,0);
       g.add(head, torso, l1, l2, a1, a2);
-
-      if (sk.hat === 'crown') {
-        const cr = new THREE.Mesh(new THREE.BoxGeometry(0.78,0.28,0.78), new THREE.MeshLambertMaterial({color:0xfacc15})); cr.position.y=2.72; g.add(cr);
-      } else if (sk.hat === 'hair') {
-        const hr = new THREE.Mesh(new THREE.BoxGeometry(0.78,0.32,0.78), new THREE.MeshLambertMaterial({color:0x78350f})); hr.position.y=2.66; g.add(hr);
-      } else if (sk.hat === 'horns') {
-        const hm = new THREE.MeshLambertMaterial({color:0x38bdf8});
-        const h1 = new THREE.Mesh(new THREE.BoxGeometry(0.15,0.4,0.15), hm); h1.position.set(-0.3,2.75,0);
-        const h2 = new THREE.Mesh(new THREE.BoxGeometry(0.15,0.4,0.15), hm); h2.position.set(0.3,2.75,0); g.add(h1,h2);
-      } else if (sk.hat === 'visor') {
-        const vs = new THREE.Mesh(new THREE.BoxGeometry(0.74,0.2,0.2), new THREE.MeshBasicMaterial({color:0x22c55e})); vs.position.set(0,2.3,-0.32); g.add(vs);
-      } else if (sk.hat === 'cape') {
-        const cp = new THREE.Mesh(new THREE.BoxGeometry(0.9,1.1,0.08), new THREE.MeshLambertMaterial({color:0x2563eb})); cp.position.set(0,1.35,0.32); g.add(cp);
-      } else if (sk.hat === 'helmet') {
-        const hl = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.85,0.9), new THREE.MeshLambertMaterial({color:0x38bdf8, transparent:true, opacity:0.45})); hl.position.y=2.25; g.add(hl);
-      } else if (sk.hat === 'band') {
-        const bd = new THREE.Mesh(new THREE.BoxGeometry(0.76,0.16,0.76), new THREE.MeshLambertMaterial({color:0x22c55e})); bd.position.y=2.4; g.add(bd);
+      if (sk.hat==='crown') { const m=new THREE.Mesh(new THREE.BoxGeometry(0.78,0.28,0.78), new THREE.MeshLambertMaterial({color:0xfacc15})); m.position.y=2.72; g.add(m); }
+      if (sk.hat==='hair') { const m=new THREE.Mesh(new THREE.BoxGeometry(0.78,0.3,0.78), new THREE.MeshLambertMaterial({color:0x78350f})); m.position.y=2.66; g.add(m); }
+      if (withWeps) {
+        const wMesh = new THREE.Mesh(new THREE.BoxGeometry(0.16,0.16,0.9), new THREE.MeshLambertMaterial({color:0x2dd4bf}));
+        wMesh.position.set(0.72, 1.15, -0.55); g.add(wMesh);
       }
       return g;
     }
@@ -207,96 +194,183 @@
       curMode = mode;
       document.getElementById('scr-hub').classList.remove('on');
       document.getElementById('scr-3d').classList.add('on');
-      document.getElementById('btn-sw').style.display = mode==='sword'?'block':'none';
-      document.getElementById('r-info').innerText = mode==='obby'?'🧱 Obby Parkur':(mode==='city'?'🏡 Brookhaven':'⚔️ Sword Arena');
+      try { if (screen.orientation?.lock) screen.orientation.lock('landscape'); } catch (e) {}
+
+      const hasCombat = (mode==='sword' || mode==='online_obby');
+      document.getElementById('b-wep').style.display = hasCombat ? 'block' : 'none';
+      document.getElementById('b-atk').style.display = hasCombat ? 'block' : 'none';
+      document.getElementById('b-car').style.display = mode==='city' ? 'block' : 'none';
+      document.getElementById('r-info').innerText = mode==='obby'?'🧱 Obby 30':(mode==='online_obby'?'🌐 Online Parkur':(mode==='city'?'🏡 Brookhaven':'⚔️ Arena'));
 
       const c = document.getElementById('c3d');
       ren = new THREE.WebGLRenderer({canvas:c, antialias:true});
       ren.setSize(window.innerWidth, window.innerHeight);
       scene = new THREE.Scene(); scene.background = new THREE.Color(0x60a5fa);
-      cam = new THREE.PerspectiveCamera(68, window.innerWidth/window.innerHeight, 0.1, 300);
+      cam = new THREE.PerspectiveCamera(68, window.innerWidth/window.innerHeight, 0.1, 350);
       scene.add(new THREE.HemisphereLight(0xffffff, 0x334155, 1.0));
 
-      plats = []; enemies = []; goalMesh = null; yaw = 0; vy = 0;
-      const mySkin = RBX_SKINS.find(x=>x.id===eqR) || RBX_SKINS[0];
-      pMesh = mkBlockChar(mySkin); scene.add(pMesh);
+      plats = []; movers = []; enemies = []; bullets = []; remote = {}; goalMesh = null; malibuMesh = null;
+      yaw = 0; vy = 0; inCar = false; curWep = 'kerambit'; checkPt = {x:0,y:1.5,z:0};
+      const sk = RBX_SKINS.find(x=>x.id===eqR) || RBX_SKINS[0];
+      pMesh = mkChar(sk, hasCombat); scene.add(pMesh);
 
-      if (mode === 'obby') {
-        pMesh.position.set(0,1.5,0);
-        const lava = new THREE.Mesh(new THREE.PlaneGeometry(240,240), new THREE.MeshBasicMaterial({color:0xdc2626}));
+      if (mode === 'obby' || mode === 'online_obby') {
+        pMesh.position.set(0, 1.5, 0);
+        const lava = new THREE.Mesh(new THREE.PlaneGeometry(360,360), new THREE.MeshBasicMaterial({color:0xdc2626}));
         lava.rotation.x=-Math.PI/2; lava.position.y=-3; scene.add(lava);
         const cols = [0x22c55e,0xfacc15,0x3b82f6,0xa855f7,0xf97316];
-        for (let i=0; i<12; i++) {
-          const w=4.5, d=4.5, px=(i%2===0?-1.5:1.5), py=i*1.2, pz=-i*6.5;
-          const b = new THREE.Mesh(new THREE.BoxGeometry(w,1,d), new THREE.MeshLambertMaterial({color:cols[i%5]}));
-          b.position.set(px,py-0.5,pz); scene.add(b);
-          plats.push({x:px,y:py,z:pz,hw:w/2,hd:d/2});
+        for (let i=0; i<30; i++) {
+          const isCP = (i>0 && i%6===0);
+          const w = isCP ? 6.0 : (i>15 ? 2.8 : 3.8), d = isCP ? 6.0 : 3.4;
+          const bx = isCP ? 0 : (i%2===0 ? -2.2 : 2.2), py = i*1.1, pz = -i*6.2;
+          const b = new THREE.Mesh(new THREE.BoxGeometry(w, 1, d), new THREE.MeshLambertMaterial({color: isCP?0x22c55e:cols[i%5]}));
+          b.position.set(bx, py-0.5, pz); scene.add(b);
+          const obj = {mesh:b, x:bx, baseX:bx, y:py, z:pz, hw:w/2, hd:d/2, move:(i>7 && !isCP && i%3===0), cp:isCP};
+          plats.push(obj); if (obj.move) movers.push(obj);
         }
-        goalMesh = new THREE.Mesh(new THREE.BoxGeometry(2.5,2.5,2.5), new THREE.MeshBasicMaterial({color:0xfacc15}));
-        goalMesh.position.set(1.5, 11*1.2+1.8, -11*6.5); scene.add(goalMesh);
+        goalMesh = new THREE.Mesh(new THREE.BoxGeometry(2.8,2.8,2.8), new THREE.MeshBasicMaterial({color:0xfacc15}));
+        goalMesh.position.set(2.2, 29*1.1 + 1.8, -29*6.2); scene.add(goalMesh);
+        document.getElementById('c-log').innerHTML = mode==='online_obby' ? (fbUrl?'🌐 Online Parkur tayyor!':'⚠️ Firebase ulanmagan (0 bot)') : '🧱 30 bosqichli Parkur!';
       } else {
         pMesh.position.set(0,0,0);
         const gr = new THREE.Mesh(new THREE.PlaneGeometry(240,240), new THREE.MeshLambertMaterial({color:0x4ade80}));
-        gr.rotation.x=-Math.PI/2; scene.add(gr);
-        plats.push({x:0,y:0,z:0,hw:120,hd:120});
+        gr.rotation.x=-Math.PI/2; scene.add(gr); plats.push({x:0,y:0,z:0,hw:120,hd:120});
         if (mode === 'city') {
-          const hcols = [0xef4444,0x3b82f6,0xfacc15,0xa855f7];
-          for (let i=0; i<8; i++) {
-            const hb = new THREE.Mesh(new THREE.BoxGeometry(9,6,8), new THREE.MeshLambertMaterial({color:hcols[i%4]}));
-            hb.position.set(i%2===0?-14:14, 3, -15-Math.floor(i/2)*18); scene.add(hb);
-          }
-          const rd = new THREE.Mesh(new THREE.BoxGeometry(8,0.1,160), new THREE.MeshLambertMaterial({color:0x334155}));
-          rd.position.set(0,0.05,-40); scene.add(rd);
+          const hc = [0xef4444,0x3b82f6,0xfacc15,0xa855f7];
+          for (let i=0; i<10; i++) { const hb=new THREE.Mesh(new THREE.BoxGeometry(9,6,8), new THREE.MeshLambertMaterial({color:hc[i%4]})); hb.position.set(i%2===0?-14:14,3,-12-Math.floor(i/2)*18); scene.add(hb); }
+          const rd = new THREE.Mesh(new THREE.BoxGeometry(9,0.1,180), new THREE.MeshLambertMaterial({color:0x1e293b})); rd.position.set(0,0.05,-45); scene.add(rd);
+          /* Qop-qora Malibu 2 */
+          malibuMesh = new THREE.Group();
+          const cb = new THREE.Mesh(new THREE.BoxGeometry(2.4,0.9,4.6), new THREE.MeshLambertMaterial({color:0x050507})); cb.position.y=0.6;
+          const cc = new THREE.Mesh(new THREE.BoxGeometry(2.0,0.7,2.1), new THREE.MeshLambertMaterial({color:0x111827})); cc.position.y=1.35;
+          malibuMesh.add(cb, cc); malibuMesh.position.set(3, 0, -8); scene.add(malibuMesh);
         } else {
-          for (let i=0; i<6; i++) {
-            const em = mkBlockChar(RBX_SKINS[(i+1)%RBX_SKINS.length]);
-            em.position.set((Math.random()-0.5)*40,0,-10-Math.random()*35);
-            scene.add(em); enemies.push({mesh:em, hp:60});
-          }
+          for (let i=0; i<7; i++) { const em=mkChar(RBX_SKINS[(i+1)%RBX_SKINS.length],true); em.position.set((Math.random()-0.5)*40,0,-10-Math.random()*35); scene.add(em); enemies.push({mesh:em,hp:70}); }
         }
       }
       run = true; if (anim) cancelAnimationFrame(anim); loopRbx();
     }
 
-    function exitRbx() { run=false; if(anim)cancelAnimationFrame(anim); document.getElementById('scr-3d').classList.remove('on'); document.getElementById('scr-hub').classList.add('on'); }
-    function doJump() { if (onG) { vy=0.28; onG=false; } }
-    function swingSword() {
-      for (let i=enemies.length-1; i>=0; i--) {
-        if (pMesh.position.distanceTo(enemies[i].mesh.position) < 4.5) {
-          enemies[i].hp -= 35;
-          if (enemies[i].hp<=0) {
-            scene.remove(enemies[i].mesh); enemies.splice(i,1); addRbx(25);
-            const em = mkBlockChar(RBX_SKINS[2]); em.position.set((Math.random()-0.5)*40,0,-10-Math.random()*35);
-            scene.add(em); enemies.push({mesh:em, hp:60});
-          }
-        }
+    function exitRbx() {
+      run=false; if(anim)cancelAnimationFrame(anim);
+      try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch (e) {}
+      document.getElementById('scr-3d').classList.remove('on'); document.getElementById('scr-hub').classList.add('on');
+    }
+
+    function doJump() { if (onG && !inCar) { vy = 0.29; onG = false; jumpLock = 6; } }
+    function toggleMalibu() {
+      if (!malibuMesh) return;
+      if (!inCar && pMesh.position.distanceTo(malibuMesh.position) > 7) return alert('Qora Malibu 2 ga yaqinroq boring!');
+      inCar = !inCar; pMesh.visible = !inCar;
+    }
+    function switchWep() {
+      curWep = curWep==='kerambit' ? 'pistolet' : 'kerambit';
+      document.getElementById('wep-lbl').innerText = curWep==='kerambit' ? 'Kerambit' : 'Pistolet';
+    }
+    function doAttack() {
+      if (curWep === 'kerambit') {
+        for (let i=enemies.length-1; i>=0; i--) if (pMesh.position.distanceTo(enemies[i].mesh.position)<4.5) hitBot(i, 45);
+      } else {
+        const b = new THREE.Mesh(new THREE.SphereGeometry(0.16,6,6), new THREE.MeshBasicMaterial({color:0xfacc15}));
+        b.position.copy(pMesh.position).add(new THREE.Vector3(0,1.5,0)); scene.add(b);
+        bullets.push({mesh:b, vel:new THREE.Vector3(-Math.sin(yaw)*1.5, 0, -Math.cos(yaw)*1.5), life:45});
+      }
+    }
+    function hitBot(i, dmg) {
+      enemies[i].hp -= dmg;
+      if (enemies[i].hp<=0) {
+        scene.remove(enemies[i].mesh); enemies.splice(i,1); addRbx(50);
+        const em=mkChar(RBX_SKINS[2],true); em.position.set((Math.random()-0.5)*40,0,-10-Math.random()*35); scene.add(em); enemies.push({mesh:em,hp:70});
       }
     }
 
+    function sendChat() {
+      const i=document.getElementById('c-inp'), v=i.value.trim(); if(!v) return; i.value='';
+      if (fbUrl) fetch(fbUrl+'/rbx_chat.json', {method:'POST', body:JSON.stringify({n:uname,m:v})});
+      else document.getElementById('c-log').innerHTML += '<div><b>'+uname+':</b> '+v+'</div>';
+    }
+    function toggleMic() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return alert('Mikrafon matn-ovoz funksiyasi bu brauzerda qo‘llab-quvvatlanmadi (jonli ovoz uchun ovoz serveri kerak).');
+      const rec = new SR(); rec.lang = 'uz-UZ';
+      document.getElementById('b-mic').style.background = '#ef4444';
+      rec.onresult = e => { document.getElementById('c-inp').value = e.results[0][0].transcript; sendChat(); };
+      rec.onend = () => { document.getElementById('b-mic').style.background = 'rgba(0,0,0,0.7)'; };
+      rec.start();
+    }
+
+    async function syncOnline() {
+      if (!fbUrl || curMode!=='online_obby') return;
+      try {
+        fetch(fbUrl+'/rbx_p/'+uid+'.json', {method:'PUT', body:JSON.stringify({n:uname,x:pMesh.position.x,y:pMesh.position.y,z:pMesh.position.z,r:yaw,t:Date.now()})});
+        const r=await fetch(fbUrl+'/rbx_p.json'), d=await r.json()||{}, now=Date.now();
+        Object.keys(d).forEach(k=>{
+          if(k===uid||now-d[k].t>12000) return;
+          if(!remote[k]){ remote[k]=mkChar(RBX_SKINS[1],true); scene.add(remote[k]); }
+          remote[k].position.set(d[k].x,d[k].y,d[k].z); remote[k].rotation.y=d[k].r;
+        });
+        const cr=await fetch(fbUrl+'/rbx_chat.json'), cd=await cr.json()||{};
+        document.getElementById('c-log').innerHTML = Object.values(cd).slice(-4).map(m=>'<div><b>'+m.n+':</b> '+m.m+'</div>').join('');
+      } catch (e) {}
+    }
+
     function loopRbx() {
-      if (!run) return; anim = requestAnimationFrame(loopRbx);
+      if (!run) return; anim = requestAnimationFrame(loopRbx); tTick += 0.04;
+      document.getElementById('rot-tip').style.display = window.innerHeight > window.innerWidth ? 'block' : 'none';
+
+      for (const m of movers) {
+        m.x = m.baseX + Math.sin(tTick) * 3.2;
+        m.mesh.position.x = m.x;
+      }
+
+      const spd = inCar ? 0.55 : 0.25;
       const fwd = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw)), rgt = new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
-      pMesh.position.addScaledVector(fwd,-joy.y*0.26).addScaledVector(rgt,joy.x*0.26); pMesh.rotation.y=yaw;
-      pMesh.position.y+=vy; vy-=0.015; onG=false;
+      pMesh.position.addScaledVector(fwd,-joy.y*spd).addScaledVector(rgt,joy.x*spd); pMesh.rotation.y=yaw;
+      if (inCar && malibuMesh) { malibuMesh.position.copy(pMesh.position); malibuMesh.rotation.y=yaw; }
+
+      if (jumpLock > 0) jumpLock--;
+      pMesh.position.y += vy; vy -= 0.014; onG = false;
       for (const p of plats) {
-        if (Math.abs(pMesh.position.x-p.x)<=p.hw+0.4 && Math.abs(pMesh.position.z-p.z)<=p.hd+0.4) {
-          if (pMesh.position.y<=p.y && pMesh.position.y>=p.y-1.0 && vy<=0) { pMesh.position.y=p.y; vy=0; onG=true; }
+        if (Math.abs(pMesh.position.x-p.x)<=p.hw+0.45 && Math.abs(pMesh.position.z-p.z)<=p.hd+0.45) {
+          if (jumpLock===0 && pMesh.position.y<=p.y+0.25 && pMesh.position.y>=p.y-1.2 && vy<=0) {
+            pMesh.position.y=p.y; vy=0; onG=true;
+            if (p.cp) checkPt = {x:p.x, y:p.y+1.2, z:p.z};
+          }
         }
       }
-      if (curMode==='obby' && pMesh.position.y<-3) { pMesh.position.set(0,1.5,0); vy=0; }
-      if (goalMesh) { goalMesh.rotation.y+=0.04; if (pMesh.position.distanceTo(goalMesh.position)<3) { addRbx(50); alert('🏆 Obby tugadi! +50 R$'); pMesh.position.set(0,1.5,0); vy=0; } }
-      for (const e of enemies) { e.mesh.lookAt(pMesh.position.x,0,pMesh.position.z); if (e.mesh.position.distanceTo(pMesh.position)>2.5) e.mesh.position.addScaledVector(new THREE.Vector3().subVectors(pMesh.position,e.mesh.position).normalize(),0.06); }
+      if ((curMode==='obby'||curMode==='online_obby') && pMesh.position.y < -3) {
+        pMesh.position.set(checkPt.x, checkPt.y, checkPt.z); vy=0;
+      }
+      if (goalMesh) {
+        goalMesh.rotation.y+=0.04;
+        if (pMesh.position.distanceTo(goalMesh.position)<3.2) { addRbx(500); alert('🏆 Parkur yakunlandi! +500 R$'); checkPt={x:0,y:1.5,z:0}; pMesh.position.set(0,1.5,0); vy=0; }
+      }
+      for (let i=bullets.length-1; i>=0; i--) {
+        const b=bullets[i]; b.mesh.position.add(b.vel); b.life--; let hit=false;
+        for (let j=enemies.length-1; j>=0; j--) if (b.mesh.position.distanceTo(enemies[j].mesh.position.clone().add(new THREE.Vector3(0,1.4,0)))<1.6) { hitBot(j,35); hit=true; break; }
+        if (hit||b.life<=0) { scene.remove(b.mesh); bullets.splice(i,1); }
+      }
+      for (const e of enemies) { e.mesh.lookAt(pMesh.position.x,0,pMesh.position.z); if (e.mesh.position.distanceTo(pMesh.position)>2.6) e.mesh.position.addScaledVector(new THREE.Vector3().subVectors(pMesh.position,e.mesh.position).normalize(),0.06); }
+      if (curMode==='online_obby' && Date.now()-lastSync>1100) { lastSync=Date.now(); syncOnline(); }
+
       cam.position.set(pMesh.position.x+Math.sin(yaw)*6.5, pMesh.position.y+3.8, pMesh.position.z+Math.cos(yaw)*6.5);
       cam.lookAt(pMesh.position.x, pMesh.position.y+1.8, pMesh.position.z);
       ren.render(scene, cam);
     }
 
+    window.addEventListener('resize', ()=>{ if(ren&&cam&&run){ ren.setSize(window.innerWidth,window.innerHeight); cam.aspect=window.innerWidth/window.innerHeight; cam.updateProjectionMatrix(); } });
     const jz=document.getElementById('joy'), kb=document.getElementById('knob');
-    jz.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0],r=jz.getBoundingClientRect();let dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2);const mr=r.width/2-15,d=Math.hypot(dx,dy);if(d>mr){dx=dx/d*mr;dy=dy/d*mr;}kb.style.transform='translate('+dx+'px,'+dy+'px)';joy.x=dx/mr;joy.y=dy/mr;},{passive:false});
+    function onJoy(e) {
+      e.preventDefault(); const t=e.targetTouches[0]; if(!t)return;
+      const r=jz.getBoundingClientRect(); let dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
+      const mr=r.width/2-15, d=Math.hypot(dx,dy); if(d>mr){dx=dx/d*mr;dy=dy/d*mr;}
+      kb.style.transform='translate('+dx+'px,'+dy+'px)'; joy.x=dx/mr; joy.y=dy/mr;
+    }
+    jz.addEventListener('touchstart',onJoy,{passive:false}); jz.addEventListener('touchmove',onJoy,{passive:false});
     jz.addEventListener('touchend',()=>{joy={x:0,y:0};kb.style.transform='translate(0,0)';});
     let lx=null; const c3=document.getElementById('c3d');
-    c3.addEventListener('touchstart',e=>{lx=e.touches[0].clientX;});
-    c3.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];yaw-=(t.clientX-lx)*0.007;lx=t.clientX;},{passive:false});
+    c3.addEventListener('touchstart',e=>{if(e.targetTouches[0])lx=e.targetTouches[0].clientX;});
+    c3.addEventListener('touchmove',e=>{e.preventDefault();const t=e.targetTouches[0];if(!t)return;yaw-=(t.clientX-lx)*0.007;lx=t.clientX;},{passive:false});
   </script>
 </body>
 </html>
