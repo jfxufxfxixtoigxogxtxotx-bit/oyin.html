@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gift Ruletka</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: 12px 12px 86px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f1f4f9; color: #111827; min-height: 100dvh;
+    }
+    .page { display: none; }
+    .page.on { display: block; }
+
+    /* Top Bar */
+    .top-pills { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
+    .pill {
+      background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 700;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 5px;
+    }
+    .seg { background: #e5e9f2; border-radius: 14px; padding: 4px; display: flex; margin-bottom: 12px; }
+    .seg button {
+      flex: 1; border: none; background: transparent; padding: 9px; border-radius: 11px;
+      font-weight: 700; font-size: 14px; color: #4b5563; cursor: pointer;
+    }
+    .seg button.on { background: #0088ff; color: #fff; box-shadow: 0 3px 10px rgba(0,136,255,0.28); }
+
+    .card { background: #fff; border-radius: 20px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15,23,42,0.05); }
+
+    /* Tiers */
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .tier {
+      background: #fff; border: 2px solid transparent; border-radius: 16px; padding: 10px 8px;
+      cursor: pointer; box-shadow: 0 3px 12px rgba(0,0,0,0.04); text-align: left;
+    }
+    .tier.on { border-color: #0088ff; background: #eef6ff; }
+    .tier small { font-size: 10px; font-weight: 800; color: #6b7280; display: block; }
+    .tier b { font-size: 15px; }
+
+    /* Roulette */
+    .roulette-wrap {
+      position: relative; background: #fff; border-radius: 22px; padding: 20px 0; margin-bottom: 12px;
+      overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+    }
+    .pointer-line { position: absolute; left: 50%; top: 6px; bottom: 6px; width: 2px; background: #0088ff; transform: translateX(-50%); z-index: 5; }
+    .pointer-top { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); color: #0088ff; font-size: 11px; z-index: 6; }
+    .track { display: flex; gap: 10px; padding-left: calc(50% - 55px); transition: transform 3.8s cubic-bezier(0.12, 0.88, 0.2, 1); will-change: transform; }
+    .r-item {
+      min-width: 110px; height: 126px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    }
+    .r-ico { font-size: 46px; }
+    .r-val { background: #e0f0ff; color: #0066cc; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+
+    /* Action Row */
+    .go-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .btn-blue {
+      flex: 1; border: none; border-radius: 16px; background: #0088ff; color: #fff;
+      font-size: 15px; font-weight: 800; padding: 15px; cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,136,255,0.3);
+    }
+    .demo-box {
+      background: #fff; border-radius: 16px; padding: 8px 12px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #4b5563; cursor: pointer;
+    }
+    .sw { width: 42px; height: 22px; background: #d1d5db; border-radius: 999px; position: relative; margin-top: 4px; transition: 0.2s; }
+    .sw.on { background: #22c55e; }
+    .sw::after { content: ""; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
+    .sw.on::after { left: 22px; }
+
+    /* Prize Grid */
+    .p-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .p-card {
+      position: relative; background: #fff; border-radius: 16px; padding: 10px 4px; text-align: center;
+      overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .nft-tag {
+      position: absolute; top: 6px; right: -16px; background: #7c3aed; color: #fff;
+      font-size: 9px; font-weight: 900; padding: 2px 18px; transform: rotate(45deg);
+    }
+
+    /* Raffle & Leaderboard */
+    .timer { font-size: 30px; font-weight: 900; text-align: center; letter-spacing: 2px; margin: 10px 0; }
+    .stats-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .st-box { background: #f3f6fb; border-radius: 14px; padding: 10px 6px; text-align: center; }
+    .st-box b { font-size: 16px; display: block; }
+    .st-box small { font-size: 11px; color: #6b7280; }
+    .row-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+    .pod-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 6px; text-align: center; position: relative; overflow: hidden; }
+
+    /* Tasks */
+    .chips { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; }
+    .chip { border: none; background: #fff; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; color: #374151; cursor: pointer; }
+    .chip.on { background: #0088ff; color: #fff; }
+    .prog-bg { height: 6px; background: #e5e7eb; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .prog-fill { height: 100%; background: #0088ff; }
+
+    /* Bottom Nav */
+    .bnav {
+      position: fixed; left: 10px; right: 10px; bottom: 10px; background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px); border-radius: 26px; padding: 7px 6px;
+      display: flex; justify-content: space-around; box-shadow: 0 8px 28px rgba(15,23,42,0.14); z-index: 30;
+    }
+    .nb {
+      border: none; background: transparent; display: flex; flex-direction: column; align-items: center;
+      gap: 2px; font-size: 10px; font-weight: 700; color: #6b7280; cursor: pointer; position: relative;
+    }
+    .nb.on { color: #0088ff; }
+    .nb span { font-size: 20px; }
+    .nb-badge { position: absolute; top: -2px; right: 2px; background: #ef4444; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. TURNIRLAR -->
+  <div class="page" id="pg-turnir">
+    <div class="seg"><button class="on">Faol</button><button>Tarix</button></div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <b style="font-size:17px;">🏆 Kundalik #232</b>
+        <span style="font-size:12px;color:#6b7280;">👥 456 ishtirokchi</span>
+      </div>
+      <div class="podium">
+        <div class="pod-card"><span class="nft-tag">NFT</span><div style="font-size:32px;">🍭</div><div class="r-val">510 💎</div><small>#2 • 21,346</small></div>
+        <div class="pod-card" style="border-color:#0088ff;"><span class="nft-tag">NFT</span><div style="font-size:36px;">🍯</div><div class="r-val">510 💎</div><small>#1 • RS</small></div>
+        <div class="pod-card"><span class="nft-tag">NFT</span><div style="font-size:32px;">🗽</div><div class="r-val">500 💎</div><small>#3 • 6,546</small></div>
+      </div>
+    </div>
+    <div class="card">
+      <b>Peshqadamlar jadvali</b>
+      <div id="lb-list" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- 2. YUTUQLI O'YINLAR -->
+  <div class="page" id="pg-raffle">
+    <div class="seg"><button class="on">Faol</button><button>Tarix</button></div>
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:10px;">🎁 Sovrinlar</div>
+      <div class="p-grid">
+        <div class="p-card"><div style="font-size:30px;">🧸</div><div class="r-val">15 💎</div></div>
+        <div class="p-card"><div style="font-size:30px;">🎂</div><div class="r-val">50 💎</div></div>
+        <div class="p-card" style="border:1.5px solid #0088ff;"><span class="nft-tag">NFT</span><div style="font-size:30px;">🍰</div><div class="r-val">510 💎</div></div>
+        <div class="p-card"><div style="font-size:30px;">💍</div><div class="r-val">100 💎</div></div>
+      </div>
+      <div style="text-align:center;color:#6b7280;font-size:13px;margin-top:12px;">🕒 O‘yin tugashiga:</div>
+      <div class="timer" id="raffle-timer">12 : 17 : 19</div>
+      <div class="stats-3">
+        <div class="st-box"><b id="r-tot">33 350</b><small>Jami chiptalar</small></div>
+        <div class="st-box"><b id="r-my">8</b><small>Sizning chiptalaringiz</small></div>
+        <div class="st-box"><b id="r-ch">0.5%</b><small>Sizning shansingiz</small></div>
+      </div>
+      <button class="btn-blue" style="width:100%;margin-bottom:8px;" onclick="addTicket()">Chipta qo‘shish (+1)</button>
+      <button class="btn-blue" style="width:100%;background:#fff;color:#111;border:1px solid #e5e7eb;box-shadow:none;" onclick="goPage('tasks')">🎯 Chipta ishlab topish</button>
+    </div>
+  </div>
+
+  <!-- 3. O'YNASH (RULETKA) -->
+  <div class="page on" id="pg-play">
+    <div class="top-pills">
+      <div class="pill" style="flex:1;overflow:hidden;white-space:nowrap;" id="last-win">🟢 Tezkor yutdi 🚀</div>
+      <div class="pill">🎟️ <span id="top-tix">8</span></div>
+      <div class="pill" onclick="demoTopup()" style="cursor:pointer;">➕ <span id="top-gem">100</span> 💎</div>
+    </div>
+
+    <div class="tiers">
+      <div class="tier on" onclick="setTier(25,this)"><small>KICHIK</small><b>25 💎</b></div>
+      <div class="tier" onclick="setTier(50,this)"><small>O‘RTA</small><b>50 💎</b></div>
+      <div class="tier" onclick="setTier(100,this)"><small>KATTA</small><b>100 💎</b></div>
+    </div>
+
+    <div class="roulette-wrap">
+      <div class="pointer-top">▼</div>
+      <div class="pointer-line"></div>
+      <div class="track" id="r-track"></div>
+    </div>
+
+    <div class="go-row">
+      <button class="btn-blue" id="go-btn" onclick="spin()">Omadim keladi, Go! <span id="go-cost">25</span> 💎</button>
+      <div class="demo-box" onclick="toggleDemo()">DEMO<div class="sw" id="demo-sw"></div></div>
+    </div>
+
+    <div style="text-align:center;font-size:14px;font-weight:700;color:#4b5563;margin-bottom:8px;">Siz yutishingiz mumkin...</div>
+    <div class="p-grid" id="prizes-grid"></div>
+  </div>
+
+  <!-- 4. VAZIFALAR -->
+  <div class="page" id="pg-tasks">
+    <div class="chips">
+      <button class="chip on" onclick="filterTasks('all',this)">⊞ Hammasi</button>
+      <button class="chip" onclick="filterTasks('daily',this)">📅 Kundalik</button>
+      <button class="chip" onclick="filterTasks('weekly',this)">🗓️ Haftalik</button>
+    </div>
+    <div id="tasks-list"></div>
+  </div>
+
+  <!-- 5. PROFIL -->
+  <div class="page" id="pg-prof">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#0088ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;" id="p-ava">A</div>
+        <div>
+          <b style="font-size:18px;" id="p-name">O‘yinchi</b>
+          <div style="font-size:15px;font-weight:800;margin-top:2px;"><span id="p-gem">100</span> 💎 • Dar. <span id="p-lvl">1</span></div>
+        </div>
+      </div>
+      <button class="btn-blue" style="width:100%;" onclick="demoTopup()">To‘ldirish (+100 Demo 💎)</button>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,#0088ff,#0284c7);color:#fff;text-align:center;">
+      <b style="font-size:16px;">Do‘stlaringizni taklif qiling</b>
+      <div style="font-size:12px;opacity:0.9;margin:4px 0 10px;">va ularning depozitlaridan 10% oling</div>
+      <button onclick="copyRef()" style="width:100%;padding:10px;border-radius:12px;border:1.5px solid #fff;background:transparent;color:#fff;font-weight:800;cursor:pointer;">Do‘stlarni taklif qilish</button>
+    </div>
+
+    <div class="card">
+      <b style="display:block;margin-bottom:8px;">🎁 Yutgan sovg‘alaringiz (<span id="inv-cnt">0</span>)</b>
+      <div id="inv-list" style="font-size:13px;color:#6b7280;">Sizda hali sovg‘alar yo‘q</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <button class="nb" onclick="goPage('turnir',this)"><span>🏆</span>Turnirlar</button>
+    <button class="nb" onclick="goPage('raffle',this)"><span>🎟️</span>Yutuqli</button>
+    <button class="nb on" onclick="goPage('play',this)"><span>🎲</span>O‘ynash</button>
+    <button class="nb" onclick="goPage('tasks',this)"><span>💎</span>Vazifalar<b class="nb-badge" id="t-badge">2</b></button>
+    <button class="nb" onclick="goPage('prof',this)"><span>👤</span>Profil</button>
+  </div>
+
+  <script>
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
+    let uname = 'O‘yinchi', uid = '1000';
+    try {
+      if (tg) {
+        tg.ready(); tg.expand();
+        if (tg.initDataUnsafe?.user) {
+          uname = tg.initDataUnsafe.user.first_name;
+          uid = String(tg.initDataUnsafe.user.id);
+        }
+      }
+    } catch (e) {}
+    document.getElementById('p-name').innerText = uname;
+    document.getElementById('p-ava').innerText = uname[0].toUpperCase();
+
+    const PRIZES = [
+      {ico:'🗡️', name:'Lazer Qilich', val:610, ch:'0.67%', nft:true},
+      {ico:'🤍', name:'Yurak Tugma', val:600, ch:'0.67%', nft:true},
+      {ico:'🎒', name:'TG Ryukzak', val:500, ch:'0.75%', nft:true},
+      {ico:'🧋', name:'Kofe Stakan', val:500, ch:'0.75%', nft:true},
+      {ico:'🏅', name:'Oltin Medal', val:500, ch:'0.75%', nft:true},
+      {ico:'🍜', name:'Ramen NFT', val:490, ch:'0.75%', nft:true},
+      {ico:'🏆', name:'Kubok', val:100, ch:'2.53%', nft:false},
+      {ico:'💎', name:'Olmos', val:100, ch:'2.53%', nft:false},
+      {ico:'💍', name:'Uzuk', val:100, ch:'2.53%', nft:false},
+      {ico:'🎂', name:'Tort', val:50, ch:'4.76%', nft:false},
+      {ico:'💐', name:'Guldasta', val:50, ch:'4.76%', nft:false},
+      {ico:'🚀', name:'Raketa', val:50, ch:'4.76%', nft:false},
+      {ico:'🌹', name:'Atirgul', val:25, ch:'9.22%', nft:false},
+      {ico:'🎁', name:'Sovg‘a', val:25, ch:'9.22%', nft:false},
+      {ico:'💝', name:'Yurak', val:15, ch:'15.16%', nft:false},
+      {ico:'🧸', name:'Ayiqcha', val:15, ch:'15.16%', nft:false}
+    ];
+
+    let gems = Number(localStorage.getItem('gr_gems') || 100);
+    let tix = Number(localStorage.getItem('gr_tix') || 8);
+    let spins = Number(localStorage.getItem('gr_spins') || 0);
+    let inv = JSON.parse(localStorage.getItem('gr_inv') || '[]');
+    let claimed = JSON.parse(localStorage.getItem('gr_clm') || '[]');
+    let tierCost = 25, isDemo = false, spinning = false, taskCat = 'all';
+
+    function save() {
+      localStorage.setItem('gr_gems', gems); localStorage.setItem('gr_tix', tix);
+      localStorage.setItem('gr_spins', spins); localStorage.setItem('gr_inv', JSON.stringify(inv));
+      localStorage.setItem('gr_clm', JSON.stringify(claimed));
+      document.getElementById('top-gem').innerText = gems;
+      document.getElementById('p-gem').innerText = gems;
+      document.getElementById('top-tix').innerText = tix;
+      document.getElementById('r-my').innerText = tix;
+      document.getElementById('p-lvl').innerText = 1 + Math.floor(spins / 5);
+      renderInv(); renderLB(); renderTasks();
+    }
+
+    function goPage(p, btn) {
+      ['turnir','raffle','play','tasks','prof'].forEach(x => document.getElementById('pg-'+x).classList.toggle('on', x===p));
+      if (btn) { document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+    }
+
+    function setTier(cost, el) {
+      tierCost = cost;
+      document.querySelectorAll('.tier').forEach(t=>t.classList.remove('on'));
+      el.classList.add('on');
+      document.getElementById('go-cost').innerText = cost;
+    }
+
+    function toggleDemo() {
+      isDemo = !isDemo;
+      document.getElementById('demo-sw').classList.toggle('on', isDemo);
+      document.getElementById('go-btn').innerHTML = isDemo ? 'DEMO aylantirish (Bepul)' : 'Omadim keladi, Go! <span id="go-cost">'+tierCost+'</span> 💎';
+    }
+
+    function buildTrack() {
+      let html = '';
+      for (let i=0; i<45; i++) {
+        const p = PRIZES[i % PRIZES.length];
+        html += '<div class="r-item"><div class="r-ico">'+p.ico+'</div><div class="r-val">'+p.val+' 💎</div></div>';
+      }
+      const tr = document.getElementById('r-track');
+      tr.style.transition = 'none'; tr.style.transform = 'translateX(0px)';
+      tr.innerHTML = html;
+    }
+
+    function spin() {
+      if (spinning) return;
+      if (!isDemo && gems < tierCost) return alert('Kristall yetarli emas! DEMO ni yoqing yoki Vazifalar bajaring.');
+      spinning = true;
+      if (!isDemo) { gems -= tierCost; spins++; save(); }
+      buildTrack();
+
+      const winIdx = 30 + Math.floor(Math.random() * 10);
+      const winPrize = PRIZES[winIdx % PRIZES.length];
+      const tr = document.getElementById('r-track');
+      setTimeout(() => {
+        tr.style.transition = 'transform 3.8s cubic-bezier(0.12, 0.88, 0.2, 1)';
+        tr.style.transform = 'translateX(-' + (winIdx * 120) + 'px)';
+      }, 40);
+
+      setTimeout(() => {
+        spinning = false;
+        document.getElementById('last-win').innerText = '🟢 ' + uname + ' yutdi ' + winPrize.ico;
+        if (isDemo) {
+          alert('DEMO: Sizga ' + winPrize.ico + ' ' + winPrize.name + ' (' + winPrize.val + ' 💎) tushdi!');
+        } else {
+          inv.unshift(winPrize);
+          save();
+          alert('🎉 Tabriklaymiz! ' + winPrize.ico + ' ' + winPrize.name + ' (' + winPrize.val + ' 💎) yutdingiz!');
+        }
+      }, 4000);
+    }
+
+    function demoTopup() { gems += 100; save(); }
+    function addTicket() { if (gems < 10) return alert('1 chipta = 10 💎'); gems -= 10; tix += 1; save(); }
+    function copyRef() { alert('Taklif havolangiz: https://t.me/share/url?url=ref_' + uid); }
+
+    function renderInv() {
+      document.getElementById('inv-cnt').innerText = inv.length;
+      if (inv.length === 0) { document.getElementById('inv-list').innerHTML = 'Sizda hali sovg‘alar yo‘q'; return; }
+      document.getElementById('inv-list').innerHTML = inv.map((p,i) =>
+        '<div class="row-item"><span>'+p.ico+' <b>'+p.name+'</b></span>' +
+        '<button onclick="sellPrize('+i+')" style="border:none;background:#e0f0ff;color:#0066cc;padding:5px 10px;border-radius:8px;font-weight:800;cursor:pointer;">Sotish (+'+p.val+' 💎)</button></div>'
+      ).join('');
+    }
+    function sellPrize(i) { gems += inv[i].val; inv.splice(i,1); save(); }
+
+    function renderLB() {
+      const list = [['Jade Dragonfly',4370],['Amiro',3050],[uname+' (Siz)', spins*50],['Defomin',2500],['Unknown',2416]].sort((a,b)=>b[1]-a[1]);
+      document.getElementById('lb-list').innerHTML = list.map((x,i) =>
+        '<div class="row-item"><b>#'+(i+4)+' '+x[0]+'</b><span>'+x[1]+' 🏆</span></div>'
+      ).join('');
+    }
+
+    const TASKS = [
+      {id:'t1',cat:'daily',t:'5 ta o‘yin o‘ynash',need:5,rew:5},
+      {id:'t2',cat:'daily',t:'10 ta o‘yin o‘ynash',need:10,rew:10},
+      {id:'t3',cat:'weekly',t:'3 kun ketma-ket o‘ynash',need:3,rew:25}
+    ];
+    function filterTasks(c, btn) { taskCat=c; document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); btn.classList.add('on'); renderTasks(); }
+    function renderTasks() {
+      const list = TASKS.filter(x=>taskCat==='all'||x.cat===taskCat);
+      document.getElementById('tasks-list').innerHTML = list.map(x => {
+        const cur = Math.min(x.need, spins), done = claimed.includes(x.id);
+        return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<div><b>🎮 '+x.t+'</b><div style="font-size:12px;color:#0066cc;font-weight:800;margin-top:4px;">+'+x.rew+' 💎</div></div>' +
+          '<button onclick="claimTask(\''+x.id+'\','+x.need+','+x.rew+')" style="border:none;background:'+(done?'#e5e7eb':(cur>=x.need?'#0088ff':'#e0f0ff'))+';color:'+(done?'#6b7280':(cur>=x.need?'#fff':'#0066cc'))+';padding:8px 14px;border-radius:10px;font-weight:800;">'+(done?'✅ Olindi':(cur>=x.need?'Olish':cur+'/'+x.need))+'</button></div>' +
+          '<div class="prog-bg"><div class="prog-fill" style="width:'+(cur/x.need*100)+'%"></div></div></div>';
+      }).join('');
+    }
+    function claimTask(id, need, rew) {
+      if (claimed.includes(id) || spins < need) return;
+      claimed.push(id); gems += rew; save();
+    }
+
+    document.getElementById('prizes-grid').innerHTML = PRIZES.map(p =>
+      '<div class="p-card">'+(p.nft?'<span class="nft-tag">NFT</span>':'')+'<div style="font-size:34px;">'+p.ico+'</div><small style="color:#6b7280;font-size:10px;">✨ '+p.ch+'</small><div class="r-val" style="margin-top:4px;">'+p.val+' 💎</div></div>'
+    ).join('');
+
+    let secLeft = 12*3600 + 17*60 + 19;
+    setInterval(() => {
+      secLeft = Math.max(0, secLeft - 1);
+      const h = String(Math.floor(secLeft/3600)).padStart(2,'0'), m = String(Math.floor((secLeft%3600)/60)).padStart(2,'0'), s = String(secLeft%60).padStart(2,'0');
+      document.getElementById('raffle-timer').innerText = h + ' : ' + m + ' : ' + s;
+    }, 1000);
+
+    buildTrack(); save();
+  </script>
+</body>
+  </html>
